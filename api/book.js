@@ -119,7 +119,7 @@ export default async function handler(req, res) {
         amount_money: { amount: 9700, currency: 'USD' },
         location_id: SQUARE_LOCATION_ID,
         idempotency_key: `booking-${email}-${selectedDate}-${selectedTime}-${Date.now()}`,
-        note: `Strategy Session — ${firstName} ${lastName} — ${selectedDateLabel}`
+        note: `Strategy Session — ${firstName} ${lastName}`
       })
     });
 
