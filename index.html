@@ -632,8 +632,8 @@ async function initSquare() {
   if (squareCard) return;
   try {
     const payments = Square.payments(
-      document.getElementById('payBtn').dataset.appId || 'YOUR_SQUARE_APP_ID',
-      document.getElementById('payBtn').dataset.locationId || 'YOUR_LOCATION_ID'
+      document.getElementById('payBtn').dataset.appId || 'sq0idp-F-S9XSRxcT_48k6AfpI8gA',
+      document.getElementById('payBtn').dataset.locationId || 'EAAAl67VA4DybLYx0HA-CkucS1qntKDod_4n_DCfkUxSRK5xJAFY7N0JSNz93dHL'
     );
     squareCard = await payments.card();
     await squareCard.attach('#card-container');
