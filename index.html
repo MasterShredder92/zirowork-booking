@@ -34,17 +34,14 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 4
 
 .page-wrap{max-width:1060px;margin:0 auto;padding:48px 32px 80px}
 
-/* TOP */
 .top-cta{text-align:center;margin-bottom:40px}
 .eyebrow{display:inline-block;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--lime);margin-bottom:12px}
 .top-cta h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,5vw,58px);line-height:1;color:#fff;margin-bottom:10px}
 .top-cta h1 span{color:var(--lime)}
 .top-cta p{font-size:15px;color:var(--muted);max-width:540px;margin:0 auto}
 
-/* BOOKING CARD: LEFT + RIGHT */
 .booking-card{display:grid;grid-template-columns:260px 1fr;border:1px solid var(--border);background:var(--card)}
 
-/* LEFT PANEL */
 .left-panel{padding:28px 24px;border-right:1px solid var(--border);display:flex;flex-direction:column}
 .host-photo{width:68px;height:68px;border-radius:50%;object-fit:cover;object-position:top center;border:2px solid var(--border2);margin-bottom:14px;display:block}
 .host-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.5px;color:#fff;margin-bottom:2px}
@@ -62,48 +59,84 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 4
 .get-item{display:flex;gap:7px;font-size:12px;color:var(--muted);margin-bottom:6px;line-height:1.4}
 .get-item::before{content:'→';color:var(--lime);font-weight:700;flex-shrink:0}
 
-/* RIGHT PANEL */
-.right-panel{display:flex;flex-direction:column;min-height:560px}
+.right-panel{display:flex;flex-direction:column}
 
-/* 7-DAY STRIP */
-.day-strip-wrap{padding:28px 28px 20px}
-.strip-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.strip-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.5px;color:#fff}
-.strip-range{font-size:12px;color:var(--muted)}
-.day-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
-.day-card{border:1px solid var(--border);padding:14px 8px;text-align:center;cursor:pointer;transition:all 0.15s;position:relative}
-.day-card.avail-day{border-color:var(--lime);border-width:2px}
-.day-card.avail-day:hover{background:rgba(197,241,53,0.08)}
-.day-card.selected{border-color:var(--lime);border-width:2px;background:rgba(197,241,53,0.15)}
-.day-card.unavail{cursor:default;opacity:0.35}
-.day-card .dc-name{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.day-card.selected .dc-name{color:var(--lime)}
-.day-card .dc-num{font-size:26px;font-weight:700;color:#fff;line-height:1;margin-bottom:6px}
-.day-card.unavail .dc-num{color:var(--muted2)}
-.day-card .dc-month{font-size:10px;color:var(--muted);margin-bottom:8px}
-.day-card .dc-slots{font-size:10px;font-weight:700;letter-spacing:0.5px}
-.dc-slots.open{color:var(--lime)}
-.dc-slots.full{color:var(--muted2)}
-.day-card.today-card .dc-num{color:var(--lime)}
-.dc-teaser{font-size:10px;color:var(--red);margin-top:5px;font-weight:600;letter-spacing:0.3px}
+/* ---- FULL MONTH CALENDAR ---- */
+.month-cal-wrap{padding:24px 24px 16px}
+.month-nav-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.month-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:#fff}
+.mnav-btn{background:none;border:1px solid var(--border);color:var(--muted);width:32px;height:32px;cursor:pointer;font-size:16px;transition:all 0.15s;display:flex;align-items:center;justify-content:center}
+.mnav-btn:hover{border-color:var(--lime);color:var(--lime)}
+.mnav-btn:disabled{opacity:0.25;cursor:default}
 
-/* TIME SLOTS - horizontal row */
-.times-wrap{padding:0 28px 24px;display:none}
+.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.mg-header{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);text-align:center;padding:6px 0 10px}
+
+.mg-day{
+  aspect-ratio:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  cursor:default;
+  position:relative;
+  font-size:13px;
+  color:var(--muted2);
+  transition:all 0.15s;
+}
+.mg-day.empty{background:transparent}
+.mg-day.past{color:var(--muted2);opacity:0.4}
+.mg-day.unavail{color:var(--muted2)}
+
+/* Available day — thin lime border */
+.mg-day.avail{
+  color:#fff;
+  cursor:pointer;
+  border:1px solid var(--lime);
+}
+.mg-day.avail:hover{
+  background:rgba(197,241,53,0.08);
+}
+.mg-day.selected{
+  background:rgba(197,241,53,0.15);
+  border:1px solid var(--lime);
+  color:var(--lime);
+}
+.mg-day.is-today .day-num{
+  color:var(--lime);
+}
+.day-num{font-size:15px;font-weight:600;line-height:1}
+.day-slots{font-size:9px;font-weight:700;letter-spacing:0.5px;margin-top:3px;color:var(--lime)}
+.mg-day.unavail .day-slots,.mg-day.past .day-slots{display:none}
+
+/* TIME SLOTS */
+.times-wrap{padding:0 24px 20px;display:none;border-top:1px solid var(--border)}
 .times-wrap.visible{display:block}
-.times-day-label{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--lime);margin-bottom:12px}
+.times-header{display:flex;align-items:center;gap:10px;padding:16px 0 12px}
+.times-day-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--lime)}
 .times-row{display:flex;flex-wrap:wrap;gap:8px}
-.time-pill{padding:10px 18px;border:1px solid var(--border);cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;min-width:120px}
+
+.time-pill{
+  padding:10px 16px;
+  border:1px solid var(--border);
+  cursor:pointer;
+  transition:all 0.15s;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  min-width:130px;
+}
 .time-pill:hover:not(.tp-booked){border-color:var(--lime);background:rgba(197,241,53,0.05)}
 .time-pill.tp-selected{border-color:var(--lime);background:rgba(197,241,53,0.1)}
-.time-pill.tp-booked{cursor:not-allowed;opacity:0.4}
-.tp-time{font-size:14px;font-weight:600;color:#fff}
+.time-pill.tp-booked{cursor:not-allowed;opacity:0.45;border-color:var(--border)}
+.tp-time{font-size:13px;font-weight:600;color:#fff}
 .time-pill.tp-booked .tp-time{color:var(--muted)}
 .tp-status{font-size:10px;font-weight:700;letter-spacing:0.5px;margin-top:2px}
 .tp-status.s-open{color:var(--lime)}
 .tp-status.s-booked{color:var(--red)}
 
 /* FORM */
-.form-wrap{border-top:1px solid var(--border);padding:24px 28px;display:none;background:var(--card2)}
+.form-wrap{border-top:1px solid var(--border);padding:24px;display:none;background:var(--card2)}
 .form-wrap.visible{display:block}
 .form-sel-time{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:rgba(197,241,53,0.07);border:1px solid rgba(197,241,53,0.25);margin-bottom:18px}
 .form-sel-time strong{font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--lime);letter-spacing:0.5px}
@@ -121,7 +154,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 4
 .proceed-btn:hover{opacity:0.9;transform:translateY(-1px)}
 
 /* PAYMENT */
-.pay-wrap{border-top:1px solid var(--border);padding:24px 28px;display:none;background:var(--card2)}
+.pay-wrap{border-top:1px solid var(--border);padding:24px;display:none;background:var(--card2)}
 .pay-wrap.visible{display:block}
 .pay-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:14px;background:var(--black);border:1px solid var(--border);margin-bottom:18px}
 .ps-row{display:flex;flex-direction:column;gap:2px}
@@ -152,39 +185,21 @@ footer{border-top:1px solid var(--border);padding:20px 40px;display:flex;justify
 footer .logo{font-size:16px}
 footer p{font-size:11px;color:var(--muted2)}
 
-@media(max-width:860px){
-  .booking-card{grid-template-columns:1fr}
-  .left-panel{border-right:none;border-bottom:1px solid var(--border);flex-direction:row;flex-wrap:wrap;gap:16px;align-items:flex-start}
-  .host-photo{width:56px;height:56px;margin-bottom:0}
-  .price-block{margin-top:0}
-  .day-strip-wrap{padding:20px 16px 16px}
-  .times-wrap,.form-wrap,.pay-wrap{padding:16px}
-  .fg{grid-template-columns:1fr}
-  .pay-summary{grid-template-columns:1fr 1fr}
-  .page-wrap{padding:28px 16px 60px}
-  nav{padding:14px 20px}
-  footer{padding:16px 20px;flex-direction:column;gap:6px;text-align:center}
-}
-
-/* HERO STATS */
 .hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:32px}
 .stat-item{background:var(--card);padding:20px;text-align:center}
 .stat-num{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--lime);display:block;line-height:1}
 .stat-label{font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;display:block}
 
-/* CONTENT SECTIONS */
 .content-section{padding:72px 0 0}
 .cs-label{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--lime);margin-bottom:14px}
 .cs-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,54px);line-height:1;color:#fff;margin-bottom:40px}
 
-/* COVERS GRID */
 .covers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border)}
 .cover-item{background:var(--card);padding:28px 24px}
 .cover-num{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:3px;color:var(--lime);display:block;margin-bottom:12px}
 .cover-item strong{display:block;font-size:15px;color:#fff;margin-bottom:8px}
 .cover-item p{font-size:13px;color:var(--muted);line-height:1.65}
 
-/* FIT SECTION */
 .fit-section{padding:60px 0 0}
 .fit-inner{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border)}
 .fit-col{background:var(--card);padding:32px 28px}
@@ -196,7 +211,6 @@ footer p{font-size:11px;color:var(--muted2)}
 .fit-list li::before{content:'→';position:absolute;left:0;color:var(--lime);font-weight:700}
 .fit-list.no-list li::before{color:var(--red);content:'✗'}
 
-/* BIO */
 .bio-grid{display:grid;grid-template-columns:220px 1fr;gap:48px;align-items:start}
 .bio-photo{width:100%;height:auto;object-fit:cover;object-position:top;filter:grayscale(10%);border:1px solid var(--border)}
 .bio-text{font-size:15px;color:var(--muted);line-height:1.75;margin-bottom:16px}
@@ -204,7 +218,6 @@ footer p{font-size:11px;color:var(--muted2)}
 .brad-quote{font-size:16px;color:#fff;line-height:1.6;font-style:italic;margin-bottom:8px}
 .brad-attr{font-size:12px;color:var(--muted)}
 
-/* FAQ */
 .faq-section{padding:60px 0 0}
 .faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border)}
 .faq-item{background:var(--card);padding:28px 24px}
@@ -212,7 +225,6 @@ footer p{font-size:11px;color:var(--muted2)}
 .faq-item p{font-size:14px;color:var(--muted);line-height:1.65}
 .faq-item a{color:var(--lime)}
 
-/* BOTTOM CTA */
 .bottom-cta{padding:72px 0;text-align:center}
 .bottom-cta h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,5vw,52px);color:#fff;line-height:1.05;margin-bottom:14px}
 .bottom-cta h2 span{color:var(--lime)}
@@ -221,12 +233,24 @@ footer p{font-size:11px;color:var(--muted2)}
 .scroll-btn:hover{opacity:0.9;transform:translateY(-1px)}
 
 @media(max-width:860px){
+  .booking-card{grid-template-columns:1fr}
+  .left-panel{border-right:none;border-bottom:1px solid var(--border);flex-direction:row;flex-wrap:wrap;gap:16px;align-items:flex-start}
+  .host-photo{width:56px;height:56px;margin-bottom:0}
+  .price-block{margin-top:0}
+  .month-cal-wrap{padding:16px}
+  .times-wrap,.form-wrap,.pay-wrap{padding:16px}
+  .fg{grid-template-columns:1fr}
+  .pay-summary{grid-template-columns:1fr 1fr}
+  .page-wrap{padding:28px 16px 60px}
+  nav{padding:14px 20px}
+  footer{padding:16px 20px;flex-direction:column;gap:6px;text-align:center}
   .hero-stats{grid-template-columns:repeat(2,1fr)}
   .covers-grid{grid-template-columns:1fr}
   .fit-inner{grid-template-columns:1fr}
   .bio-grid{grid-template-columns:1fr;gap:24px}
   .bio-photo{max-width:200px}
   .faq-grid{grid-template-columns:1fr}
+  .mg-day{font-size:11px}
 }
 </style>
 </head>
@@ -244,28 +268,14 @@ footer p{font-size:11px;color:var(--muted2)}
     <p>Walk away with a prioritized fix list, rewritten copy, and exactly what to do first to start converting more parents this week.</p>
   </div>
 
-  
-  <!-- VALUE STATS -->
   <div class="hero-stats">
-    <div class="stat-item">
-      <span class="stat-num">30</span>
-      <span class="stat-label">Minutes That Change Everything</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-num">$97</span>
-      <span class="stat-label">Less Than One New Student</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-num">3-5</span>
-      <span class="stat-label">Specific Fixes You Leave With</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-num">100%</span>
-      <span class="stat-label">Specific To Your School</span>
-    </div>
+    <div class="stat-item"><span class="stat-num">30</span><span class="stat-label">Minutes That Change Everything</span></div>
+    <div class="stat-item"><span class="stat-num">$97</span><span class="stat-label">Less Than One New Student</span></div>
+    <div class="stat-item"><span class="stat-num">3-5</span><span class="stat-label">Specific Fixes You Leave With</span></div>
+    <div class="stat-item"><span class="stat-num">100%</span><span class="stat-label">Specific To Your School</span></div>
   </div>
 
-<div class="booking-card" id="bookingCard">
+  <div class="booking-card" id="bookingCard">
 
     <!-- LEFT -->
     <div class="left-panel">
@@ -305,9 +315,9 @@ footer p{font-size:11px;color:var(--muted2)}
       <!-- FULL MONTH CALENDAR -->
       <div class="month-cal-wrap">
         <div class="month-nav-row">
-          <button class="mnav-btn" id="prevMonthBtn" onclick="changeMonth(-1)">&#8592;</button>
-          <div class="month-title" id="monthTitle">Loading...</div>
-          <button class="mnav-btn" id="nextMonthBtn" onclick="changeMonth(1)">&#8594;</button>
+          <button class="mnav-btn" id="prevMonthBtn">&#8592;</button>
+          <div class="month-title" id="monthTitle"></div>
+          <button class="mnav-btn" id="nextMonthBtn">&#8594;</button>
         </div>
         <div class="month-grid" id="monthGrid">
           <div class="mg-header">Sun</div>
@@ -320,9 +330,11 @@ footer p{font-size:11px;color:var(--muted2)}
         </div>
       </div>
 
-      <!-- TIME SLOTS - horizontal -->
+      <!-- TIME SLOTS -->
       <div class="times-wrap" id="timesWrap">
-        <div class="times-day-label" id="timesDayLabel">Available Times</div>
+        <div class="times-header">
+          <div class="times-day-label" id="timesDayLabel"></div>
+        </div>
         <div class="times-row" id="timesRow"></div>
       </div>
 
@@ -376,46 +388,20 @@ footer p{font-size:11px;color:var(--muted2)}
     </div>
   </div>
 
-
   <!-- WHAT WE COVER -->
   <div class="content-section">
     <div class="cs-label">What Happens In 30 Minutes</div>
     <h2 class="cs-title">Everything You Need.<br>Nothing You Don't.</h2>
     <div class="covers-grid">
-      <div class="cover-item">
-        <span class="cover-num">01</span>
-        <strong>Live Website Review</strong>
-        <p>I pull up your site and walk through it exactly like a parent would. You'll see what's working and what's bleeding you students.</p>
-      </div>
-      <div class="cover-item">
-        <span class="cover-num">02</span>
-        <strong>Revenue Leak Identification</strong>
-        <p>I tell you exactly where you're losing students and calculate how much each leak costs you per month in real dollars.</p>
-      </div>
-      <div class="cover-item">
-        <span class="cover-num">03</span>
-        <strong>Prioritized Fix List</strong>
-        <p>You leave with 3-5 specific changes ranked by ROI. Highest impact first. No fluff, no 47-step marketing funnel nonsense.</p>
-      </div>
-      <div class="cover-item">
-        <span class="cover-num">04</span>
-        <strong>Hero Copy Rewritten Live</strong>
-        <p>Your homepage headline and CTA — rewritten on the spot so you leave with something you can implement today.</p>
-      </div>
-      <div class="cover-item">
-        <span class="cover-num">05</span>
-        <strong>Retention Strategy</strong>
-        <p>The one thing I changed that stopped silent churn. Takes 5 minutes to implement. Worth thousands per year in saved revenue.</p>
-      </div>
-      <div class="cover-item">
-        <span class="cover-num">06</span>
-        <strong>Your Next 90-Day Plan</strong>
-        <p>What to do first, second, and third. In order. So you leave with a clear path instead of a list of ideas you never implement.</p>
-      </div>
+      <div class="cover-item"><span class="cover-num">01</span><strong>Live Website Review</strong><p>I pull up your site and walk through it exactly like a parent would. You'll see what's working and what's bleeding you students.</p></div>
+      <div class="cover-item"><span class="cover-num">02</span><strong>Revenue Leak Identification</strong><p>I tell you exactly where you're losing students and calculate how much each leak costs you per month in real dollars.</p></div>
+      <div class="cover-item"><span class="cover-num">03</span><strong>Prioritized Fix List</strong><p>You leave with 3-5 specific changes ranked by ROI. Highest impact first. No fluff, no 47-step marketing funnel nonsense.</p></div>
+      <div class="cover-item"><span class="cover-num">04</span><strong>Hero Copy Rewritten Live</strong><p>Your homepage headline and CTA — rewritten on the spot so you leave with something you can implement today.</p></div>
+      <div class="cover-item"><span class="cover-num">05</span><strong>Retention Strategy</strong><p>The one thing I changed that stopped silent churn. Takes 5 minutes to implement. Worth thousands per year in saved revenue.</p></div>
+      <div class="cover-item"><span class="cover-num">06</span><strong>Your Next 90-Day Plan</strong><p>What to do first, second, and third. In order. So you leave with a clear path instead of a list of ideas you never implement.</p></div>
     </div>
   </div>
 
-  <!-- IS THIS FOR YOU -->
   <div class="fit-section">
     <div class="fit-inner">
       <div class="fit-col">
@@ -442,7 +428,6 @@ footer p{font-size:11px;color:var(--muted2)}
     </div>
   </div>
 
-  <!-- ZACH BIO + BRAD LEA -->
   <div class="content-section">
     <div class="bio-grid">
       <div class="bio-left">
@@ -462,37 +447,22 @@ footer p{font-size:11px;color:var(--muted2)}
     </div>
   </div>
 
-  <!-- FAQ -->
   <div class="faq-section">
     <div class="cs-label">Common Questions</div>
     <h2 class="cs-title">Before You Book</h2>
     <div class="faq-grid">
-      <div class="faq-item">
-        <strong>What do I need to prepare?</strong>
-        <p>Have your website URL ready and your screen share working. Know your current student count and pricing. That's it — I do the rest.</p>
-      </div>
-      <div class="faq-item">
-        <strong>What if I need to reschedule?</strong>
-        <p>Email me at <a href="mailto:adkinsguitarandmusic@gmail.com">adkinsguitarandmusic@gmail.com</a> at least 4 hours before and I'll get you rescheduled. I'm a real person and I respond.</p>
-      </div>
-      <div class="faq-item">
-        <strong>What happens after the call?</strong>
-        <p>You get a follow-up email with your prioritized fix list and any resources I mentioned. If ZiroWork can automate something we talked about, I'll let you know — no pressure.</p>
-      </div>
-      <div class="faq-item">
-        <strong>Is $97 refundable?</strong>
-        <p>If you show up and feel like you got zero value, email me and I'll refund you. That's never happened. But the guarantee is there.</p>
-      </div>
+      <div class="faq-item"><strong>What do I need to prepare?</strong><p>Have your website URL ready and your screen share working. Know your current student count and pricing. That's it — I do the rest.</p></div>
+      <div class="faq-item"><strong>What if I need to reschedule?</strong><p>Email me at <a href="mailto:adkinsguitarandmusic@gmail.com">adkinsguitarandmusic@gmail.com</a> at least 4 hours before and I'll get you rescheduled. I'm a real person and I respond.</p></div>
+      <div class="faq-item"><strong>What happens after the call?</strong><p>You get a follow-up email with your prioritized fix list and any resources I mentioned. If ZiroWork can automate something we talked about, I'll let you know — no pressure.</p></div>
+      <div class="faq-item"><strong>Is $97 refundable?</strong><p>If you show up and feel like you got zero value, email me and I'll refund you. That's never happened. But the guarantee is there.</p></div>
     </div>
   </div>
 
-  <!-- BOTTOM CTA -->
   <div class="bottom-cta">
     <h2>One New Student Pays For This.<br><span>Ten New Students Change Everything.</span></h2>
     <p>Scroll up and pick a time. It takes 2 minutes to book.</p>
     <button onclick="document.getElementById('bookingCard').scrollIntoView({behavior:'smooth'})" class="scroll-btn">PICK A TIME →</button>
   </div>
-
 
 </div>
 
@@ -503,173 +473,227 @@ footer p{font-size:11px;color:var(--muted2)}
 
 <script src="https://web.squarecdn.com/v1/square.js"></script>
 <script>
-const SQUARE_APP_ID = 'YOUR_SQUARE_APP_ID';
+// ─── CONFIG ───────────────────────────────────────────────
+const SQUARE_APP_ID      = 'YOUR_SQUARE_APP_ID';
 const SQUARE_LOCATION_ID = 'YOUR_LOCATION_ID';
 
-// Available slots by weekday (0=Sun,1=Mon...6=Sat)
-const AVAIL = {
-  1: ['10:00','11:00','15:00','19:00'],
-  2: ['10:00','11:00','15:00','19:00'],
-  3: ['10:00','11:00','15:00','19:00'],
-  4: ['10:00','11:00','15:00','19:00'],
-  6: ['10:00','11:00','15:00'],
+// Zach's real slots by weekday (0=Sun … 6=Sat)
+// Times in 24h HH:MM
+const REAL_SLOTS = {
+  1: ['10:00','11:00','15:00','19:00'], // Mon
+  2: ['10:00','11:00','15:00','19:00'], // Tue
+  3: ['10:00','11:00','15:00','19:00'], // Wed
+  4: ['10:00','11:00','15:00','19:00'], // Thu
+  6: ['10:00','11:00','15:00'],         // Sat
 };
 
-const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-const DAY_FULL  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-const MON_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+// One fake-booked slot per day — always shows as "Already Booked"
+// Picked deterministically from the available slots so it looks real
+const FAKE_SLOT_INDEX = 1; // always marks the second slot as fake-booked
 
-// Seeded fake booked — consistent per date+time
-function seeded(str){
-  let h=0;
-  for(let i=0;i<str.length;i++) h=Math.imul(31,h)+str.charCodeAt(i)|0;
-  return ((h>>>0)/4294967295);
-}
-function fakeBooked(dateStr,time){ return seeded(dateStr+time)<0.20; }
+const MON_NAMES  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MON_SHORT  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DAY_FULL   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
-function fmt12(h,m){
-  const h12=h>12?h-12:h===0?12:h;
-  const ap=h>=12?'PM':'AM';
+// ─── STATE ────────────────────────────────────────────────
+let viewYear, viewMonth; // currently displayed month
+let selDate = null, selDateStr = '', selTime = '', selLabel = '';
+let bookData = {};
+let sqCard = null, sqInited = false;
+
+// ─── HELPERS ──────────────────────────────────────────────
+function toDateStr(d){ return d.toISOString().split('T')[0]; }
+
+function fmt12(h, m){
+  const h12 = h > 12 ? h - 12 : h === 0 ? 12 : h;
+  const ap   = h >= 12 ? 'PM' : 'AM';
   return `${h12}:${String(m).padStart(2,'0')} ${ap}`;
 }
 
-let selDate=null, selDateStr='', selTime='', selLabel='';
-let bookData={};
-let sqCard=null, sqInited=false;
-
-// ---- BUILD 7-DAY STRIP ----
-function buildStrip(){
-  const today=new Date(); today.setHours(0,0,0,0);
-  const cutoff=new Date(today.getTime()+8*60*60*1000); // 8hr from now
-  const strip=document.getElementById('dayStrip');
-  strip.innerHTML='';
-
-  let rangeStart='', rangeEnd='';
-
-  for(let i=0;i<7;i++){
-    const d=new Date(today); d.setDate(today.getDate()+i);
-    const dow=d.getDay();
-    const ds=d.toISOString().split('T')[0];
-    const slots=AVAIL[dow]||[];
-    const isToday=i===0;
-
-    // Count genuinely open slots
-    const openCount=slots.filter(t=>{
-      const [h,m]=t.split(':').map(Number);
-      const dt=new Date(d.getFullYear(),d.getMonth(),d.getDate(),h,m);
-      return !fakeBooked(ds,t) && dt>=cutoff;
-    }).length;
-
-    const hasOpen=openCount>0;
-    const isSelected=selDate&&d.getTime()===selDate.getTime();
-
-    if(i===0) rangeStart=`${MON_SHORT[d.getMonth()]} ${d.getDate()}`;
-    if(i===6) rangeEnd=`${MON_SHORT[d.getMonth()]} ${d.getDate()}`;
-
-    const card=document.createElement('div');
-    // Pick a teaser booked time for available days
-    const teaserSlots=['10:00','11:00','15:00','19:00'];
-    const teaserTime=teaserSlots[Math.floor(seeded(ds)*teaserSlots.length)];
-    const [th,tm]=teaserTime.split(':').map(Number);
-    const teaserLabel=fmt12(th,tm);
-
-    card.className=`day-card${isToday?' today-card':''}${isSelected?' selected':''}`;
-    if(!slots.length||!hasOpen){ card.classList.add('unavail'); }
-    else { card.classList.add('avail-day'); }
-    card.innerHTML=`
-      <div class="dc-name">${DAY_NAMES[dow]}</div>
-      <div class="dc-num">${d.getDate()}</div>
-      <div class="dc-month">${MON_SHORT[d.getMonth()]}</div>
-      <div class="dc-slots ${hasOpen&&slots.length?'open':'full'}">${!slots.length?'—':hasOpen?openCount+' open':'Full'}</div>
-      ${slots.length&&hasOpen?`<div class="dc-teaser">${teaserLabel} booked</div>`:''}`;
-
-    if(slots.length&&hasOpen){
-      card.onclick=()=>selectDay(d,ds,dow);
-    }
-    strip.appendChild(card);
-  }
-
-  document.getElementById('stripRange').textContent=`${rangeStart} – ${rangeEnd}`;
+function addMins(h, m, mins){
+  const total = h * 60 + m + mins;
+  return [Math.floor(total/60) % 24, total % 60];
 }
 
-function selectDay(d,ds,dow){
-  selDate=d; selDateStr=ds; selTime=''; selLabel='';
+// ─── CALENDAR ─────────────────────────────────────────────
+function buildCalendar(){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const now   = new Date();
+  const cutoff = new Date(now.getTime() + 8 * 60 * 60 * 1000); // 8hr from now
+  const maxDate = new Date(today); maxDate.setDate(today.getDate() + 14);
+
+  document.getElementById('monthTitle').textContent =
+    `${MON_NAMES[viewMonth]} ${viewYear}`;
+
+  // Disable prev if this month <= today's month
+  const firstOfView = new Date(viewYear, viewMonth, 1);
+  const firstOfToday = new Date(today.getFullYear(), today.getMonth(), 1);
+  document.getElementById('prevMonthBtn').disabled = firstOfView <= firstOfToday;
+
+  // Disable next if first of next month is beyond maxDate
+  const firstOfNext = new Date(viewYear, viewMonth + 1, 1);
+  document.getElementById('nextMonthBtn').disabled = firstOfNext > maxDate;
+
+  const grid = document.getElementById('monthGrid');
+  // Remove all day cells (keep the 7 headers)
+  while(grid.children.length > 7) grid.removeChild(grid.lastChild);
+
+  const firstDay = new Date(viewYear, viewMonth, 1).getDay(); // 0-6
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+  // Empty padding
+  for(let i = 0; i < firstDay; i++){
+    const empty = document.createElement('div');
+    empty.className = 'mg-day empty';
+    grid.appendChild(empty);
+  }
+
+  for(let day = 1; day <= daysInMonth; day++){
+    const d   = new Date(viewYear, viewMonth, day);
+    const dow = d.getDay();
+    const ds  = toDateStr(d);
+    const slots = REAL_SLOTS[dow] || [];
+
+    const isPast    = d < today;
+    const isBeyond  = d > maxDate;
+    const isToday   = ds === toDateStr(today);
+
+    // Count truly open slots (not fake-booked, not past cutoff)
+    const openSlots = slots.filter((t, idx) => {
+      if(idx === FAKE_SLOT_INDEX) return false; // fake booked
+      const [h,m] = t.split(':').map(Number);
+      const dt = new Date(d.getFullYear(), d.getMonth(), d.getDate(), h, m);
+      if(isToday && dt < cutoff) return false;
+      return true;
+    });
+
+    const hasOpen = openSlots.length > 0;
+    const isAvail = slots.length > 0 && !isPast && !isBeyond && hasOpen;
+    const isSelected = selDate && ds === selDateStr;
+
+    const cell = document.createElement('div');
+    cell.className = 'mg-day';
+    if(isPast || isBeyond)    cell.classList.add('past');
+    else if(!slots.length)    cell.classList.add('unavail');
+    else if(!hasOpen)         cell.classList.add('unavail');
+    else                      cell.classList.add('avail');
+    if(isToday)               cell.classList.add('is-today');
+    if(isSelected)            cell.classList.add('selected');
+
+    cell.innerHTML = `
+      <span class="day-num">${day}</span>
+      ${isAvail ? `<span class="day-slots">${openSlots.length} open</span>` : ''}
+    `;
+
+    if(isAvail){
+      cell.onclick = () => selectDay(d, ds, dow);
+    }
+
+    grid.appendChild(cell);
+  }
+}
+
+function changeMonth(dir){
+  viewMonth += dir;
+  if(viewMonth > 11){ viewMonth = 0; viewYear++; }
+  if(viewMonth < 0) { viewMonth = 11; viewYear--; }
+  buildCalendar();
+}
+
+function selectDay(d, ds, dow){
+  selDate    = d;
+  selDateStr = ds;
+  selTime    = '';
+  selLabel   = '';
   document.getElementById('formWrap').classList.remove('visible');
   document.getElementById('payWrap').classList.remove('visible');
   buildCalendar();
-  buildTimes(d,ds,dow);
+  buildTimes(d, ds, dow);
 }
 
-// ---- BUILD TIME PILLS ----
-function buildTimes(d,ds,dow){
-  const slots=AVAIL[dow]||[];
-  const today=new Date(); today.setHours(0,0,0,0);
-  const cutoff=new Date(new Date().getTime()+8*60*60*1000);
+// ─── TIME SLOTS ───────────────────────────────────────────
+function buildTimes(d, ds, dow){
+  const today   = new Date(); today.setHours(0,0,0,0);
+  const isToday = ds === toDateStr(today);
+  const cutoff  = new Date(new Date().getTime() + 8 * 60 * 60 * 1000);
+  const slots   = REAL_SLOTS[dow] || [];
 
-  document.getElementById('timesDayLabel').textContent=
+  document.getElementById('timesDayLabel').textContent =
     `${DAY_FULL[dow]}, ${MON_SHORT[d.getMonth()]} ${d.getDate()}`;
 
-  const row=document.getElementById('timesRow');
-  row.innerHTML='';
+  const row = document.getElementById('timesRow');
+  row.innerHTML = '';
 
-  slots.forEach(time=>{
-    const [h,m]=time.split(':').map(Number);
-    const dt=new Date(d.getFullYear(),d.getMonth(),d.getDate(),h,m);
-    const isToday2=ds===new Date().toISOString().split('T')[0];
-    const booked=fakeBooked(ds,time)||(isToday2&&dt<cutoff);
-    const endH=m+30>=60?h+1:h;
-    const endM=(m+30)%60;
-    const isSelected=selTime===time&&!booked;
+  slots.forEach((time, idx) => {
+    const [h, m]     = time.split(':').map(Number);
+    const [eh, em]   = addMins(h, m, 30);
+    const dt         = new Date(d.getFullYear(), d.getMonth(), d.getDate(), h, m);
 
-    const pill=document.createElement('div');
-    pill.className=`time-pill${booked?' tp-booked':''}${isSelected?' tp-selected':''}`;
-    pill.innerHTML=`
-      <span class="tp-time">${fmt12(h,m)} – ${fmt12(endH,endM)}</span>
-      <span class="tp-status ${booked?'s-booked':'s-open'}">${booked?'Booked':'Open'}</span>`;
+    // Fake booked = second slot always
+    const isFakeBooked  = idx === FAKE_SLOT_INDEX;
+    const isPastCutoff  = isToday && dt < cutoff;
+    const isBooked      = isFakeBooked || isPastCutoff;
+    const isSelected    = !isBooked && selTime === time;
 
-    if(!booked){
-      pill.onclick=()=>{
-        selTime=time;
-        selLabel=`${DAY_FULL[dow]}, ${MON_SHORT[d.getMonth()]} ${d.getDate()} at ${fmt12(h,m)} CST`;
-        buildTimes(d,ds,dow);
+    const pill = document.createElement('div');
+    pill.className = `time-pill${isBooked ? ' tp-booked' : ''}${isSelected ? ' tp-selected' : ''}`;
+    pill.innerHTML = `
+      <span class="tp-time">${fmt12(h,m)} – ${fmt12(eh,em)}</span>
+      <span class="tp-status ${isBooked ? 's-booked' : 's-open'}">${isBooked ? 'Already Booked' : 'Available'}</span>
+    `;
+
+    if(!isBooked){
+      pill.onclick = () => {
+        selTime  = time;
+        selLabel = `${DAY_FULL[dow]}, ${MON_SHORT[d.getMonth()]} ${d.getDate()} · ${fmt12(h,m)} CST`;
+        buildTimes(d, ds, dow);
         showForm();
       };
     }
+
     row.appendChild(pill);
   });
 
   document.getElementById('timesWrap').classList.add('visible');
+  document.getElementById('timesWrap').scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
 function clearTime(){
-  selTime=''; selLabel='';
+  selTime  = '';
+  selLabel = '';
   document.getElementById('formWrap').classList.remove('visible');
   document.getElementById('payWrap').classList.remove('visible');
-  if(selDate) buildTimes(selDate,selDateStr,selDate.getDay());
+  if(selDate) buildTimes(selDate, selDateStr, selDate.getDay());
 }
 
-// ---- FORM ----
+// ─── FORM ─────────────────────────────────────────────────
 function showForm(){
-  document.getElementById('selTimeLabel').textContent=selLabel;
+  document.getElementById('selTimeLabel').textContent = selLabel;
   document.getElementById('payWrap').classList.remove('visible');
   document.getElementById('formWrap').classList.add('visible');
-  document.getElementById('formWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+  document.getElementById('formWrap').scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
 function goToPayment(){
-  const fn=document.getElementById('firstName').value.trim();
-  const ln=document.getElementById('lastName').value.trim();
-  const em=document.getElementById('email').value.trim();
-  const err=document.getElementById('formErr');
-  if(!fn||!ln||!em){err.textContent='Please fill in your name and email.';err.style.display='block';return;}
-  err.style.display='none';
-  bookData={firstName:fn,lastName:ln,email:em,
-    schoolUrl:document.getElementById('schoolUrl').value.trim(),
-    selectedDate:selDateStr,selectedTime:selTime,selectedDateLabel:selLabel};
-  document.getElementById('payTimeLabel').textContent=selLabel;
+  const fn  = document.getElementById('firstName').value.trim();
+  const ln  = document.getElementById('lastName').value.trim();
+  const em  = document.getElementById('email').value.trim();
+  const err = document.getElementById('formErr');
+  if(!fn || !ln || !em){
+    err.textContent = 'Please fill in your name and email.';
+    err.style.display = 'block';
+    return;
+  }
+  err.style.display = 'none';
+  bookData = {
+    firstName:fn, lastName:ln, email:em,
+    schoolUrl: document.getElementById('schoolUrl').value.trim(),
+    selectedDate:selDateStr, selectedTime:selTime, selectedDateLabel:selLabel
+  };
+  document.getElementById('payTimeLabel').textContent = selLabel;
   document.getElementById('formWrap').classList.remove('visible');
   document.getElementById('payWrap').classList.add('visible');
-  document.getElementById('payWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+  document.getElementById('payWrap').scrollIntoView({behavior:'smooth', block:'nearest'});
   if(!sqInited) initSquare();
 }
 
@@ -678,62 +702,73 @@ function backToForm(){
   document.getElementById('formWrap').classList.add('visible');
 }
 
-// ---- SQUARE ----
+// ─── SQUARE ───────────────────────────────────────────────
 async function initSquare(){
-  if(sqInited)return;
+  if(sqInited) return;
   try{
-    const payments=Square.payments(SQUARE_APP_ID,SQUARE_LOCATION_ID);
-    sqCard=await payments.card();
+    const payments = Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
+    sqCard = await payments.card();
     await sqCard.attach('#card-container');
-    sqInited=true;
-  }catch(e){console.error('Square:',e);}
+    sqInited = true;
+  } catch(e){ console.error('Square init:', e); }
 }
 
-document.getElementById('payBtn').addEventListener('click',async function(){
-  const btn=this;
-  const err=document.getElementById('payErr');
-  err.style.display='none';
-  btn.textContent='PROCESSING...';
-  btn.disabled=true;
+document.getElementById('payBtn').addEventListener('click', async function(){
+  const btn = this;
+  const err = document.getElementById('payErr');
+  err.style.display = 'none';
+  btn.textContent = 'PROCESSING...';
+  btn.disabled = true;
   try{
-    const result=await sqCard.tokenize();
-    if(result.status!=='OK'){
-      err.textContent=result.errors?.[0]?.message||'Card error. Try again.';
-      err.style.display='block';
-      btn.textContent='PAY $97 & CONFIRM →';btn.disabled=false;return;
+    const result = await sqCard.tokenize();
+    if(result.status !== 'OK'){
+      err.textContent = result.errors?.[0]?.message || 'Card error. Try again.';
+      err.style.display = 'block';
+      btn.textContent = 'PAY $97 & CONFIRM →'; btn.disabled = false;
+      return;
     }
-    const res=await fetch('/api/book',{
+    const res  = await fetch('/api/book', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({...bookData,sourceId:result.token})
+      body: JSON.stringify({...bookData, sourceId: result.token})
     });
-    const data=await res.json();
-    if(res.ok&&data.success){
-      document.getElementById('dayStrip').closest('.day-strip-wrap').style.display='none';
-      document.getElementById('timesWrap').style.display='none';
+    const data = await res.json();
+    if(res.ok && data.success){
+      document.getElementById('monthGrid').closest('.month-cal-wrap').style.display = 'none';
+      document.getElementById('timesWrap').style.display   = 'none';
       document.getElementById('formWrap').classList.remove('visible');
       document.getElementById('payWrap').classList.remove('visible');
-      const sw=document.getElementById('successWrap');
+      const sw = document.getElementById('successWrap');
       sw.classList.add('visible');
       if(data.meetLink){
-        document.getElementById('meetLink').href=data.meetLink;
-        document.getElementById('meetLink').textContent=data.meetLink;
-        document.getElementById('meetBox').style.display='block';
+        document.getElementById('meetLink').href        = data.meetLink;
+        document.getElementById('meetLink').textContent = data.meetLink;
+        document.getElementById('meetBox').style.display = 'block';
       }
       sw.scrollIntoView({behavior:'smooth'});
-    }else{
-      err.textContent=data.error||'Payment failed. Try again.';
-      err.style.display='block';
-      btn.textContent='PAY $97 & CONFIRM →';btn.disabled=false;
+    } else {
+      err.textContent = data.error || 'Payment failed. Try again.';
+      err.style.display = 'block';
+      btn.textContent = 'PAY $97 & CONFIRM →'; btn.disabled = false;
     }
-  }catch(e){
-    err.textContent='Something went wrong. Try again.';
-    err.style.display='block';
-    btn.textContent='PAY $97 & CONFIRM →';btn.disabled=false;
+  } catch(e){
+    err.textContent = 'Something went wrong. Try again.';
+    err.style.display = 'block';
+    btn.textContent = 'PAY $97 & CONFIRM →'; btn.disabled = false;
   }
 });
 
-buildCalendar();
+// ─── NAV BUTTONS ──────────────────────────────────────────
+document.getElementById('prevMonthBtn').addEventListener('click', () => changeMonth(-1));
+document.getElementById('nextMonthBtn').addEventListener('click', () => changeMonth(1));
+
+// ─── INIT ─────────────────────────────────────────────────
+(function init(){
+  const now = new Date();
+  viewYear  = now.getFullYear();
+  viewMonth = now.getMonth();
+  buildCalendar();
+})();
 </script>
 </body>
 </html>
