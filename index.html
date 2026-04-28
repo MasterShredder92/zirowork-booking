@@ -16,163 +16,217 @@
   --black:#080808;
   --dark:#0f0f0f;
   --card:#141414;
+  --card2:#1a1a1a;
   --border:#222;
   --border2:#2a2a2a;
   --text:#EFEFEF;
   --muted:#777;
   --muted2:#444;
-  --red:#ff3535;
+  --red:#ff4444;
 }
 html{scroll-behavior:smooth}
-body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;line-height:1.6;overflow-x:hidden}
+body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;overflow-x:hidden}
 
-nav{display:flex;justify-content:space-between;align-items:center;padding:18px 48px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(8,8,8,0.96);backdrop-filter:blur(12px);z-index:100}
-.logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;color:var(--lime)}
-.nav-back{font-size:13px;color:var(--muted);text-decoration:none;letter-spacing:1px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:16px 40px;border-bottom:1px solid var(--border);background:rgba(8,8,8,0.97);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;color:var(--lime)}
+.nav-back{font-size:12px;color:var(--muted);text-decoration:none;letter-spacing:1px;transition:color 0.2s}
 .nav-back:hover{color:var(--lime)}
 
-/* HERO */
-.hero{max-width:900px;margin:0 auto;padding:64px 48px 48px;text-align:center}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--lime);border:1px solid rgba(197,241,53,0.3);padding:7px 16px;margin-bottom:24px;opacity:0;animation:fadeUp 0.6s ease 0.1s forwards}
-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,7vw,80px);line-height:0.93;color:#fff;margin-bottom:20px;opacity:0;animation:fadeUp 0.6s ease 0.2s forwards}
-h1 span{color:var(--lime)}
-.hero-sub{font-size:17px;color:var(--muted);max-width:600px;margin:0 auto 40px;line-height:1.7;opacity:0;animation:fadeUp 0.6s ease 0.3s forwards}
-.hero-sub strong{color:var(--text)}
+.page-wrap{max-width:1060px;margin:0 auto;padding:48px 32px 80px}
 
-/* VALUE PROPS */
-.value-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);max-width:900px;margin:0 auto 48px;opacity:0;animation:fadeUp 0.6s ease 0.4s forwards}
-.value-item{background:var(--card);padding:24px 20px;text-align:center}
-.value-icon{font-size:28px;margin-bottom:8px}
-.value-item strong{display:block;font-size:15px;color:#fff;margin-bottom:4px}
-.value-item span{font-size:13px;color:var(--muted);line-height:1.5}
+/* TOP */
+.top-cta{text-align:center;margin-bottom:40px}
+.eyebrow{display:inline-block;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--lime);margin-bottom:12px}
+.top-cta h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,5vw,58px);line-height:1;color:#fff;margin-bottom:10px}
+.top-cta h1 span{color:var(--lime)}
+.top-cta p{font-size:15px;color:var(--muted);max-width:540px;margin:0 auto}
 
-/* PRICE CALLOUT */
-.price-callout{background:var(--lime);color:var(--black);padding:20px 32px;text-align:center;max-width:900px;margin:0 auto 48px;opacity:0;animation:fadeUp 0.6s ease 0.5s forwards}
-.price-callout .price{font-family:'Bebas Neue',sans-serif;font-size:52px;line-height:1}
-.price-callout .price-sub{font-size:14px;font-weight:600;opacity:0.7;margin-top:4px}
+/* BOOKING CARD: LEFT + RIGHT */
+.booking-card{display:grid;grid-template-columns:260px 1fr;border:1px solid var(--border);background:var(--card)}
 
-/* BOOKING CONTAINER */
-.booking-container{max-width:900px;margin:0 auto;padding:0 48px 80px}
+/* LEFT PANEL */
+.left-panel{padding:28px 24px;border-right:1px solid var(--border);display:flex;flex-direction:column}
+.host-photo{width:68px;height:68px;border-radius:50%;object-fit:cover;object-position:top center;border:2px solid var(--border2);margin-bottom:14px;display:block}
+.host-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.5px;color:#fff;margin-bottom:2px}
+.host-cred{font-size:11px;color:var(--muted);margin-bottom:18px;line-height:1.4}
+.session-name{font-size:15px;font-weight:700;color:#fff;padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:14px}
+.detail{display:flex;gap:9px;margin-bottom:10px;align-items:flex-start}
+.detail-icon{font-size:13px;margin-top:1px;flex-shrink:0}
+.detail-info strong{display:block;font-size:13px;color:#fff}
+.detail-info span{font-size:12px;color:var(--muted)}
+.price-block{background:var(--black);border:1px solid var(--border2);padding:14px 16px;margin-top:16px}
+.price-block .amt{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--lime);line-height:1}
+.price-block .price-note{font-size:11px;color:var(--muted);margin-top:3px}
+.gets{margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.gets-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.get-item{display:flex;gap:7px;font-size:12px;color:var(--muted);margin-bottom:6px;line-height:1.4}
+.get-item::before{content:'→';color:var(--lime);font-weight:700;flex-shrink:0}
 
-/* STEP INDICATOR */
-.steps-indicator{display:flex;align-items:center;gap:0;margin-bottom:40px}
-.step-dot{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
-.step-dot.active{color:var(--lime)}
-.step-dot.done{color:var(--muted2)}
-.dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--muted2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted2);flex-shrink:0}
-.step-dot.active .dot{border-color:var(--lime);color:var(--lime)}
-.step-dot.done .dot{border-color:var(--muted2);background:var(--muted2);color:var(--black)}
-.step-line{flex:1;height:1px;background:var(--border2);margin:0 12px}
+/* RIGHT PANEL */
+.right-panel{display:flex;flex-direction:column;min-height:560px}
 
-/* CALENDAR */
-.calendar-section{display:none}
-.calendar-section.active{display:block}
-.cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
-.cal-header h2{font-family:'Bebas Neue',sans-serif;font-size:32px;color:#fff;letter-spacing:0.5px}
-.cal-nav{display:flex;gap:8px}
-.cal-nav button{background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;transition:all 0.2s}
-.cal-nav button:hover{border-color:var(--lime);color:var(--lime)}
-.cal-nav button:disabled{opacity:0.3;cursor:not-allowed}
+/* 7-DAY STRIP */
+.day-strip-wrap{padding:28px 28px 20px}
+.strip-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.strip-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.5px;color:#fff}
+.strip-range{font-size:12px;color:var(--muted)}
+.day-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.day-card{border:1px solid var(--border);padding:14px 8px;text-align:center;cursor:pointer;transition:all 0.15s;position:relative}
+.day-card.avail-day{border-color:var(--lime);border-width:2px}
+.day-card.avail-day:hover{background:rgba(197,241,53,0.08)}
+.day-card.selected{border-color:var(--lime);border-width:2px;background:rgba(197,241,53,0.15)}
+.day-card.unavail{cursor:default;opacity:0.35}
+.day-card .dc-name{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.day-card.selected .dc-name{color:var(--lime)}
+.day-card .dc-num{font-size:26px;font-weight:700;color:#fff;line-height:1;margin-bottom:6px}
+.day-card.unavail .dc-num{color:var(--muted2)}
+.day-card .dc-month{font-size:10px;color:var(--muted);margin-bottom:8px}
+.day-card .dc-slots{font-size:10px;font-weight:700;letter-spacing:0.5px}
+.dc-slots.open{color:var(--lime)}
+.dc-slots.full{color:var(--muted2)}
+.day-card.today-card .dc-num{color:var(--lime)}
+.dc-teaser{font-size:10px;color:var(--red);margin-top:5px;font-weight:600;letter-spacing:0.3px}
 
-.days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:32px}
-.day-header{background:var(--dark);padding:10px 4px;text-align:center;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
-.day-cell{background:var(--card);padding:12px 8px;text-align:center;min-height:56px;cursor:pointer;transition:background 0.15s;position:relative}
-.day-cell:hover:not(.disabled):not(.empty){background:#1a1a1a}
-.day-cell.empty{background:var(--dark);cursor:default}
-.day-cell.disabled{cursor:default;opacity:0.4}
-.day-cell.selected{background:rgba(197,241,53,0.1);border:1px solid var(--lime)}
-.day-cell.today .day-num::after{content:'';display:block;width:4px;height:4px;background:var(--lime);border-radius:50%;margin:2px auto 0}
-.day-num{font-size:16px;font-weight:600;color:#fff;margin-bottom:2px}
-.day-cell.disabled .day-num{color:var(--muted2)}
-.day-avail{font-size:10px;color:var(--lime);font-weight:600;letter-spacing:0.5px}
-.day-cell.disabled .day-avail{color:var(--muted2)}
+/* TIME SLOTS - horizontal row */
+.times-wrap{padding:0 28px 24px;display:none}
+.times-wrap.visible{display:block}
+.times-day-label{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--lime);margin-bottom:12px}
+.times-row{display:flex;flex-wrap:wrap;gap:8px}
+.time-pill{padding:10px 18px;border:1px solid var(--border);cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;min-width:120px}
+.time-pill:hover:not(.tp-booked){border-color:var(--lime);background:rgba(197,241,53,0.05)}
+.time-pill.tp-selected{border-color:var(--lime);background:rgba(197,241,53,0.1)}
+.time-pill.tp-booked{cursor:not-allowed;opacity:0.4}
+.tp-time{font-size:14px;font-weight:600;color:#fff}
+.time-pill.tp-booked .tp-time{color:var(--muted)}
+.tp-status{font-size:10px;font-weight:700;letter-spacing:0.5px;margin-top:2px}
+.tp-status.s-open{color:var(--lime)}
+.tp-status.s-booked{color:var(--red)}
 
-/* TIME SLOTS */
-.slots-section{display:none;margin-top:0}
-.slots-section.visible{display:block}
-.slots-label{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--lime);margin-bottom:16px}
-.slots-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
-.slot{padding:14px 16px;border:1px solid var(--border);background:var(--card);cursor:pointer;transition:all 0.2s;text-align:center}
-.slot:hover:not(.booked){border-color:var(--lime);background:rgba(197,241,53,0.05)}
-.slot.selected{border-color:var(--lime);background:rgba(197,241,53,0.1)}
-.slot.booked{cursor:not-allowed;opacity:0.5;border-color:var(--border)}
-.slot-time{font-size:15px;font-weight:600;color:#fff;display:block;margin-bottom:2px}
-.slot.booked .slot-time{color:var(--muted)}
-.slot-status{font-size:11px;color:var(--lime);font-weight:600;letter-spacing:0.5px}
-.slot.booked .slot-status{color:var(--red)}
+/* FORM */
+.form-wrap{border-top:1px solid var(--border);padding:24px 28px;display:none;background:var(--card2)}
+.form-wrap.visible{display:block}
+.form-sel-time{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:rgba(197,241,53,0.07);border:1px solid rgba(197,241,53,0.25);margin-bottom:18px}
+.form-sel-time strong{font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--lime);letter-spacing:0.5px}
+.change-time-btn{font-size:11px;color:var(--muted);cursor:pointer;background:none;border:none;text-decoration:underline}
+.change-time-btn:hover{color:var(--lime)}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.ff{display:flex;flex-direction:column;gap:4px}
+.ff.full{grid-column:1/-1}
+.ff label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.ff input{background:#111;border:1px solid var(--border2);color:#fff;padding:11px 13px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;width:100%}
+.ff input::placeholder{color:#444}
+.ff input:focus{border-color:var(--lime)}
+.ff-note{font-size:11px;color:var(--muted2);margin-top:2px}
+.proceed-btn{width:100%;background:var(--lime);color:var(--black);border:none;padding:14px;font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:2px;cursor:pointer;transition:all 0.2s;margin-top:6px}
+.proceed-btn:hover{opacity:0.9;transform:translateY(-1px)}
 
-/* FORM SECTION */
-.form-section{display:none}
-.form-section.active{display:block}
-.selected-time-display{background:var(--card);border:1px solid var(--lime);padding:16px 20px;margin-bottom:28px;display:flex;justify-content:space-between;align-items:center}
-.selected-time-display strong{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--lime);letter-spacing:0.5px}
-.selected-time-display span{font-size:13px;color:var(--muted)}
-.change-time{font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline}
-.change-time:hover{color:var(--lime)}
-.field{margin-bottom:14px}
-.field label{display:block;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.field input{width:100%;background:#1c1c1c;border:1px solid var(--border2);color:#fff;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color 0.2s}
-.field input::placeholder{color:#444}
-.field input:focus{border-color:var(--lime)}
-.field-note{font-size:12px;color:#555;margin-top:5px}
-.continue-btn{width:100%;background:var(--lime);color:var(--black);border:none;padding:17px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;cursor:pointer;transition:all 0.2s;margin-top:8px}
-.continue-btn:hover{opacity:0.9;transform:translateY(-1px)}
-.continue-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
-
-/* PAYMENT SECTION */
-.payment-section{display:none}
-.payment-section.active{display:block}
-.booking-summary{background:var(--card);border:1px solid var(--border);padding:24px;margin-bottom:28px}
-.summary-label{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--lime);margin-bottom:16px}
-.summary-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px;color:var(--muted)}
-.summary-row:last-child{border-bottom:none;color:#fff;font-weight:700;font-size:16px;margin-top:4px}
-.summary-row span:last-child{color:var(--lime)}
-.pay-btn{width:100%;background:var(--lime);color:var(--black);border:none;padding:18px;font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;cursor:pointer;transition:all 0.2s}
-.pay-btn:hover{opacity:0.9;transform:translateY(-1px)}
+/* PAYMENT */
+.pay-wrap{border-top:1px solid var(--border);padding:24px 28px;display:none;background:var(--card2)}
+.pay-wrap.visible{display:block}
+.pay-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:14px;background:var(--black);border:1px solid var(--border);margin-bottom:18px}
+.ps-row{display:flex;flex-direction:column;gap:2px}
+.ps-row span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.ps-row strong{font-size:13px;color:#fff}
+.ps-row.ps-total strong{color:var(--lime);font-size:17px}
+#card-container{background:#111;border:1px solid var(--border2);padding:13px;margin-bottom:10px;min-height:48px}
+.pay-btn{width:100%;background:var(--lime);color:var(--black);border:none;padding:15px;font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:2px;cursor:pointer;transition:all 0.2s}
+.pay-btn:hover:not(:disabled){opacity:0.9;transform:translateY(-1px)}
 .pay-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
-.payment-note{font-size:12px;color:var(--muted2);text-align:center;margin-top:12px}
-.square-container{margin-bottom:20px}
-#card-container{min-height:60px;background:#1c1c1c;border:1px solid var(--border2);padding:16px}
+.pay-secure{font-size:11px;color:var(--muted2);text-align:center;margin-top:8px}
+.back-btn{display:block;text-align:center;margin-top:6px;font-size:12px;color:var(--muted);cursor:pointer;background:none;border:none}
+.back-btn:hover{color:var(--lime)}
 
 /* SUCCESS */
-.success-section{display:none;text-align:center;padding:60px 20px}
-.success-section.active{display:block}
-.success-icon{font-size:64px;margin-bottom:16px}
-.success-section h2{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--lime);margin-bottom:12px}
-.success-section p{font-size:16px;color:var(--muted);line-height:1.7;max-width:480px;margin:0 auto 24px}
-.meet-link-box{background:var(--card);border:1px solid var(--lime);padding:20px;margin:0 auto 32px;max-width:480px}
-.meet-link-box p{font-size:12px;color:var(--muted);margin-bottom:8px;letter-spacing:1px;text-transform:uppercase}
-.meet-link-box a{font-size:15px;color:var(--lime);word-break:break-all}
+.success-wrap{display:none;padding:60px 40px;text-align:center}
+.success-wrap.visible{display:block}
+.success-wrap .si{font-size:48px;margin-bottom:14px}
+.success-wrap h2{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--lime);margin-bottom:10px}
+.success-wrap p{color:var(--muted);font-size:14px;line-height:1.7;max-width:420px;margin:0 auto 18px}
+.meet-box{background:var(--black);border:1px solid var(--lime);padding:14px 18px;margin:0 auto 20px;max-width:420px;text-align:left}
+.meet-box span{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:5px}
+.meet-box a{color:var(--lime);font-size:13px;word-break:break-all}
 
-/* ERROR */
-.error-msg{display:none;background:rgba(255,53,53,0.1);border:1px solid rgba(255,53,53,0.3);padding:12px 16px;margin-top:12px;font-size:13px;color:#ff6b6b;text-align:center}
+.err{display:none;background:rgba(255,68,68,0.08);border:1px solid rgba(255,68,68,0.2);padding:9px 13px;margin-top:8px;font-size:13px;color:#ff8080;text-align:center}
 
-/* WHAT YOU GET */
-.what-you-get{background:var(--dark);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:60px 48px;margin-bottom:0}
-.what-inner{max-width:900px;margin:0 auto}
-.section-label{font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--lime);margin-bottom:16px}
-.what-inner h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,52px);color:#fff;margin-bottom:36px;line-height:1}
-.what-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border)}
-.what-item{background:var(--card);padding:24px 28px;display:flex;gap:16px;align-items:flex-start}
-.what-check{color:var(--lime);font-size:18px;flex-shrink:0;margin-top:2px}
-.what-text strong{display:block;font-size:15px;color:#fff;margin-bottom:4px}
-.what-text span{font-size:13px;color:var(--muted);line-height:1.6}
+footer{border-top:1px solid var(--border);padding:20px 40px;display:flex;justify-content:space-between;align-items:center}
+footer .logo{font-size:16px}
+footer p{font-size:11px;color:var(--muted2)}
 
-footer{border-top:1px solid var(--border);padding:24px 48px;display:flex;justify-content:space-between;align-items:center}
-footer .logo{font-size:18px}
-footer p{font-size:12px;color:var(--muted2)}
+@media(max-width:860px){
+  .booking-card{grid-template-columns:1fr}
+  .left-panel{border-right:none;border-bottom:1px solid var(--border);flex-direction:row;flex-wrap:wrap;gap:16px;align-items:flex-start}
+  .host-photo{width:56px;height:56px;margin-bottom:0}
+  .price-block{margin-top:0}
+  .day-strip-wrap{padding:20px 16px 16px}
+  .times-wrap,.form-wrap,.pay-wrap{padding:16px}
+  .fg{grid-template-columns:1fr}
+  .pay-summary{grid-template-columns:1fr 1fr}
+  .page-wrap{padding:28px 16px 60px}
+  nav{padding:14px 20px}
+  footer{padding:16px 20px;flex-direction:column;gap:6px;text-align:center}
+}
 
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+/* HERO STATS */
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:32px}
+.stat-item{background:var(--card);padding:20px;text-align:center}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--lime);display:block;line-height:1}
+.stat-label{font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;display:block}
 
-@media(max-width:768px){
-  nav{padding:16px 20px}
-  .hero{padding:48px 20px 32px}
-  .value-row{grid-template-columns:1fr}
-  .booking-container{padding:0 20px 60px}
-  .what-you-get{padding:48px 20px}
-  .what-grid{grid-template-columns:1fr}
-  footer{padding:20px;flex-direction:column;gap:8px;text-align:center}
-  .days-grid{font-size:12px}
+/* CONTENT SECTIONS */
+.content-section{padding:72px 0 0}
+.cs-label{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--lime);margin-bottom:14px}
+.cs-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,54px);line-height:1;color:#fff;margin-bottom:40px}
+
+/* COVERS GRID */
+.covers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border)}
+.cover-item{background:var(--card);padding:28px 24px}
+.cover-num{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:3px;color:var(--lime);display:block;margin-bottom:12px}
+.cover-item strong{display:block;font-size:15px;color:#fff;margin-bottom:8px}
+.cover-item p{font-size:13px;color:var(--muted);line-height:1.65}
+
+/* FIT SECTION */
+.fit-section{padding:60px 0 0}
+.fit-inner{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border)}
+.fit-col{background:var(--card);padding:32px 28px}
+.fit-label{font-size:12px;font-weight:700;letter-spacing:1px;margin-bottom:16px}
+.fit-label.yes{color:var(--lime)}
+.fit-label.no{color:var(--red)}
+.fit-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.fit-list li{font-size:14px;color:var(--muted);line-height:1.5;padding-left:16px;position:relative}
+.fit-list li::before{content:'→';position:absolute;left:0;color:var(--lime);font-weight:700}
+.fit-list.no-list li::before{color:var(--red);content:'✗'}
+
+/* BIO */
+.bio-grid{display:grid;grid-template-columns:220px 1fr;gap:48px;align-items:start}
+.bio-photo{width:100%;height:auto;object-fit:cover;object-position:top;filter:grayscale(10%);border:1px solid var(--border)}
+.bio-text{font-size:15px;color:var(--muted);line-height:1.75;margin-bottom:16px}
+.brad-block{border-left:3px solid var(--lime);padding:16px 20px;background:var(--card);margin-top:24px}
+.brad-quote{font-size:16px;color:#fff;line-height:1.6;font-style:italic;margin-bottom:8px}
+.brad-attr{font-size:12px;color:var(--muted)}
+
+/* FAQ */
+.faq-section{padding:60px 0 0}
+.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border)}
+.faq-item{background:var(--card);padding:28px 24px}
+.faq-item strong{display:block;font-size:15px;color:#fff;margin-bottom:10px}
+.faq-item p{font-size:14px;color:var(--muted);line-height:1.65}
+.faq-item a{color:var(--lime)}
+
+/* BOTTOM CTA */
+.bottom-cta{padding:72px 0;text-align:center}
+.bottom-cta h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,5vw,52px);color:#fff;line-height:1.05;margin-bottom:14px}
+.bottom-cta h2 span{color:var(--lime)}
+.bottom-cta p{color:var(--muted);font-size:15px;margin-bottom:28px}
+.scroll-btn{background:var(--lime);color:var(--black);border:none;padding:16px 40px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;cursor:pointer;transition:all 0.2s}
+.scroll-btn:hover{opacity:0.9;transform:translateY(-1px)}
+
+@media(max-width:860px){
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+  .covers-grid{grid-template-columns:1fr}
+  .fit-inner{grid-template-columns:1fr}
+  .bio-grid{grid-template-columns:1fr;gap:24px}
+  .bio-photo{max-width:200px}
+  .faq-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -180,198 +234,266 @@ footer p{font-size:12px;color:var(--muted2)}
 
 <nav>
   <div class="logo">ZIROWORK</div>
-  <a href="https://audit.zirowork.com" class="nav-back">← Free Audit</a>
+  <a href="https://audit.zirowork.com" class="nav-back">← Free Website Audit</a>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-  <span class="eyebrow">30-Minute Strategy Session</span>
-  <h1>Let's Fix Your<br><span>Music School</span><br>Website. Live.</h1>
-  <p class="hero-sub">In 30 minutes I'll tell you <strong>exactly what's broken</strong>, what to fix first, and how much revenue you're leaving on the table. Most owners walk away knowing how to get 5-10 more students without spending a dollar on ads.</p>
-</section>
-
-<!-- VALUE PROPS -->
-<div class="value-row">
-  <div class="value-item">
-    <div class="value-icon">🎯</div>
-    <strong>Specific To Your Site</strong>
-    <span>Not generic advice. I review your actual website live on the call.</span>
+<div class="page-wrap">
+  <div class="top-cta">
+    <div class="eyebrow">30-Minute Strategy Session</div>
+    <h1>Fix Your Music School Website.<br><span>Live. With Zach.</span></h1>
+    <p>Walk away with a prioritized fix list, rewritten copy, and exactly what to do first to start converting more parents this week.</p>
   </div>
-  <div class="value-item">
-    <div class="value-icon">⚡</div>
-    <strong>Immediate Action Items</strong>
-    <span>You leave with a prioritized fix list you can implement this week.</span>
-  </div>
-  <div class="value-item">
-    <div class="value-icon">💰</div>
-    <strong>One Student Pays For It</strong>
-    <span>One new enrollment covers the $97. Most owners get 5-10 from the fixes.</span>
-  </div>
-</div>
 
-<!-- PRICE -->
-<div class="price-callout">
-  <div class="price">$97</div>
-  <div class="price-sub">One-time investment · 30 minutes · Google Meet · Instant confirmation</div>
-</div>
-
-<!-- BOOKING -->
-<div class="booking-container">
-
-  <!-- STEP INDICATOR -->
-  <div class="steps-indicator" id="stepsIndicator">
-    <div class="step-dot active" id="step1dot">
-      <div class="dot">1</div>
-      <span>Pick A Time</span>
+  
+  <!-- VALUE STATS -->
+  <div class="hero-stats">
+    <div class="stat-item">
+      <span class="stat-num">30</span>
+      <span class="stat-label">Minutes That Change Everything</span>
     </div>
-    <div class="step-line"></div>
-    <div class="step-dot" id="step2dot">
-      <div class="dot">2</div>
-      <span>Your Info</span>
+    <div class="stat-item">
+      <span class="stat-num">$97</span>
+      <span class="stat-label">Less Than One New Student</span>
     </div>
-    <div class="step-line"></div>
-    <div class="step-dot" id="step3dot">
-      <div class="dot">3</div>
-      <span>Pay & Confirm</span>
+    <div class="stat-item">
+      <span class="stat-num">3-5</span>
+      <span class="stat-label">Specific Fixes You Leave With</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">100%</span>
+      <span class="stat-label">Specific To Your School</span>
     </div>
   </div>
 
-  <!-- STEP 1: CALENDAR -->
-  <div class="calendar-section active" id="calendarSection">
-    <div class="cal-header">
-      <h2 id="calMonthLabel">Loading...</h2>
-      <div class="cal-nav">
-        <button id="prevWeek" onclick="changeWeek(-1)">← Prev</button>
-        <button id="nextWeek" onclick="changeWeek(1)">Next →</button>
+<div class="booking-card" id="bookingCard">
+
+    <!-- LEFT -->
+    <div class="left-panel">
+      <img class="host-photo" src="/images/zach_hero.jpg" alt="Zachary Adkins" width="68" height="68">
+      <div class="host-name">Zachary Adkins</div>
+      <div class="host-cred">Founder · Adkins Music Lessons<br>$1.5M/yr · 4 Locations · ZiroWork</div>
+      <div class="session-name">Music School Strategy Session</div>
+      <div class="detail">
+        <span class="detail-icon">⏱</span>
+        <div class="detail-info"><strong>30 Minutes</strong><span>Google Meet · Video Call</span></div>
+      </div>
+      <div class="detail">
+        <span class="detail-icon">🌐</span>
+        <div class="detail-info"><strong>Online</strong><span>Link sent after booking</span></div>
+      </div>
+      <div class="detail">
+        <span class="detail-icon">🎯</span>
+        <div class="detail-info"><strong>Music School Owners Only</strong><span>Real advice. Real results.</span></div>
+      </div>
+      <div class="price-block">
+        <div class="amt">$97</div>
+        <div class="price-note">One new student covers this immediately</div>
+      </div>
+      <div class="gets">
+        <div class="gets-label">What You Get</div>
+        <div class="get-item">Live review of your actual website</div>
+        <div class="get-item">Revenue leaks identified</div>
+        <div class="get-item">Prioritized fix list — ROI first</div>
+        <div class="get-item">Hero copy rewritten on the spot</div>
+        <div class="get-item">Retention strategy that stops churn</div>
       </div>
     </div>
-    <div class="days-grid" id="daysGrid">
-      <div class="day-header">Sun</div>
-      <div class="day-header">Mon</div>
-      <div class="day-header">Tue</div>
-      <div class="day-header">Wed</div>
-      <div class="day-header">Thu</div>
-      <div class="day-header">Fri</div>
-      <div class="day-header">Sat</div>
-    </div>
-    <div class="slots-section" id="slotsSection">
-      <div class="slots-label" id="slotsLabel">Available Times</div>
-      <div class="slots-grid" id="slotsGrid"></div>
-    </div>
-  </div>
 
-  <!-- STEP 2: INFO FORM -->
-  <div class="form-section" id="formSection">
-    <div class="selected-time-display">
-      <div>
-        <strong id="selectedTimeDisplay">—</strong>
-        <span style="display:block;font-size:13px;color:var(--muted);margin-top:2px;">Central Time (CST)</span>
-      </div>
-      <span class="change-time" onclick="goToStep(1)">Change time</span>
-    </div>
-    <div class="field">
-      <label>First Name</label>
-      <input type="text" id="firstName" placeholder="Your first name" required>
-    </div>
-    <div class="field">
-      <label>Last Name</label>
-      <input type="text" id="lastName" placeholder="Your last name" required>
-    </div>
-    <div class="field">
-      <label>Email Address</label>
-      <input type="email" id="email" placeholder="Where we send your confirmation" required>
-    </div>
-    <div class="field">
-      <label>Your School Website URL</label>
-      <input type="url" id="schoolUrl" placeholder="https://yourmusicschool.com">
-      <p class="field-note">So I can review it before our call.</p>
-    </div>
-    <button class="continue-btn" onclick="goToStep(3)">CONTINUE TO PAYMENT →</button>
-    <div class="error-msg" id="formError"></div>
-  </div>
+    <!-- RIGHT -->
+    <div class="right-panel" id="rightPanel">
 
-  <!-- STEP 3: PAYMENT -->
-  <div class="payment-section" id="paymentSection">
-    <div class="booking-summary">
-      <div class="summary-label">Booking Summary</div>
-      <div class="summary-row"><span>Session</span><span>30-Minute Strategy Session</span></div>
-      <div class="summary-row"><span>Date & Time</span><span id="summaryTime">—</span></div>
-      <div class="summary-row"><span>With</span><span>Zachary Adkins</span></div>
-      <div class="summary-row"><span>Format</span><span>Google Meet (link in confirmation)</span></div>
-      <div class="summary-row"><span>Total</span><span>$97.00</span></div>
-    </div>
-    <div class="square-container">
-      <div id="card-container"></div>
-    </div>
-    <button class="pay-btn" id="payBtn">PAY $97 & CONFIRM SESSION →</button>
-    <div class="error-msg" id="payError"></div>
-    <p class="payment-note">Secure payment powered by Square. You'll receive a Google Meet link instantly.</p>
-  </div>
-
-  <!-- SUCCESS -->
-  <div class="success-section" id="successSection">
-    <div class="success-icon">🎸</div>
-    <h2>You're Booked.</h2>
-    <p>Check your inbox — your confirmation and Google Meet link are on the way. I'll review your site before our call so we hit the ground running.</p>
-    <div class="meet-link-box" id="meetLinkBox" style="display:none">
-      <p>Your Google Meet Link</p>
-      <a id="meetLink" href="#" target="_blank">Loading...</a>
-    </div>
-    <p style="font-size:14px;color:var(--muted2);">Questions? Email me at <a href="mailto:adkinsguitarandmusic@gmail.com" style="color:var(--lime);">adkinsguitarandmusic@gmail.com</a></p>
-  </div>
-
-</div>
-
-<!-- WHAT YOU GET -->
-<div class="what-you-get">
-  <div class="what-inner">
-    <div class="section-label">What Happens In 30 Minutes</div>
-    <h2>Everything You Need.<br>Nothing You Don't.</h2>
-    <div class="what-grid">
-      <div class="what-item">
-        <div class="what-check">→</div>
-        <div class="what-text">
-          <strong>Live Website Review</strong>
-          <span>I pull up your site and walk through it section by section. You see exactly what a parent sees when they land.</span>
+      <!-- FULL MONTH CALENDAR -->
+      <div class="month-cal-wrap">
+        <div class="month-nav-row">
+          <button class="mnav-btn" id="prevMonthBtn" onclick="changeMonth(-1)">&#8592;</button>
+          <div class="month-title" id="monthTitle">Loading...</div>
+          <button class="mnav-btn" id="nextMonthBtn" onclick="changeMonth(1)">&#8594;</button>
+        </div>
+        <div class="month-grid" id="monthGrid">
+          <div class="mg-header">Sun</div>
+          <div class="mg-header">Mon</div>
+          <div class="mg-header">Tue</div>
+          <div class="mg-header">Wed</div>
+          <div class="mg-header">Thu</div>
+          <div class="mg-header">Fri</div>
+          <div class="mg-header">Sat</div>
         </div>
       </div>
-      <div class="what-item">
-        <div class="what-check">→</div>
-        <div class="what-text">
-          <strong>Revenue Leak Identification</strong>
-          <span>I tell you exactly where you're losing students and how much each leak is costing you per month.</span>
-        </div>
+
+      <!-- TIME SLOTS - horizontal -->
+      <div class="times-wrap" id="timesWrap">
+        <div class="times-day-label" id="timesDayLabel">Available Times</div>
+        <div class="times-row" id="timesRow"></div>
       </div>
-      <div class="what-item">
-        <div class="what-check">→</div>
-        <div class="what-text">
-          <strong>Prioritized Fix List</strong>
-          <span>You leave with 3-5 specific changes ranked by impact. Highest ROI first. No fluff.</span>
+
+      <!-- FORM -->
+      <div class="form-wrap" id="formWrap">
+        <div class="form-sel-time">
+          <strong id="selTimeLabel">—</strong>
+          <button class="change-time-btn" onclick="clearTime()">Change time</button>
         </div>
-      </div>
-      <div class="what-item">
-        <div class="what-check">→</div>
-        <div class="what-text">
-          <strong>Copy That Actually Converts</strong>
-          <span>I'll rewrite your hero headline and CTA on the spot so you leave with something you can use today.</span>
+        <div class="fg">
+          <div class="ff"><label>First Name</label><input type="text" id="firstName" placeholder="First name"></div>
+          <div class="ff"><label>Last Name</label><input type="text" id="lastName" placeholder="Last name"></div>
+          <div class="ff full"><label>Email Address</label><input type="email" id="email" placeholder="your@email.com"></div>
+          <div class="ff full">
+            <label>School Website <span style="text-transform:none;letter-spacing:0;font-weight:400;color:var(--muted2)">(optional)</span></label>
+            <input type="url" id="schoolUrl" placeholder="https://yourmusicschool.com">
+            <div class="ff-note">I'll review it before our call</div>
+          </div>
         </div>
+        <button class="proceed-btn" onclick="goToPayment()">CONFIRM & PAY $97 →</button>
+        <div class="err" id="formErr"></div>
       </div>
-      <div class="what-item">
-        <div class="what-check">→</div>
-        <div class="what-text">
-          <strong>Retention Strategy</strong>
-          <span>The one thing I changed that stopped silent churn. Takes 5 minutes to implement. Worth thousands per year.</span>
+
+      <!-- PAYMENT -->
+      <div class="pay-wrap" id="payWrap">
+        <div class="pay-summary">
+          <div class="ps-row"><span>Session</span><strong>Strategy Session</strong></div>
+          <div class="ps-row"><span>Time</span><strong id="payTimeLabel">—</strong></div>
+          <div class="ps-row"><span>Format</span><strong>Google Meet</strong></div>
+          <div class="ps-row ps-total"><span>Total</span><strong>$97</strong></div>
         </div>
+        <div id="card-container"></div>
+        <button class="pay-btn" id="payBtn">PAY $97 & CONFIRM →</button>
+        <p class="pay-secure">🔒 Secure · Powered by Square · Instant confirmation</p>
+        <button class="back-btn" onclick="backToForm()">← Back</button>
+        <div class="err" id="payErr"></div>
       </div>
-      <div class="what-item">
-        <div class="what-check">→</div>
-        <div class="what-text">
-          <strong>Real Operator Advice</strong>
-          <span>Not theory. Not a guru playbook. What actually worked across 4 locations and $1.5M in annual revenue.</span>
+
+      <!-- SUCCESS -->
+      <div class="success-wrap" id="successWrap">
+        <div class="si">🎸</div>
+        <h2>You're Booked.</h2>
+        <p>Your confirmation and Google Meet link are heading to your inbox. I'll review your site before we talk so we hit the ground running.</p>
+        <div class="meet-box" id="meetBox" style="display:none">
+          <span>Your Google Meet Link</span>
+          <a id="meetLink" href="#" target="_blank">—</a>
+        </div>
+        <p style="font-size:12px;color:var(--muted2)">Questions? <a href="mailto:adkinsguitarandmusic@gmail.com" style="color:var(--lime)">adkinsguitarandmusic@gmail.com</a></p>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- WHAT WE COVER -->
+  <div class="content-section">
+    <div class="cs-label">What Happens In 30 Minutes</div>
+    <h2 class="cs-title">Everything You Need.<br>Nothing You Don't.</h2>
+    <div class="covers-grid">
+      <div class="cover-item">
+        <span class="cover-num">01</span>
+        <strong>Live Website Review</strong>
+        <p>I pull up your site and walk through it exactly like a parent would. You'll see what's working and what's bleeding you students.</p>
+      </div>
+      <div class="cover-item">
+        <span class="cover-num">02</span>
+        <strong>Revenue Leak Identification</strong>
+        <p>I tell you exactly where you're losing students and calculate how much each leak costs you per month in real dollars.</p>
+      </div>
+      <div class="cover-item">
+        <span class="cover-num">03</span>
+        <strong>Prioritized Fix List</strong>
+        <p>You leave with 3-5 specific changes ranked by ROI. Highest impact first. No fluff, no 47-step marketing funnel nonsense.</p>
+      </div>
+      <div class="cover-item">
+        <span class="cover-num">04</span>
+        <strong>Hero Copy Rewritten Live</strong>
+        <p>Your homepage headline and CTA — rewritten on the spot so you leave with something you can implement today.</p>
+      </div>
+      <div class="cover-item">
+        <span class="cover-num">05</span>
+        <strong>Retention Strategy</strong>
+        <p>The one thing I changed that stopped silent churn. Takes 5 minutes to implement. Worth thousands per year in saved revenue.</p>
+      </div>
+      <div class="cover-item">
+        <span class="cover-num">06</span>
+        <strong>Your Next 90-Day Plan</strong>
+        <p>What to do first, second, and third. In order. So you leave with a clear path instead of a list of ideas you never implement.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- IS THIS FOR YOU -->
+  <div class="fit-section">
+    <div class="fit-inner">
+      <div class="fit-col">
+        <div class="fit-label yes">✓ This Is For You If...</div>
+        <ul class="fit-list">
+          <li>You own or run a music school or studio</li>
+          <li>Your website exists but isn't converting parents</li>
+          <li>You're losing students you didn't have to lose</li>
+          <li>You want specific advice, not generic marketing tips</li>
+          <li>You're ready to implement what you learn</li>
+          <li>One new student more than covers the $97</li>
+        </ul>
+      </div>
+      <div class="fit-col">
+        <div class="fit-label no">✗ This Is NOT For You If...</div>
+        <ul class="fit-list no-list">
+          <li>You don't have a music school or studio</li>
+          <li>You're looking for a generic business coach</li>
+          <li>You want someone to build everything for you</li>
+          <li>You're not willing to actually make changes</li>
+          <li>You think your website is already perfect</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ZACH BIO + BRAD LEA -->
+  <div class="content-section">
+    <div class="bio-grid">
+      <div class="bio-left">
+        <img src="/images/zach_hero.jpg" alt="Zachary Adkins" class="bio-photo" width="200" height="280">
+      </div>
+      <div class="bio-right">
+        <div class="cs-label">Who You're Talking To</div>
+        <h2 class="cs-title" style="font-size:clamp(30px,4vw,46px);">Not A Guru.<br>An Operator.</h2>
+        <p class="bio-text">I went from teaching guitar in my living room to running four music school locations doing $1.5M a year. No investors. No business degree. No connections. Just a national guitar competition win in 2017 and the willingness to figure it out.</p>
+        <p class="bio-text">I've been at every level you can imagine — house sessions, single location, two, three, four locations. I've made every mistake you're probably making right now. And I fixed them.</p>
+        <p class="bio-text">Everything I tell you in 30 minutes is something I actually did — with real students, real payroll, and real consequences if it didn't work.</p>
+        <div class="brad-block">
+          <div class="brad-quote">"You can teach anyone how to build a seven figure music business."</div>
+          <div class="brad-attr">— Brad Lea · CEO, LightSpeed VT · Host, Dropping Bombs Podcast</div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- FAQ -->
+  <div class="faq-section">
+    <div class="cs-label">Common Questions</div>
+    <h2 class="cs-title">Before You Book</h2>
+    <div class="faq-grid">
+      <div class="faq-item">
+        <strong>What do I need to prepare?</strong>
+        <p>Have your website URL ready and your screen share working. Know your current student count and pricing. That's it — I do the rest.</p>
+      </div>
+      <div class="faq-item">
+        <strong>What if I need to reschedule?</strong>
+        <p>Email me at <a href="mailto:adkinsguitarandmusic@gmail.com">adkinsguitarandmusic@gmail.com</a> at least 4 hours before and I'll get you rescheduled. I'm a real person and I respond.</p>
+      </div>
+      <div class="faq-item">
+        <strong>What happens after the call?</strong>
+        <p>You get a follow-up email with your prioritized fix list and any resources I mentioned. If ZiroWork can automate something we talked about, I'll let you know — no pressure.</p>
+      </div>
+      <div class="faq-item">
+        <strong>Is $97 refundable?</strong>
+        <p>If you show up and feel like you got zero value, email me and I'll refund you. That's never happened. But the guarantee is there.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM CTA -->
+  <div class="bottom-cta">
+    <h2>One New Student Pays For This.<br><span>Ten New Students Change Everything.</span></h2>
+    <p>Scroll up and pick a time. It takes 2 minutes to book.</p>
+    <button onclick="document.getElementById('bookingCard').scrollIntoView({behavior:'smooth'})" class="scroll-btn">PICK A TIME →</button>
+  </div>
+
+
 </div>
 
 <footer>
@@ -379,324 +501,239 @@ footer p{font-size:12px;color:var(--muted2)}
   <p>© 2026 ZiroWork · book.zirowork.com</p>
 </footer>
 
-<script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
+<script src="https://web.squarecdn.com/v1/square.js"></script>
 <script>
-// ============================================
-// AVAILABILITY CONFIG
-// ============================================
-const AVAILABILITY = {
-  1: ['10:00','11:00','15:00','19:00'],   // Monday
-  2: ['10:00','11:00','15:00','19:00'],   // Tuesday
-  3: ['10:00','11:00','15:00','19:00'],   // Wednesday
-  4: ['10:00','11:00','15:00','19:00'],   // Thursday
-  6: ['10:00','11:00','15:00'],           // Saturday
+const SQUARE_APP_ID = 'YOUR_SQUARE_APP_ID';
+const SQUARE_LOCATION_ID = 'YOUR_LOCATION_ID';
+
+// Available slots by weekday (0=Sun,1=Mon...6=Sat)
+const AVAIL = {
+  1: ['10:00','11:00','15:00','19:00'],
+  2: ['10:00','11:00','15:00','19:00'],
+  3: ['10:00','11:00','15:00','19:00'],
+  4: ['10:00','11:00','15:00','19:00'],
+  6: ['10:00','11:00','15:00'],
 };
 
-// Seeded random for consistent "booked" slots
-function seededRandom(seed) {
-  let x = Math.sin(seed) * 10000;
-  return x - Math.floor(x);
+const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DAY_FULL  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MON_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// Seeded fake booked — consistent per date+time
+function seeded(str){
+  let h=0;
+  for(let i=0;i<str.length;i++) h=Math.imul(31,h)+str.charCodeAt(i)|0;
+  return ((h>>>0)/4294967295);
+}
+function fakeBooked(dateStr,time){ return seeded(dateStr+time)<0.20; }
+
+function fmt12(h,m){
+  const h12=h>12?h-12:h===0?12:h;
+  const ap=h>=12?'PM':'AM';
+  return `${h12}:${String(m).padStart(2,'0')} ${ap}`;
 }
 
-function isSlotFakeBooked(dateStr, time) {
-  const seed = dateStr.split('').reduce((a,c) => a + c.charCodeAt(0), 0) +
-               time.split('').reduce((a,c) => a + c.charCodeAt(0), 0);
-  return seededRandom(seed) < 0.45; // 45% appear booked
+let selDate=null, selDateStr='', selTime='', selLabel='';
+let bookData={};
+let sqCard=null, sqInited=false;
+
+// ---- BUILD 7-DAY STRIP ----
+function buildStrip(){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const cutoff=new Date(today.getTime()+8*60*60*1000); // 8hr from now
+  const strip=document.getElementById('dayStrip');
+  strip.innerHTML='';
+
+  let rangeStart='', rangeEnd='';
+
+  for(let i=0;i<7;i++){
+    const d=new Date(today); d.setDate(today.getDate()+i);
+    const dow=d.getDay();
+    const ds=d.toISOString().split('T')[0];
+    const slots=AVAIL[dow]||[];
+    const isToday=i===0;
+
+    // Count genuinely open slots
+    const openCount=slots.filter(t=>{
+      const [h,m]=t.split(':').map(Number);
+      const dt=new Date(d.getFullYear(),d.getMonth(),d.getDate(),h,m);
+      return !fakeBooked(ds,t) && dt>=cutoff;
+    }).length;
+
+    const hasOpen=openCount>0;
+    const isSelected=selDate&&d.getTime()===selDate.getTime();
+
+    if(i===0) rangeStart=`${MON_SHORT[d.getMonth()]} ${d.getDate()}`;
+    if(i===6) rangeEnd=`${MON_SHORT[d.getMonth()]} ${d.getDate()}`;
+
+    const card=document.createElement('div');
+    // Pick a teaser booked time for available days
+    const teaserSlots=['10:00','11:00','15:00','19:00'];
+    const teaserTime=teaserSlots[Math.floor(seeded(ds)*teaserSlots.length)];
+    const [th,tm]=teaserTime.split(':').map(Number);
+    const teaserLabel=fmt12(th,tm);
+
+    card.className=`day-card${isToday?' today-card':''}${isSelected?' selected':''}`;
+    if(!slots.length||!hasOpen){ card.classList.add('unavail'); }
+    else { card.classList.add('avail-day'); }
+    card.innerHTML=`
+      <div class="dc-name">${DAY_NAMES[dow]}</div>
+      <div class="dc-num">${d.getDate()}</div>
+      <div class="dc-month">${MON_SHORT[d.getMonth()]}</div>
+      <div class="dc-slots ${hasOpen&&slots.length?'open':'full'}">${!slots.length?'—':hasOpen?openCount+' open':'Full'}</div>
+      ${slots.length&&hasOpen?`<div class="dc-teaser">${teaserLabel} booked</div>`:''}`;
+
+    if(slots.length&&hasOpen){
+      card.onclick=()=>selectDay(d,ds,dow);
+    }
+    strip.appendChild(card);
+  }
+
+  document.getElementById('stripRange').textContent=`${rangeStart} – ${rangeEnd}`;
 }
 
-// ============================================
-// STATE
-// ============================================
-let currentWeekOffset = 0;
-let selectedDate = null;
-let selectedTime = null;
-let selectedDateLabel = '';
-let bookingData = {};
-let squareCard = null;
+function selectDay(d,ds,dow){
+  selDate=d; selDateStr=ds; selTime=''; selLabel='';
+  document.getElementById('formWrap').classList.remove('visible');
+  document.getElementById('payWrap').classList.remove('visible');
+  buildCalendar();
+  buildTimes(d,ds,dow);
+}
 
-// ============================================
-// CALENDAR RENDERING
-// ============================================
-function getWeekDates(offset) {
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  const startOfWeek = new Date(today);
-  startOfWeek.setDate(today.getDate() - today.getDay() + (offset * 7));
-  return Array.from({length:7}, (_, i) => {
-    const d = new Date(startOfWeek);
-    d.setDate(startOfWeek.getDate() + i);
-    return d;
+// ---- BUILD TIME PILLS ----
+function buildTimes(d,ds,dow){
+  const slots=AVAIL[dow]||[];
+  const today=new Date(); today.setHours(0,0,0,0);
+  const cutoff=new Date(new Date().getTime()+8*60*60*1000);
+
+  document.getElementById('timesDayLabel').textContent=
+    `${DAY_FULL[dow]}, ${MON_SHORT[d.getMonth()]} ${d.getDate()}`;
+
+  const row=document.getElementById('timesRow');
+  row.innerHTML='';
+
+  slots.forEach(time=>{
+    const [h,m]=time.split(':').map(Number);
+    const dt=new Date(d.getFullYear(),d.getMonth(),d.getDate(),h,m);
+    const isToday2=ds===new Date().toISOString().split('T')[0];
+    const booked=fakeBooked(ds,time)||(isToday2&&dt<cutoff);
+    const endH=m+30>=60?h+1:h;
+    const endM=(m+30)%60;
+    const isSelected=selTime===time&&!booked;
+
+    const pill=document.createElement('div');
+    pill.className=`time-pill${booked?' tp-booked':''}${isSelected?' tp-selected':''}`;
+    pill.innerHTML=`
+      <span class="tp-time">${fmt12(h,m)} – ${fmt12(endH,endM)}</span>
+      <span class="tp-status ${booked?'s-booked':'s-open'}">${booked?'Booked':'Open'}</span>`;
+
+    if(!booked){
+      pill.onclick=()=>{
+        selTime=time;
+        selLabel=`${DAY_FULL[dow]}, ${MON_SHORT[d.getMonth()]} ${d.getDate()} at ${fmt12(h,m)} CST`;
+        buildTimes(d,ds,dow);
+        showForm();
+      };
+    }
+    row.appendChild(pill);
   });
+
+  document.getElementById('timesWrap').classList.add('visible');
 }
 
-function formatDateStr(date) {
-  return date.toISOString().split('T')[0];
+function clearTime(){
+  selTime=''; selLabel='';
+  document.getElementById('formWrap').classList.remove('visible');
+  document.getElementById('payWrap').classList.remove('visible');
+  if(selDate) buildTimes(selDate,selDateStr,selDate.getDay());
 }
 
-function renderCalendar() {
-  const dates = getWeekDates(currentWeekOffset);
-  const today = new Date(); today.setHours(0,0,0,0);
-  const maxDate = new Date(today); maxDate.setDate(today.getDate() + 7);
+// ---- FORM ----
+function showForm(){
+  document.getElementById('selTimeLabel').textContent=selLabel;
+  document.getElementById('payWrap').classList.remove('visible');
+  document.getElementById('formWrap').classList.add('visible');
+  document.getElementById('formWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
 
-  // Month label
-  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const firstDate = dates[0];
-  const lastDate = dates[6];
-  let label = months[firstDate.getMonth()];
-  if (firstDate.getMonth() !== lastDate.getMonth()) label += ' / ' + months[lastDate.getMonth()];
-  label += ' ' + firstDate.getFullYear();
-  document.getElementById('calMonthLabel').textContent = label;
+function goToPayment(){
+  const fn=document.getElementById('firstName').value.trim();
+  const ln=document.getElementById('lastName').value.trim();
+  const em=document.getElementById('email').value.trim();
+  const err=document.getElementById('formErr');
+  if(!fn||!ln||!em){err.textContent='Please fill in your name and email.';err.style.display='block';return;}
+  err.style.display='none';
+  bookData={firstName:fn,lastName:ln,email:em,
+    schoolUrl:document.getElementById('schoolUrl').value.trim(),
+    selectedDate:selDateStr,selectedTime:selTime,selectedDateLabel:selLabel};
+  document.getElementById('payTimeLabel').textContent=selLabel;
+  document.getElementById('formWrap').classList.remove('visible');
+  document.getElementById('payWrap').classList.add('visible');
+  document.getElementById('payWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+  if(!sqInited) initSquare();
+}
 
-  // Prev/next buttons
-  document.getElementById('prevWeek').disabled = currentWeekOffset <= 0;
-  document.getElementById('nextWeek').disabled = currentWeekOffset >= 1;
+function backToForm(){
+  document.getElementById('payWrap').classList.remove('visible');
+  document.getElementById('formWrap').classList.add('visible');
+}
 
-  // Render day cells (keep headers)
-  const grid = document.getElementById('daysGrid');
-  // Remove old day cells
-  const headers = grid.querySelectorAll('.day-header');
-  grid.innerHTML = '';
-  headers.forEach(h => grid.appendChild(h));
+// ---- SQUARE ----
+async function initSquare(){
+  if(sqInited)return;
+  try{
+    const payments=Square.payments(SQUARE_APP_ID,SQUARE_LOCATION_ID);
+    sqCard=await payments.card();
+    await sqCard.attach('#card-container');
+    sqInited=true;
+  }catch(e){console.error('Square:',e);}
+}
 
-  dates.forEach(date => {
-    const cell = document.createElement('div');
-    const dayOfWeek = date.getDay();
-    const dateStr = formatDateStr(date);
-    const isPast = date < today;
-    const isFuture = date > maxDate;
-    const hasAvail = AVAILABILITY[dayOfWeek];
-    const isToday = date.getTime() === today.getTime();
-    const isSelected = dateStr === selectedDate;
-
-    cell.className = 'day-cell';
-    if (isPast || isFuture || !hasAvail) {
-      cell.classList.add('disabled');
+document.getElementById('payBtn').addEventListener('click',async function(){
+  const btn=this;
+  const err=document.getElementById('payErr');
+  err.style.display='none';
+  btn.textContent='PROCESSING...';
+  btn.disabled=true;
+  try{
+    const result=await sqCard.tokenize();
+    if(result.status!=='OK'){
+      err.textContent=result.errors?.[0]?.message||'Card error. Try again.';
+      err.style.display='block';
+      btn.textContent='PAY $97 & CONFIRM →';btn.disabled=false;return;
     }
-    if (isToday) cell.classList.add('today');
-    if (isSelected) cell.classList.add('selected');
-
-    const slots = hasAvail ? hasAvail.filter(t => !isSlotFakeBooked(dateStr, t)) : [];
-    const availCount = slots.length;
-
-    cell.innerHTML = `
-      <div class="day-num">${date.getDate()}</div>
-      ${hasAvail && !isPast && !isFuture ? `<div class="day-avail">${availCount > 0 ? availCount + ' open' : 'Full'}</div>` : ''}
-    `;
-
-    if (!isPast && !isFuture && hasAvail && availCount > 0) {
-      cell.onclick = () => selectDate(dateStr, date, dayOfWeek);
-    }
-
-    grid.appendChild(cell);
-  });
-
-  // Re-render slots if a date is selected
-  if (selectedDate) {
-    const dateObj = dates.find(d => formatDateStr(d) === selectedDate);
-    if (dateObj) renderSlots(selectedDate, dateObj.getDay(), dateObj);
-  }
-}
-
-function selectDate(dateStr, dateObj, dayOfWeek) {
-  selectedDate = dateStr;
-  selectedTime = null;
-  document.querySelectorAll('.day-cell').forEach(c => c.classList.remove('selected'));
-  renderCalendar();
-  renderSlots(dateStr, dayOfWeek, dateObj);
-  document.getElementById('slotsSection').classList.add('visible');
-  document.getElementById('slotsSection').scrollIntoView({behavior:'smooth', block:'nearest'});
-}
-
-function renderSlots(dateStr, dayOfWeek, dateObj) {
-  const slots = AVAILABILITY[dayOfWeek] || [];
-  const now = new Date();
-  const eightHoursLater = new Date(now.getTime() + 8 * 60 * 60 * 1000);
-  
-  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  document.getElementById('slotsLabel').textContent = 
-    `${days[dayOfWeek]}, ${months[dateObj.getMonth()]} ${dateObj.getDate()}`;
-
-  const grid = document.getElementById('slotsGrid');
-  grid.innerHTML = '';
-
-  // Show all slots including fake booked ones
-  const allSlots = AVAILABILITY[dayOfWeek] || [];
-  
-  allSlots.forEach(time => {
-    const [h, m] = time.split(':').map(Number);
-    const slotDate = new Date(dateObj);
-    slotDate.setHours(h, m, 0, 0);
-    
-    const isFakeBooked = isSlotFakeBooked(dateStr, time);
-    const isPastCutoff = slotDate < eightHoursLater;
-    const isBooked = isFakeBooked || isPastCutoff;
-    const isSelected = time === selectedTime && !isBooked;
-
-    const hour12 = h > 12 ? h - 12 : h === 0 ? 12 : h;
-    const ampm = h >= 12 ? 'PM' : 'AM';
-    const endHour = h + 0;
-    const endMin = m + 30;
-    const endH = endMin >= 60 ? endHour + 1 : endHour;
-    const endM = endMin >= 60 ? endMin - 60 : endMin;
-    const endH12 = endH > 12 ? endH - 12 : endH === 0 ? 12 : endH;
-    const endAmpm = endH >= 12 ? 'PM' : 'AM';
-
-    const slot = document.createElement('div');
-    slot.className = `slot${isBooked ? ' booked' : ''}${isSelected ? ' selected' : ''}`;
-    slot.innerHTML = `
-      <span class="slot-time">${hour12}:${String(m).padStart(2,'0')} – ${endH12}:${String(endM).padStart(2,'0')} ${endAmpm}</span>
-      <span class="slot-status">${isBooked ? 'Already Booked' : 'Available'}</span>
-    `;
-
-    if (!isBooked) {
-      slot.onclick = () => selectSlot(time, dateObj, `${days[dayOfWeek]}, ${months[dateObj.getMonth()]} ${dateObj.getDate()} at ${hour12}:${String(m).padStart(2,'0')} ${ampm} CST`);
-    }
-
-    grid.appendChild(slot);
-  });
-}
-
-function selectSlot(time, dateObj, label) {
-  selectedTime = time;
-  selectedDateLabel = label;
-  renderSlots(selectedDate, dateObj.getDay(), dateObj);
-  // Auto-advance to step 2 after short delay
-  setTimeout(() => goToStep(2), 300);
-}
-
-function changeWeek(dir) {
-  currentWeekOffset += dir;
-  selectedDate = null;
-  selectedTime = null;
-  document.getElementById('slotsSection').classList.remove('visible');
-  renderCalendar();
-}
-
-// ============================================
-// STEP NAVIGATION
-// ============================================
-function goToStep(step) {
-  if (step === 2) {
-    if (!selectedDate || !selectedTime) return;
-    document.getElementById('selectedTimeDisplay').textContent = selectedDateLabel;
-    document.getElementById('calendarSection').classList.remove('active');
-    document.getElementById('formSection').classList.add('active');
-    document.getElementById('paymentSection').classList.remove('active');
-    document.getElementById('successSection').classList.remove('active');
-    updateStepDots(2);
-  } else if (step === 3) {
-    const firstName = document.getElementById('firstName').value.trim();
-    const lastName = document.getElementById('lastName').value.trim();
-    const email = document.getElementById('email').value.trim();
-    if (!firstName || !lastName || !email) {
-      const err = document.getElementById('formError');
-      err.textContent = 'Please fill in your name and email.';
-      err.style.display = 'block';
-      return;
-    }
-    document.getElementById('formError').style.display = 'none';
-    bookingData = {
-      firstName, lastName, email,
-      schoolUrl: document.getElementById('schoolUrl').value.trim(),
-      selectedDate, selectedTime, selectedDateLabel
-    };
-    document.getElementById('summaryTime').textContent = selectedDateLabel;
-    document.getElementById('calendarSection').classList.remove('active');
-    document.getElementById('formSection').classList.remove('active');
-    document.getElementById('paymentSection').classList.add('active');
-    updateStepDots(3);
-    initSquare();
-  } else if (step === 1) {
-    document.getElementById('calendarSection').classList.add('active');
-    document.getElementById('formSection').classList.remove('active');
-    document.getElementById('paymentSection').classList.remove('active');
-    updateStepDots(1);
-  }
-  window.scrollTo({top: document.getElementById('stepsIndicator').offsetTop - 80, behavior:'smooth'});
-}
-
-function updateStepDots(active) {
-  for (let i = 1; i <= 3; i++) {
-    const dot = document.getElementById(`step${i}dot`);
-    dot.classList.remove('active','done');
-    if (i < active) dot.classList.add('done');
-    else if (i === active) dot.classList.add('active');
-  }
-}
-
-// ============================================
-// SQUARE PAYMENT
-// ============================================
-async function initSquare() {
-  if (squareCard) return;
-  try {
-    const payments = Square.payments(
-      document.getElementById('payBtn').dataset.appId || 'sq0idp-F-S9XSRxcT_48k6AfpI8gA',
-      document.getElementById('payBtn').dataset.locationId || 'EAAAl67VA4DybLYx0HA-CkucS1qntKDod_4n_DCfkUxSRK5xJAFY7N0JSNz93dHL'
-    );
-    squareCard = await payments.card();
-    await squareCard.attach('#card-container');
-  } catch(e) {
-    console.error('Square init error:', e);
-  }
-}
-
-document.getElementById('payBtn').addEventListener('click', async function() {
-  const btn = this;
-  const errEl = document.getElementById('payError');
-  errEl.style.display = 'none';
-  btn.textContent = 'PROCESSING...';
-  btn.disabled = true;
-
-  try {
-    const result = await squareCard.tokenize();
-    if (result.status === 'OK') {
-      const res = await fetch('/api/book', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({
-          ...bookingData,
-          sourceId: result.token
-        })
-      });
-
-      const data = await res.json();
-
-      if (res.ok && data.success) {
-        document.getElementById('calendarSection').classList.remove('active');
-        document.getElementById('paymentSection').classList.remove('active');
-        document.getElementById('successSection').classList.add('active');
-        document.getElementById('stepsIndicator').style.display = 'none';
-        if (data.meetLink) {
-          document.getElementById('meetLink').href = data.meetLink;
-          document.getElementById('meetLink').textContent = data.meetLink;
-          document.getElementById('meetLinkBox').style.display = 'block';
-        }
-      } else {
-        errEl.textContent = data.error || 'Payment failed. Please try again.';
-        errEl.style.display = 'block';
-        btn.textContent = 'PAY $97 & CONFIRM SESSION →';
-        btn.disabled = false;
+    const res=await fetch('/api/book',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({...bookData,sourceId:result.token})
+    });
+    const data=await res.json();
+    if(res.ok&&data.success){
+      document.getElementById('dayStrip').closest('.day-strip-wrap').style.display='none';
+      document.getElementById('timesWrap').style.display='none';
+      document.getElementById('formWrap').classList.remove('visible');
+      document.getElementById('payWrap').classList.remove('visible');
+      const sw=document.getElementById('successWrap');
+      sw.classList.add('visible');
+      if(data.meetLink){
+        document.getElementById('meetLink').href=data.meetLink;
+        document.getElementById('meetLink').textContent=data.meetLink;
+        document.getElementById('meetBox').style.display='block';
       }
-    } else {
-      errEl.textContent = result.errors?.[0]?.message || 'Card error. Please try again.';
-      errEl.style.display = 'block';
-      btn.textContent = 'PAY $97 & CONFIRM SESSION →';
-      btn.disabled = false;
+      sw.scrollIntoView({behavior:'smooth'});
+    }else{
+      err.textContent=data.error||'Payment failed. Try again.';
+      err.style.display='block';
+      btn.textContent='PAY $97 & CONFIRM →';btn.disabled=false;
     }
-  } catch(e) {
-    errEl.textContent = 'Something went wrong. Please try again.';
-    errEl.style.display = 'block';
-    btn.textContent = 'PAY $97 & CONFIRM SESSION →';
-    btn.disabled = false;
+  }catch(e){
+    err.textContent='Something went wrong. Try again.';
+    err.style.display='block';
+    btn.textContent='PAY $97 & CONFIRM →';btn.disabled=false;
   }
 });
 
-// ============================================
-// INIT
-// ============================================
-renderCalendar();
+buildCalendar();
 </script>
 </body>
 </html>
