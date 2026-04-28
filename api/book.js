@@ -13,13 +13,6 @@ const FROM_EMAIL = process.env.FROM_EMAIL || 'Zach Adkins <zach@zirowork.com>';
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || 'adkinsguitarandmusic@gmail.com';
 const ZACH_CALENDAR_ID = process.env.ZACH_CALENDAR_ID || 'primary';
 
-function formatTime(time) {
-  const [h, m] = time.split(':').map(Number);
-  const hour12 = h > 12 ? h - 12 : h === 0 ? 12 : h;
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  return `${hour12}:${String(m).padStart(2,'0')} ${ampm}`;
-}
-
 function buildConfirmationEmail(data, meetLink) {
   return `<!DOCTYPE html>
 <html><head><meta charset="UTF-8"></head>
@@ -107,6 +100,9 @@ export default async function handler(req, res) {
 
     // STEP 1 — CHARGE SQUARE
     console.log('Processing Square payment...');
+    console.log('sourceId:', sourceId);
+    console.log('location_id:', SQUARE_LOCATION_ID);
+
     const squareRes = await fetch(`https://connect.squareup.com/v2/payments`, {
       method: 'POST',
       headers: {
@@ -118,12 +114,13 @@ export default async function handler(req, res) {
         source_id: sourceId,
         amount_money: { amount: 9700, currency: 'USD' },
         location_id: SQUARE_LOCATION_ID,
-        idempotency_key: `booking-${email}-${selectedDate}-${selectedTime}-${Date.now()}`,
+        idempotency_key: `booking-${Date.now()}`,
         note: `Strategy Session — ${firstName} ${lastName}`
       })
     });
 
     const squareData = await squareRes.json();
+    console.log('Square full response:', JSON.stringify(squareData));
 
     if (!squareRes.ok || squareData.payment?.status !== 'COMPLETED') {
       const errMsg = squareData.errors?.[0]?.detail || 'Payment failed.';
@@ -132,7 +129,6 @@ export default async function handler(req, res) {
     }
 
     console.log('Payment successful:', squareData.payment.id);
-
 
     // STEP 2 — CREATE GOOGLE CALENDAR EVENT WITH MEET
     console.log('Creating calendar event...');
@@ -175,7 +171,6 @@ export default async function handler(req, res) {
     const meetLink = event.data.conferenceData?.entryPoints?.[0]?.uri || null;
     console.log('Calendar event created. Meet link:', meetLink);
 
-
     // STEP 3 — SEND CONFIRMATION EMAIL TO CLIENT
     await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -189,7 +184,6 @@ export default async function handler(req, res) {
     });
 
     console.log('Confirmation email sent to:', email);
-
 
     // STEP 4 — NOTIFY ZACH
     await fetch('https://api.resend.com/emails', {
@@ -210,7 +204,6 @@ export default async function handler(req, res) {
         </div>`
       })
     });
-
 
     return res.status(200).json({ success: true, meetLink });
 
