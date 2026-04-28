@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/book.js": {
+      "maxDuration": 30
+    }
+  }
+}
