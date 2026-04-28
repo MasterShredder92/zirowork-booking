@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book A Strategy Session — ZiroWork</title>
+<meta name="description" content="Book a 30-minute strategy session with Zach Adkins. Find exactly what's costing your music school students and revenue.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --lime:#C5F135;--black:#080808;--dark:#0f0f0f;--card:#141414;--card2:#1a1a1a;
+  --border:#222;--border2:#2a2a2a;--text:#EFEFEF;--muted:#777;--muted2:#444;--red:#ff4444;
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;overflow-x:hidden}
+nav{display:flex;justify-content:space-between;align-items:center;padding:16px 40px;border-bottom:1px solid var(--border);background:rgba(8,8,8,0.97);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;color:var(--lime)}
+.nav-back{font-size:12px;color:var(--muted);text-decoration:none;letter-spacing:1px;transition:color 0.2s}
+.nav-back:hover{color:var(--lime)}
+.page-wrap{max-width:1060px;margin:0 auto;padding:48px 32px 80px}
+.top-cta{text-align:center;margin-bottom:40px}
+.eyebrow{display:inline-block;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--lime);margin-bottom:12px}
+.top-cta h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,5vw,58px);line-height:1;color:#fff;margin-bottom:10px}
+.top-cta h1 span{color:var(--lime)}
+.top-cta p{font-size:15px;color:var(--muted);max-width:540px;margin:0 auto}
+.booking-card{display:grid;grid-template-columns:260px 1fr;border:1px solid var(--border);background:var(--card)}
+.left-panel{padding:28px 24px;border-right:1px solid var(--border);display:flex;flex-direction:column}
+.host-photo{width:68px;height:68px;border-radius:50%;object-fit:cover;object-position:top center;border:2px solid var(--border2);margin-bottom:14px;display:block}
+.host-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.5px;color:#fff;margin-bottom:2px}
+.host-cred{font-size:11px;color:var(--muted);margin-bottom:18px;line-height:1.4}
+.session-name{font-size:15px;font-weight:700;color:#fff;padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:14px}
+.detail{display:flex;gap:9px;margin-bottom:10px;align-items:flex-start}
+.detail-icon{font-size:13px;margin-top:1px;flex-shrink:0}
+.detail-info strong{display:block;font-size:13px;color:#fff}
+.detail-info span{font-size:12px;color:var(--muted)}
+.price-block{background:var(--black);border:1px solid var(--border2);padding:14px 16px;margin-top:16px}
+.price-block .amt{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--lime);line-height:1}
+.price-block .price-note{font-size:11px;color:var(--muted);margin-top:3px}
+.gets{margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.gets-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.get-item{display:flex;gap:7px;font-size:12px;color:var(--muted);margin-bottom:6px;line-height:1.4}
+.get-item::before{content:'→';color:var(--lime);font-weight:700;flex-shrink:0}
+.right-panel{display:flex;flex-direction:column}
+/* CALENDAR */
+.month-cal-wrap{padding:24px 24px 16px}
+.month-nav-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.month-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:#fff}
+.mnav-btn{background:none;border:1px solid var(--border);color:var(--muted);width:32px;height:32px;cursor:pointer;font-size:16px;transition:all 0.15s;display:flex;align-items:center;justify-content:center}
+.mnav-btn:hover{border-color:var(--lime);color:var(--lime)}
+.mnav-btn:disabled{opacity:0.25;cursor:default}
+.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.mg-header{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);text-align:center;padding:6px 0 10px}
+.mg-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:default;position:relative;font-size:13px;color:var(--muted2);transition:all 0.15s}
+.mg-day.empty{background:transparent}
+.mg-day.past{color:var(--muted2);opacity:0.4}
+.mg-day.unavail{color:var(--muted2)}
+.mg-day.avail{color:#fff;cursor:pointer;border:1px solid var(--lime)}
+.mg-day.avail:hover{background:rgba(197,241,53,0.08)}
+.mg-day.selected{background:rgba(197,241,53,0.15);border:1px solid var(--lime);color:var(--lime)}
+.mg-day.is-today .day-num{color:var(--lime)}
+.day-num{font-size:15px;font-weight:600;line-height:1}
+.day-slots{font-size:9px;font-weight:700;letter-spacing:0.5px;margin-top:3px;color:var(--lime)}
+.mg-day.unavail .day-slots,.mg-day.past .day-slots{display:none}
+/* TIME SLOTS */
+.times-wrap{padding:0 24px 20px;display:none;border-top:1px solid var(--border)}
+.times-wrap.visible{display:block}
+.times-header{display:flex;align-items:center;gap:10px;padding:16px 0 12px}
+.times-day-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--lime)}
+.times-row{display:flex;flex-wrap:wrap;gap:8px}
+.time-pill{padding:10px 16px;border:1px solid var(--border);cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;min-width:130px}
+.time-pill:hover:not(.tp-booked){border-color:var(--lime);background:rgba(197,241,53,0.05)}
+.time-pill.tp-selected{border-color:var(--lime);background:rgba(197,241,53,0.1)}
+.time-pill.tp-booked{cursor:not-allowed;opacity:0.45;border-color:var(--border)}
+.tp-time{font-size:13px;font-weight:600;color:#fff}
+.time-pill.tp-booked .tp-time{color:var(--muted)}
+.tp-status{font-size:10px;font-weight:700;letter-spacing:0.5px;margin-top:2px}
+.tp-status.s-open{color:var(--lime)}
+.tp-status.s-booked{color:var(--red)}
+/* FORM */
+.form-wrap{border-top:1px solid var(--border);padding:24px;display:none;background:var(--card2)}
+.form-wrap.visible{display:block}
+.form-sel-time{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:rgba(197,241,53,0.07);border:1px solid rgba(197,241,53,0.25);margin-bottom:18px}
+.form-sel-time strong{font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--lime);letter-spacing:0.5px}
+.change-time-btn{font-size:11px;color:var(--muted);cursor:pointer;background:none;border:none;text-decoration:underline}
+.change-time-btn:hover{color:var(--lime)}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.ff{display:flex;flex-direction:column;gap:4px}
+.ff.full{grid-column:1/-1}
+.ff label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.ff input{background:#111;border:1px solid var(--border2);color:#fff;padding:11px 13px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;width:100%}
+.ff input::placeholder{color:#444}
+.ff input:focus{border-color:var(--lime)}
+.ff-note{font-size:11px;color:var(--muted2);margin-top:2px}
+.proceed-btn{width:100%;background:var(--lime);color:var(--black);border:none;padding:14px;font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:2px;cursor:pointer;transition:all 0.2s;margin-top:6px}
+.proceed-btn:hover{opacity:0.9;transform:translateY(-1px)}
+/* PAYMENT */
+.pay-wrap{border-top:1px solid var(--border);padding:24px;display:none;background:var(--card2)}
+.pay-wrap.visible{display:block}
+.pay-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:14px;background:var(--black);border:1px solid var(--border);margin-bottom:18px}
+.ps-row{display:flex;flex-direction:column;gap:2px}
+.ps-row span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.ps-row strong{font-size:13px;color:#fff}
+.ps-row.ps-total strong{color:var(--lime);font-size:17px}
+/* WALLETS */
+.wallet-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+#apple-pay-btn,#google-pay-btn,#cash-app-btn{width:100%;margin-bottom:8px;min-height:44px}
+.wallet-divider{display:flex;align-items:center;gap:12px;margin:16px 0}
+.wallet-divider::before,.wallet-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.wallet-divider span{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+/* CARD */
+#card-container{background:#111;border:1px solid var(--border2);padding:13px;margin-bottom:10px;min-height:48px}
+.pay-btn{width:100%;background:var(--lime);color:var(--black);border:none;padding:15px;font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:2px;cursor:pointer;transition:all 0.2s}
+.pay-btn:hover:not(:disabled){opacity:0.9;transform:translateY(-1px)}
+.pay-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.pay-secure{font-size:11px;color:var(--muted2);text-align:center;margin-top:8px}
+.back-btn{display:block;text-align:center;margin-top:6px;font-size:12px;color:var(--muted);cursor:pointer;background:none;border:none}
+.back-btn:hover{color:var(--lime)}
+/* SUCCESS */
+.success-wrap{display:none;padding:60px 40px;text-align:center}
+.success-wrap.visible{display:block}
+.success-wrap .si{font-size:48px;margin-bottom:14px}
+.success-wrap h2{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--lime);margin-bottom:10px}
+.success-wrap p{color:var(--muted);font-size:14px;line-height:1.7;max-width:420px;margin:0 auto 18px}
+.meet-box{background:var(--black);border:1px solid var(--lime);padding:14px 18px;margin:0 auto 20px;max-width:420px;text-align:left}
+.meet-box span{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:5px}
+.meet-box a{color:var(--lime);font-size:13px;word-break:break-all}
+.err{display:none;background:rgba(255,68,68,0.08);border:1px solid rgba(255,68,68,0.2);padding:9px 13px;margin-top:8px;font-size:13px;color:#ff8080;text-align:center}
+footer{border-top:1px solid var(--border);padding:20px 40px;display:flex;justify-content:space-between;align-items:center}
+footer .logo{font-size:16px}
+footer p{font-size:11px;color:var(--muted2)}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:32px}
+.stat-item{background:var(--card);padding:20px;text-align:center}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--lime);display:block;line-height:1}
+.stat-label{font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;display:block}
+.content-section{padding:72px 0 0}
+.cs-label{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--lime);margin-bottom:14px}
+.cs-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,54px);line-height:1;color:#fff;margin-bottom:40px}
+.covers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border)}
+.cover-item{background:var(--card);padding:28px 24px}
+.cover-num{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:3px;color:var(--lime);display:block;margin-bottom:12px}
+.cover-item strong{display:block;font-size:15px;color:#fff;margin-bottom:8px}
+.cover-item p{font-size:13px;color:var(--muted);line-height:1.65}
+.fit-section{padding:60px 0 0}
+.fit-inner{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border)}
+.fit-col{background:var(--card);padding:32px 28px}
+.fit-label{font-size:12px;font-weight:700;letter-spacing:1px;margin-bottom:16px}
+.fit-label.yes{color:var(--lime)}
+.fit-label.no{color:var(--red)}
+.fit-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.fit-list li{font-size:14px;color:var(--muted);line-height:1.5;padding-left:16px;position:relative}
+.fit-list li::before{content:'→';position:absolute;left:0;color:var(--lime);font-weight:700}
+.fit-list.no-list li::before{color:var(--red);content:'✗'}
+.bio-grid{display:grid;grid-template-columns:220px 1fr;gap:48px;align-items:start}
+.bio-photo{width:100%;height:auto;object-fit:cover;object-position:top;filter:grayscale(10%);border:1px solid var(--border)}
+.bio-text{font-size:15px;color:var(--muted);line-height:1.75;margin-bottom:16px}
+.brad-block{border-left:3px solid var(--lime);padding:16px 20px;background:var(--card);margin-top:24px}
+.brad-quote{font-size:16px;color:#fff;line-height:1.6;font-style:italic;margin-bottom:8px}
+.brad-attr{font-size:12px;color:var(--muted)}
+.faq-section{padding:60px 0 0}
+.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border)}
+.faq-item{background:var(--card);padding:28px 24px}
+.faq-item strong{display:block;font-size:15px;color:#fff;margin-bottom:10px}
+.faq-item p{font-size:14px;color:var(--muted);line-height:1.65}
+.faq-item a{color:var(--lime)}
+.bottom-cta{padding:72px 0;text-align:center}
+.bottom-cta h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,5vw,52px);color:#fff;line-height:1.05;margin-bottom:14px}
+.bottom-cta h2 span{color:var(--lime)}
+.bottom-cta p{color:var(--muted);font-size:15px;margin-bottom:28px}
+.scroll-btn{background:var(--lime);color:var(--black);border:none;padding:16px 40px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;cursor:pointer;transition:all 0.2s}
+.scroll-btn:hover{opacity:0.9;transform:translateY(-1px)}
+@media(max-width:860px){
+  .booking-card{grid-template-columns:1fr}
+  .left-panel{border-right:none;border-bottom:1px solid var(--border);flex-direction:row;flex-wrap:wrap;gap:16px;align-items:flex-start}
+  .host-photo{width:56px;height:56px;margin-bottom:0}
+  .price-block{margin-top:0}
+  .month-cal-wrap{padding:16px}
+  .times-wrap,.form-wrap,.pay-wrap{padding:16px}
+  .fg{grid-template-columns:1fr}
+  .pay-summary{grid-template-columns:1fr 1fr}
+  .page-wrap{padding:28px 16px 60px}
+  nav{padding:14px 20px}
+  footer{padding:16px 20px;flex-direction:column;gap:6px;text-align:center}
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+  .covers-grid{grid-template-columns:1fr}
+  .fit-inner{grid-template-columns:1fr}
+  .bio-grid{grid-template-columns:1fr;gap:24px}
+  .bio-photo{max-width:200px}
+  .faq-grid{grid-template-columns:1fr}
+  .mg-day{font-size:11px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">ZIROWORK</div>
+  <a href="https://audit.zirowork.com" class="nav-back">← Free Website Audit</a>
+</nav>
+
+<div class="page-wrap">
+  <div class="top-cta">
+    <div class="eyebrow">30-Minute Strategy Session</div>
+    <h1>Fix Your Music School Website.<br><span>Live. With Zach.</span></h1>
+    <p>Walk away with a prioritized fix list, rewritten copy, and exactly what to do first to start converting more parents this week.</p>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-item"><span class="stat-num">30</span><span class="stat-label">Minutes That Change Everything</span></div>
+    <div class="stat-item"><span class="stat-num">$97</span><span class="stat-label">Less Than One New Student</span></div>
+    <div class="stat-item"><span class="stat-num">3-5</span><span class="stat-label">Specific Fixes You Leave With</span></div>
+    <div class="stat-item"><span class="stat-num">100%</span><span class="stat-label">Specific To Your School</span></div>
+  </div>
+
+  <div class="booking-card" id="bookingCard">
+    <div class="left-panel">
+      <img class="host-photo" src="/images/zach_hero.jpg" alt="Zachary Adkins" width="68" height="68">
+      <div class="host-name">Zachary Adkins</div>
+      <div class="host-cred">Founder · Adkins Music Lessons<br>$1.5M/yr · 4 Locations · ZiroWork</div>
+      <div class="session-name">Music School Strategy Session</div>
+      <div class="detail"><span class="detail-icon">⏱</span><div class="detail-info"><strong>30 Minutes</strong><span>Google Meet · Video Call</span></div></div>
+      <div class="detail"><span class="detail-icon">🌐</span><div class="detail-info"><strong>Online</strong><span>Link sent after booking</span></div></div>
+      <div class="detail"><span class="detail-icon">🎯</span><div class="detail-info"><strong>Music School Owners Only</strong><span>Real advice. Real results.</span></div></div>
+      <div class="price-block"><div class="amt">$97</div><div class="price-note">One new student covers this immediately</div></div>
+      <div class="gets">
+        <div class="gets-label">What You Get</div>
+        <div class="get-item">Live review of your actual website</div>
+        <div class="get-item">Revenue leaks identified</div>
+        <div class="get-item">Prioritized fix list — ROI first</div>
+        <div class="get-item">Hero copy rewritten on the spot</div>
+        <div class="get-item">Retention strategy that stops churn</div>
+      </div>
+    </div>
+
+    <div class="right-panel" id="rightPanel">
+
+      <div class="month-cal-wrap">
+        <div class="month-nav-row">
+          <button class="mnav-btn" id="prevMonthBtn">&#8592;</button>
+          <div class="month-title" id="monthTitle"></div>
+          <button class="mnav-btn" id="nextMonthBtn">&#8594;</button>
+        </div>
+        <div class="month-grid" id="monthGrid">
+          <div class="mg-header">Sun</div><div class="mg-header">Mon</div><div class="mg-header">Tue</div>
+          <div class="mg-header">Wed</div><div class="mg-header">Thu</div><div class="mg-header">Fri</div><div class="mg-header">Sat</div>
+        </div>
+      </div>
+
+      <div class="times-wrap" id="timesWrap">
+        <div class="times-header"><div class="times-day-label" id="timesDayLabel"></div></div>
+        <div class="times-row" id="timesRow"></div>
+      </div>
+
+      <div class="form-wrap" id="formWrap">
+        <div class="form-sel-time">
+          <strong id="selTimeLabel">—</strong>
+          <button class="change-time-btn" onclick="clearTime()">Change time</button>
+        </div>
+        <div class="fg">
+          <div class="ff"><label>First Name</label><input type="text" id="firstName" placeholder="First name"></div>
+          <div class="ff"><label>Last Name</label><input type="text" id="lastName" placeholder="Last name"></div>
+          <div class="ff full"><label>Email Address</label><input type="email" id="email" placeholder="your@email.com"></div>
+          <div class="ff full">
+            <label>School Website <span style="text-transform:none;letter-spacing:0;font-weight:400;color:var(--muted2)">(optional)</span></label>
+            <input type="url" id="schoolUrl" placeholder="https://yourmusicschool.com">
+            <div class="ff-note">I'll review it before our call</div>
+          </div>
+        </div>
+        <button class="proceed-btn" onclick="goToPayment()">CONFIRM & PAY $97 →</button>
+        <div class="err" id="formErr"></div>
+      </div>
+
+      <div class="pay-wrap" id="payWrap">
+        <div class="pay-summary">
+          <div class="ps-row"><span>Session</span><strong>Strategy Session</strong></div>
+          <div class="ps-row"><span>Time</span><strong id="payTimeLabel">—</strong></div>
+          <div class="ps-row"><span>Format</span><strong>Google Meet</strong></div>
+          <div class="ps-row ps-total"><span>Total</span><strong>$97</strong></div>
+        </div>
+
+        <!-- EXPRESS CHECKOUT -->
+        <div class="wallet-label">Express Checkout</div>
+        <div id="apple-pay-btn"></div>
+        <div id="google-pay-btn"></div>
+        <div id="cash-app-btn"></div>
+
+        <div class="wallet-divider"><span>or pay by card</span></div>
+
+        <div id="card-container"></div>
+        <button class="pay-btn" id="payBtn">PAY $97 & CONFIRM →</button>
+        <p class="pay-secure">🔒 Secure · Powered by Square · Instant confirmation</p>
+        <button class="back-btn" onclick="backToForm()">← Back</button>
+        <div class="err" id="payErr"></div>
+      </div>
+
+      <div class="success-wrap" id="successWrap">
+        <div class="si">🎸</div>
+        <h2>You're Booked.</h2>
+        <p>Your confirmation and Google Meet link are heading to your inbox. I'll review your site before we talk so we hit the ground running.</p>
+        <div class="meet-box" id="meetBox" style="display:none">
+          <span>Your Google Meet Link</span>
+          <a id="meetLink" href="#" target="_blank">—</a>
+        </div>
+        <p style="font-size:12px;color:var(--muted2)">Questions? <a href="mailto:adkinsguitarandmusic@gmail.com" style="color:var(--lime)">adkinsguitarandmusic@gmail.com</a></p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="content-section">
+    <div class="cs-label">What Happens In 30 Minutes</div>
+    <h2 class="cs-title">Everything You Need.<br>Nothing You Don't.</h2>
+    <div class="covers-grid">
+      <div class="cover-item"><span class="cover-num">01</span><strong>Live Website Review</strong><p>I pull up your site and walk through it exactly like a parent would. You'll see what's working and what's bleeding you students.</p></div>
+      <div class="cover-item"><span class="cover-num">02</span><strong>Revenue Leak Identification</strong><p>I tell you exactly where you're losing students and calculate how much each leak costs you per month in real dollars.</p></div>
+      <div class="cover-item"><span class="cover-num">03</span><strong>Prioritized Fix List</strong><p>You leave with 3-5 specific changes ranked by ROI. Highest impact first. No fluff, no 47-step marketing funnel nonsense.</p></div>
+      <div class="cover-item"><span class="cover-num">04</span><strong>Hero Copy Rewritten Live</strong><p>Your homepage headline and CTA — rewritten on the spot so you leave with something you can implement today.</p></div>
+      <div class="cover-item"><span class="cover-num">05</span><strong>Retention Strategy</strong><p>The one thing I changed that stopped silent churn. Takes 5 minutes to implement. Worth thousands per year in saved revenue.</p></div>
+      <div class="cover-item"><span class="cover-num">06</span><strong>Your Next 90-Day Plan</strong><p>What to do first, second, and third. In order. So you leave with a clear path instead of a list of ideas you never implement.</p></div>
+    </div>
+  </div>
+
+  <div class="fit-section">
+    <div class="fit-inner">
+      <div class="fit-col">
+        <div class="fit-label yes">✓ This Is For You If...</div>
+        <ul class="fit-list">
+          <li>You own or run a music school or studio</li>
+          <li>Your website exists but isn't converting parents</li>
+          <li>You're losing students you didn't have to lose</li>
+          <li>You want specific advice, not generic marketing tips</li>
+          <li>You're ready to implement what you learn</li>
+          <li>One new student more than covers the $97</li>
+        </ul>
+      </div>
+      <div class="fit-col">
+        <div class="fit-label no">✗ This Is NOT For You If...</div>
+        <ul class="fit-list no-list">
+          <li>You don't have a music school or studio</li>
+          <li>You're looking for a generic business coach</li>
+          <li>You want someone to build everything for you</li>
+          <li>You're not willing to actually make changes</li>
+          <li>You think your website is already perfect</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-section">
+    <div class="bio-grid">
+      <div class="bio-left"><img src="/images/zach_hero.jpg" alt="Zachary Adkins" class="bio-photo" width="200" height="280"></div>
+      <div class="bio-right">
+        <div class="cs-label">Who You're Talking To</div>
+        <h2 class="cs-title" style="font-size:clamp(30px,4vw,46px);">Not A Guru.<br>An Operator.</h2>
+        <p class="bio-text">I went from teaching guitar in my living room to running four music school locations doing $1.5M a year. No investors. No business degree. No connections. Just a national guitar competition win in 2017 and the willingness to figure it out.</p>
+        <p class="bio-text">I've been at every level you can imagine — house sessions, single location, two, three, four locations. I've made every mistake you're probably making right now. And I fixed them.</p>
+        <p class="bio-text">Everything I tell you in 30 minutes is something I actually did — with real students, real payroll, and real consequences if it didn't work.</p>
+        <div class="brad-block">
+          <div class="brad-quote">"You can teach anyone how to build a seven figure music business."</div>
+          <div class="brad-attr">— Brad Lea · CEO, LightSpeed VT · Host, Dropping Bombs Podcast</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="faq-section">
+    <div class="cs-label">Common Questions</div>
+    <h2 class="cs-title">Before You Book</h2>
+    <div class="faq-grid">
+      <div class="faq-item"><strong>What do I need to prepare?</strong><p>Have your website URL ready and your screen share working. Know your current student count and pricing. That's it — I do the rest.</p></div>
+      <div class="faq-item"><strong>What if I need to reschedule?</strong><p>Email me at <a href="mailto:adkinsguitarandmusic@gmail.com">adkinsguitarandmusic@gmail.com</a> at least 4 hours before and I'll get you rescheduled.</p></div>
+      <div class="faq-item"><strong>What happens after the call?</strong><p>You get a follow-up email with your prioritized fix list and any resources I mentioned. If ZiroWork can automate something we talked about, I'll let you know — no pressure.</p></div>
+      <div class="faq-item"><strong>Is $97 refundable?</strong><p>If you show up and feel like you got zero value, email me and I'll refund you. That's never happened. But the guarantee is there.</p></div>
+    </div>
+  </div>
+
+  <div class="bottom-cta">
+    <h2>One New Student Pays For This.<br><span>Ten New Students Change Everything.</span></h2>
+    <p>Scroll up and pick a time. It takes 2 minutes to book.</p>
+    <button onclick="document.getElementById('bookingCard').scrollIntoView({behavior:'smooth'})" class="scroll-btn">PICK A TIME →</button>
+  </div>
+
+</div>
+
+<footer>
+  <div class="logo">ZIROWORK</div>
+  <p>© 2026 ZiroWork · book.zirowork.com</p>
+</footer>
+
+<script src="https://web.squarecdn.com/v1/square.js"></script>
+<script>
+// ── REPLACE THESE WITH YOUR REAL VALUES ──────────────────
+const SQUARE_APP_ID      = 'sq0idp-F-S9XSRxcT_48k6AfpI8gA';
+const SQUARE_LOCATION_ID = 'EAAAl67VA4DybLYx0HA-CkucS1qntKDod_4n_DCfkUxSRK5xJAFY7N0JSNz93dHL';
+
+const REAL_SLOTS = {
+  1:['10:00','11:00','15:00','19:00'],
+  2:['10:00','11:00','15:00','19:00'],
+  3:['10:00','11:00','15:00','19:00'],
+  4:['10:00','11:00','15:00','19:00'],
+  6:['10:00','11:00','15:00'],
+};
+const FAKE_SLOT_INDEX = 1; // 11am always shows "Already Booked"
+
+const MON_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MON_SHORT=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DAY_FULL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+let viewYear, viewMonth;
+let selDate=null, selDateStr='', selTime='', selLabel='';
+let bookData={};
+let sqCard=null, sqInited=false;
+
+function toDateStr(d){ return d.toISOString().split('T')[0]; }
+function fmt12(h,m){ const h12=h>12?h-12:h===0?12:h; return `${h12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`; }
+function addMins(h,m,mins){ const t=h*60+m+mins; return [Math.floor(t/60)%24,t%60]; }
+
+// ── CALENDAR ──────────────────────────────────────────────
+function buildCalendar(){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const cutoff=new Date(new Date().getTime()+8*60*60*1000);
+  const maxDate=new Date(today); maxDate.setDate(today.getDate()+14);
+
+  document.getElementById('monthTitle').textContent=`${MON_NAMES[viewMonth]} ${viewYear}`;
+  document.getElementById('prevMonthBtn').disabled=new Date(viewYear,viewMonth,1)<=new Date(today.getFullYear(),today.getMonth(),1);
+  document.getElementById('nextMonthBtn').disabled=new Date(viewYear,viewMonth+1,1)>maxDate;
+
+  const grid=document.getElementById('monthGrid');
+  while(grid.children.length>7) grid.removeChild(grid.lastChild);
+
+  const firstDay=new Date(viewYear,viewMonth,1).getDay();
+  const daysInMonth=new Date(viewYear,viewMonth+1,0).getDate();
+
+  for(let i=0;i<firstDay;i++){
+    const e=document.createElement('div'); e.className='mg-day empty'; grid.appendChild(e);
+  }
+
+  for(let day=1;day<=daysInMonth;day++){
+    const d=new Date(viewYear,viewMonth,day);
+    const dow=d.getDay();
+    const ds=toDateStr(d);
+    const slots=REAL_SLOTS[dow]||[];
+    const isToday=ds===toDateStr(today);
+
+    const openSlots=slots.filter((t,idx)=>{
+      if(idx===FAKE_SLOT_INDEX) return false;
+      const [h,m]=t.split(':').map(Number);
+      const dt=new Date(d.getFullYear(),d.getMonth(),d.getDate(),h,m);
+      if(isToday && dt<cutoff) return false;
+      return true;
+    });
+
+    const isAvail=slots.length>0 && d>=today && d<=maxDate && openSlots.length>0;
+    const isSelected=selDate && ds===selDateStr;
+
+    const cell=document.createElement('div');
+    cell.className='mg-day';
+    if(d<today||d>maxDate) cell.classList.add('past');
+    else if(!isAvail)      cell.classList.add('unavail');
+    else                   cell.classList.add('avail');
+    if(isToday)    cell.classList.add('is-today');
+    if(isSelected) cell.classList.add('selected');
+
+    cell.innerHTML=`<span class="day-num">${day}</span>${isAvail?`<span class="day-slots">${openSlots.length} open</span>`:''}`;
+    if(isAvail) cell.onclick=()=>selectDay(d,ds,dow);
+    grid.appendChild(cell);
+  }
+}
+
+function changeMonth(dir){
+  viewMonth+=dir;
+  if(viewMonth>11){viewMonth=0;viewYear++;}
+  if(viewMonth<0){viewMonth=11;viewYear--;}
+  buildCalendar();
+}
+
+function selectDay(d,ds,dow){
+  selDate=d; selDateStr=ds; selTime=''; selLabel='';
+  document.getElementById('formWrap').classList.remove('visible');
+  document.getElementById('payWrap').classList.remove('visible');
+  buildCalendar();
+  buildTimes(d,ds,dow);
+}
+
+// ── TIMES ─────────────────────────────────────────────────
+function buildTimes(d,ds,dow){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const isToday=ds===toDateStr(today);
+  const cutoff=new Date(new Date().getTime()+8*60*60*1000);
+  const slots=REAL_SLOTS[dow]||[];
+
+  document.getElementById('timesDayLabel').textContent=
+    `${DAY_FULL[dow]}, ${MON_SHORT[d.getMonth()]} ${d.getDate()}`;
+
+  const row=document.getElementById('timesRow');
+  row.innerHTML='';
+
+  slots.forEach((time,idx)=>{
+    const [h,m]=time.split(':').map(Number);
+    const [eh,em]=addMins(h,m,30);
+    const dt=new Date(d.getFullYear(),d.getMonth(),d.getDate(),h,m);
+    const isBooked=idx===FAKE_SLOT_INDEX||(isToday&&dt<cutoff);
+    const isSelected=!isBooked&&selTime===time;
+
+    const pill=document.createElement('div');
+    pill.className=`time-pill${isBooked?' tp-booked':''}${isSelected?' tp-selected':''}`;
+    pill.innerHTML=`
+      <span class="tp-time">${fmt12(h,m)} – ${fmt12(eh,em)}</span>
+      <span class="tp-status ${isBooked?'s-booked':'s-open'}">${isBooked?'Already Booked':'Available'}</span>`;
+    if(!isBooked){
+      pill.onclick=()=>{
+        selTime=time;
+        selLabel=`${DAY_FULL[dow]}, ${MON_SHORT[d.getMonth()]} ${d.getDate()} · ${fmt12(h,m)} CST`;
+        buildTimes(d,ds,dow);
+        showForm();
+      };
+    }
+    row.appendChild(pill);
+  });
+
+  document.getElementById('timesWrap').classList.add('visible');
+  document.getElementById('timesWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function clearTime(){
+  selTime=''; selLabel='';
+  document.getElementById('formWrap').classList.remove('visible');
+  document.getElementById('payWrap').classList.remove('visible');
+  if(selDate) buildTimes(selDate,selDateStr,selDate.getDay());
+}
+
+// ── FORM ──────────────────────────────────────────────────
+function showForm(){
+  document.getElementById('selTimeLabel').textContent=selLabel;
+  document.getElementById('payWrap').classList.remove('visible');
+  document.getElementById('formWrap').classList.add('visible');
+  document.getElementById('formWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function goToPayment(){
+  const fn=document.getElementById('firstName').value.trim();
+  const ln=document.getElementById('lastName').value.trim();
+  const em=document.getElementById('email').value.trim();
+  const err=document.getElementById('formErr');
+  if(!fn||!ln||!em){err.textContent='Please fill in your name and email.';err.style.display='block';return;}
+  err.style.display='none';
+  bookData={firstName:fn,lastName:ln,email:em,
+    schoolUrl:document.getElementById('schoolUrl').value.trim(),
+    selectedDate:selDateStr,selectedTime:selTime,selectedDateLabel:selLabel};
+  document.getElementById('payTimeLabel').textContent=selLabel;
+  document.getElementById('formWrap').classList.remove('visible');
+  document.getElementById('payWrap').classList.add('visible');
+  document.getElementById('payWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+  if(!sqInited) initSquare();
+}
+
+function backToForm(){
+  document.getElementById('payWrap').classList.remove('visible');
+  document.getElementById('formWrap').classList.add('visible');
+}
+
+// ── SQUARE ────────────────────────────────────────────────
+async function initSquare(){
+  if(sqInited) return;
+  try{
+    const payments=Square.payments(SQUARE_APP_ID,SQUARE_LOCATION_ID);
+
+    const paymentRequest=payments.paymentRequest({
+      countryCode:'US',
+      currencyCode:'USD',
+      total:{amount:'97.00',label:'ZiroWork Strategy Session'}
+    });
+
+    // Apple Pay
+    try{
+      const ap=await payments.applePay(paymentRequest);
+      await ap.attach('#apple-pay-btn');
+      ap.addEventListener('ontokenization',({detail})=>{
+        if(detail.tokenResult?.status==='OK') submitBooking(detail.tokenResult.token);
+      });
+    }catch(e){ document.getElementById('apple-pay-btn').style.display='none'; }
+
+    // Google Pay
+    try{
+      const gp=await payments.googlePay(paymentRequest);
+      await gp.attach('#google-pay-btn');
+      gp.addEventListener('ontokenization',({detail})=>{
+        if(detail.tokenResult?.status==='OK') submitBooking(detail.tokenResult.token);
+      });
+    }catch(e){ document.getElementById('google-pay-btn').style.display='none'; }
+
+    // Cash App Pay
+    try{
+      const ca=await payments.cashAppPay(paymentRequest,{
+        redirectURL:window.location.href,
+        referenceId:`zw-${Date.now()}`
+      });
+      await ca.attach('#cash-app-btn');
+      ca.addEventListener('ontokenization',({detail})=>{
+        if(detail.tokenResult?.status==='OK') submitBooking(detail.tokenResult.token);
+      });
+    }catch(e){ document.getElementById('cash-app-btn').style.display='none'; }
+
+    // Card (always available)
+    sqCard=await payments.card();
+    await sqCard.attach('#card-container');
+    sqInited=true;
+
+  }catch(e){ console.error('Square init:',e); }
+}
+
+// ── SUBMIT ────────────────────────────────────────────────
+async function submitBooking(token){
+  const btn=document.getElementById('payBtn');
+  const err=document.getElementById('payErr');
+  err.style.display='none';
+  btn.textContent='PROCESSING...'; btn.disabled=true;
+
+  try{
+    const res=await fetch('/api/book',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({...bookData,sourceId:token})
+    });
+    const data=await res.json();
+
+    if(res.ok&&data.success){
+      document.getElementById('monthGrid').closest('.month-cal-wrap').style.display='none';
+      document.getElementById('timesWrap').style.display='none';
+      document.getElementById('formWrap').classList.remove('visible');
+      document.getElementById('payWrap').classList.remove('visible');
+      const sw=document.getElementById('successWrap');
+      sw.classList.add('visible');
+      if(data.meetLink){
+        document.getElementById('meetLink').href=data.meetLink;
+        document.getElementById('meetLink').textContent=data.meetLink;
+        document.getElementById('meetBox').style.display='block';
+      }
+      sw.scrollIntoView({behavior:'smooth'});
+    }else{
+      err.textContent=data.error||'Payment failed. Try again.';
+      err.style.display='block';
+      btn.textContent='PAY $97 & CONFIRM →'; btn.disabled=false;
+    }
+  }catch(e){
+    err.textContent='Something went wrong. Try again.';
+    err.style.display='block';
+    btn.textContent='PAY $97 & CONFIRM →'; btn.disabled=false;
+  }
+}
+
+document.getElementById('payBtn').addEventListener('click',async function(){
+  const err=document.getElementById('payErr');
+  err.style.display='none';
+  try{
+    const result=await sqCard.tokenize();
+    if(result.status!=='OK'){
+      err.textContent=result.errors?.[0]?.message||'Card error. Try again.';
+      err.style.display='block'; return;
+    }
+    await submitBooking(result.token);
+  }catch(e){
+    err.textContent='Something went wrong. Try again.';
+    err.style.display='block';
+  }
+});
+
+document.getElementById('prevMonthBtn').addEventListener('click',()=>changeMonth(-1));
+document.getElementById('nextMonthBtn').addEventListener('click',()=>changeMonth(1));
+
+(function init(){
+  const now=new Date();
+  viewYear=now.getFullYear();
+  viewMonth=now.getMonth();
+  buildCalendar();
+})();
+</script>
+</body>
+</html>
