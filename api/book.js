@@ -112,7 +112,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         source_id: sourceId,
-        amount_money: { amount: 9700, currency: 'USD' },
+        amount_money: { amount: 100, currency: 'USD' },
         location_id: SQUARE_LOCATION_ID,
         idempotency_key: `booking-${Date.now()}`,
         note: `Strategy Session — ${firstName} ${lastName}`
