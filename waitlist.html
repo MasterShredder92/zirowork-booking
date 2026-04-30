@@ -501,6 +501,27 @@ document.getElementById('nextMonthBtn').addEventListener('click',()=>changeMonth
   const now=new Date();
   viewYear=now.getFullYear();
   viewMonth=now.getMonth();
+  // Check if current month has any future available slots; if not, advance to next month
+  const today=new Date(); today.setHours(0,0,0,0);
+  const cutoff=new Date(new Date().getTime()+8*60*60*1000);
+  const maxDate=new Date(today); maxDate.setDate(today.getDate()+14);
+  let hasSlotThisMonth=false;
+  for(let day=today.getDate();day<=new Date(viewYear,viewMonth+1,0).getDate();day++){
+    const d=new Date(viewYear,viewMonth,day);
+    if(d>maxDate) break;
+    const dow=d.getDay();
+    const slots=REAL_SLOTS[dow]||[];
+    for(const t of slots){
+      const [h,m]=t.split(':').map(Number);
+      const dt=new Date(d.getFullYear(),d.getMonth(),d.getDate(),h,m);
+      if(dt>cutoff){hasSlotThisMonth=true;break;}
+    }
+    if(hasSlotThisMonth) break;
+  }
+  if(!hasSlotThisMonth){
+    viewMonth+=1;
+    if(viewMonth>11){viewMonth=0;viewYear++;}
+  }
   buildCalendar();
 })();
 </script>
