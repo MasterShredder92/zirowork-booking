@@ -1,8 +1,8 @@
 {
   "version": 2,
   "builds": [
-    { "src": "api/book.js", "use": "@vercel/node" },
-    { "src": "api/book-waitlist.js", "use": "@vercel/node" },
+    { "src": "api/book.js", "use": "@vercel/node", "config": { "maxDuration": 30 } },
+    { "src": "api/book-waitlist.js", "use": "@vercel/node", "config": { "maxDuration": 30 } },
     { "src": "api/slots.js", "use": "@vercel/node" },
     { "src": "index.html", "use": "@vercel/static" },
     { "src": "waitlist.html", "use": "@vercel/static" },
@@ -15,9 +15,5 @@
     { "src": "/waitlist", "dest": "/waitlist.html" },
     { "src": "/waitlist/", "dest": "/waitlist.html" },
     { "src": "/(.*)", "dest": "/index.html" }
-  ],
-  "functions": {
-    "api/book.js": { "maxDuration": 30 },
-    "api/book-waitlist.js": { "maxDuration": 30 }
-  }
+  ]
 }
