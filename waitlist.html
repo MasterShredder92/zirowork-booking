@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Book A Strategy Session — ZiroWork</title>
-<meta name="description" content="Book a 30-minute strategy session with Zach Adkins. Find exactly what's costing your music school students and revenue.">
+<title>Claim Your Free Founder Call — ZiroWork</title>
+<meta name="description" content="ZiroWork founding members: book your free 30-minute call with Zach Adkins. Limited to 50 spots.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
@@ -19,8 +19,7 @@ html{scroll-behavior:smooth}
 body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;overflow-x:hidden}
 nav{display:flex;justify-content:space-between;align-items:center;padding:16px 40px;border-bottom:1px solid var(--border);background:rgba(8,8,8,0.97);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
 .logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;color:var(--lime)}
-.nav-back{font-size:12px;color:var(--muted);text-decoration:none;letter-spacing:1px;transition:color 0.2s}
-.nav-back:hover{color:var(--lime)}
+.nav-badge{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--black);background:var(--lime);padding:4px 10px}
 .page-wrap{max-width:1060px;margin:0 auto;padding:48px 32px 80px}
 .top-cta{text-align:center;margin-bottom:40px}
 .eyebrow{display:inline-block;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--lime);margin-bottom:12px}
@@ -37,9 +36,9 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 4
 .detail-icon{font-size:13px;margin-top:1px;flex-shrink:0}
 .detail-info strong{display:block;font-size:13px;color:#fff}
 .detail-info span{font-size:12px;color:var(--muted)}
-.price-block{background:var(--black);border:1px solid var(--border2);padding:14px 16px;margin-top:16px}
-.price-block .amt{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--lime);line-height:1}
-.price-block .price-note{font-size:11px;color:var(--muted);margin-top:3px}
+.free-block{background:var(--black);border:1px solid var(--lime);padding:14px 16px;margin-top:16px}
+.free-block .amt{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--lime);line-height:1}
+.free-block .price-note{font-size:11px;color:var(--muted);margin-top:3px}
 .gets{margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
 .gets-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
 .get-item{display:flex;gap:7px;font-size:12px;color:var(--muted);margin-bottom:6px;line-height:1.4}
@@ -95,34 +94,12 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 4
 .ff input::placeholder{color:#444}
 .ff input:focus{border-color:var(--lime)}
 .ff-note{font-size:11px;color:var(--muted2);margin-top:2px}
-.proceed-btn{width:100%;background:var(--lime);color:var(--black);border:none;padding:14px;font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:2px;cursor:pointer;transition:all 0.2s;margin-top:6px}
-.proceed-btn:hover{opacity:0.9;transform:translateY(-1px)}
-/* PAYMENT */
-.pay-wrap{border-top:1px solid var(--border);padding:24px;display:none;background:var(--card2)}
-.pay-wrap.visible{display:block}
-.pay-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:14px;background:var(--black);border:1px solid var(--border);margin-bottom:18px}
-.ps-row{display:flex;flex-direction:column;gap:2px}
-.ps-row span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-.ps-row strong{font-size:13px;color:#fff}
-.ps-row.ps-total strong{color:var(--lime);font-size:17px}
-/* WALLETS */
-.wallet-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
-#apple-pay-btn,#google-pay-btn,#cash-app-btn{width:100%;margin-bottom:8px;min-height:44px}
-.wallet-divider{display:flex;align-items:center;gap:12px;margin:16px 0}
-.wallet-divider::before,.wallet-divider::after{content:'';flex:1;height:1px;background:var(--border)}
-.wallet-divider span{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
-/* CARD */
-#card-container{background:#111;border:1px solid var(--border2);padding:13px;margin-bottom:10px;min-height:48px}
-.pay-btn{width:100%;background:var(--lime);color:var(--black);border:none;padding:15px;font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:2px;cursor:pointer;transition:all 0.2s}
-.pay-btn:hover:not(:disabled){opacity:0.9;transform:translateY(-1px)}
-.pay-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
-.pay-secure{font-size:11px;color:var(--muted2);text-align:center;margin-top:8px}
-.back-btn{display:block;text-align:center;margin-top:6px;font-size:12px;color:var(--muted);cursor:pointer;background:none;border:none}
-.back-btn:hover{color:var(--lime)}
+.confirm-btn{width:100%;background:var(--lime);color:var(--black);border:none;padding:14px;font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:2px;cursor:pointer;transition:all 0.2s;margin-top:6px}
+.confirm-btn:hover:not(:disabled){opacity:0.9;transform:translateY(-1px)}
+.confirm-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
 /* SUCCESS */
 .success-wrap{display:none;padding:60px 40px;text-align:center}
 .success-wrap.visible{display:block}
-.success-wrap .si{font-size:48px;margin-bottom:14px}
 .success-wrap h2{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--lime);margin-bottom:10px}
 .success-wrap p{color:var(--muted);font-size:14px;line-height:1.7;max-width:420px;margin:0 auto 18px}
 .meet-box{background:var(--black);border:1px solid var(--lime);padding:14px 18px;margin:0 auto 20px;max-width:420px;text-align:left}
@@ -144,16 +121,6 @@ footer p{font-size:11px;color:var(--muted2)}
 .cover-num{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:3px;color:var(--lime);display:block;margin-bottom:12px}
 .cover-item strong{display:block;font-size:15px;color:#fff;margin-bottom:8px}
 .cover-item p{font-size:13px;color:var(--muted);line-height:1.65}
-.fit-section{padding:60px 0 0}
-.fit-inner{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border)}
-.fit-col{background:var(--card);padding:32px 28px}
-.fit-label{font-size:12px;font-weight:700;letter-spacing:1px;margin-bottom:16px}
-.fit-label.yes{color:var(--lime)}
-.fit-label.no{color:var(--red)}
-.fit-list{list-style:none;display:flex;flex-direction:column;gap:10px}
-.fit-list li{font-size:14px;color:var(--muted);line-height:1.5;padding-left:16px;position:relative}
-.fit-list li::before{content:'→';position:absolute;left:0;color:var(--lime);font-weight:700}
-.fit-list.no-list li::before{color:var(--red);content:'✗'}
 .bio-grid{display:grid;grid-template-columns:220px 1fr;gap:48px;align-items:start}
 .bio-photo{width:100%;height:auto;object-fit:cover;object-position:top;filter:grayscale(10%);border:1px solid var(--border)}
 .bio-text{font-size:15px;color:var(--muted);line-height:1.75;margin-bottom:16px}
@@ -176,17 +143,15 @@ footer p{font-size:11px;color:var(--muted2)}
   .booking-card{grid-template-columns:1fr}
   .left-panel{border-right:none;border-bottom:1px solid var(--border);flex-direction:row;flex-wrap:wrap;gap:16px;align-items:flex-start}
   .host-photo{width:56px;height:56px;margin-bottom:0}
-  .price-block{margin-top:0}
+  .free-block{margin-top:0}
   .month-cal-wrap{padding:16px}
-  .times-wrap,.form-wrap,.pay-wrap{padding:16px}
+  .times-wrap,.form-wrap{padding:16px}
   .fg{grid-template-columns:1fr}
-  .pay-summary{grid-template-columns:1fr 1fr}
   .page-wrap{padding:28px 16px 60px}
   nav{padding:14px 20px}
   footer{padding:16px 20px;flex-direction:column;gap:6px;text-align:center}
   .hero-stats{grid-template-columns:repeat(2,1fr)}
   .covers-grid{grid-template-columns:1fr}
-  .fit-inner{grid-template-columns:1fr}
   .bio-grid{grid-template-columns:1fr;gap:24px}
   .bio-photo{max-width:200px}
   .faq-grid{grid-template-columns:1fr}
@@ -201,20 +166,20 @@ footer p{font-size:11px;color:var(--muted2)}
 
 <nav>
   <div class="logo">ZIROWORK</div>
-  <a href="https://audit.zirowork.com" class="nav-back">← Free Website Audit</a>
+  <div class="nav-badge">FOUNDING MEMBER</div>
 </nav>
 
 <div class="page-wrap">
   <div class="top-cta">
-    <div class="eyebrow">30-Minute Strategy Session</div>
-    <h1>Fix Your Music School Website.<br><span>Live. With Zach.</span></h1>
-    <p>Walk away with a prioritized fix list, rewritten copy, and exactly what to do first to start converting more parents this week.</p>
+    <div class="eyebrow">Founding Member Benefit</div>
+    <h1>Your Free Founder Call.<br><span>30 Minutes With Zach.</span></h1>
+    <p>You're on the ZiroWork waitlist. This call is yours — no charge, no pitch. Just 30 minutes to talk through your school, your goals, and how ZiroWork is built to solve your specific problems.</p>
   </div>
 
   <div class="hero-stats">
-    <div class="stat-item"><span class="stat-num">30</span><span class="stat-label">Minutes That Change Everything</span></div>
-    <div class="stat-item"><span class="stat-num">$97</span><span class="stat-label">Less Than One New Student</span></div>
-    <div class="stat-item"><span class="stat-num">3-5</span><span class="stat-label">Specific Fixes You Leave With</span></div>
+    <div class="stat-item"><span class="stat-num">30</span><span class="stat-label">Minutes, One-On-One</span></div>
+    <div class="stat-item"><span class="stat-num">FREE</span><span class="stat-label">Founding Member Only</span></div>
+    <div class="stat-item"><span class="stat-num">50</span><span class="stat-label">Total Spots Available</span></div>
     <div class="stat-item"><span class="stat-num">100%</span><span class="stat-label">Specific To Your School</span></div>
   </div>
 
@@ -223,18 +188,18 @@ footer p{font-size:11px;color:var(--muted2)}
       <img class="host-photo" src="/images/zach_hero.jpg" alt="Zachary Adkins" width="68" height="68">
       <div class="host-name">Zachary Adkins</div>
       <div class="host-cred">Founder · Adkins Music Lessons<br>$1.5M/yr · 4 Locations · ZiroWork</div>
-      <div class="session-name">Music School Strategy Session</div>
+      <div class="session-name">ZiroWork Founder Call</div>
       <div class="detail"><span class="detail-icon">⏱</span><div class="detail-info"><strong>30 Minutes</strong><span>Google Meet · Video Call</span></div></div>
       <div class="detail"><span class="detail-icon">🌐</span><div class="detail-info"><strong>Online</strong><span>Link sent after booking</span></div></div>
-      <div class="detail"><span class="detail-icon">🎯</span><div class="detail-info"><strong>Music School Owners Only</strong><span>Real advice. Real results.</span></div></div>
-      <div class="price-block"><div class="amt">$97</div><div class="price-note">One new student covers this immediately</div></div>
+      <div class="detail"><span class="detail-icon">🎯</span><div class="detail-info"><strong>Waitlist Members Only</strong><span>Founding member access</span></div></div>
+      <div class="free-block"><div class="amt">FREE</div><div class="price-note">Your benefit as a founding member</div></div>
       <div class="gets">
-        <div class="gets-label">What You Get</div>
-        <div class="get-item">Live review of your actual website</div>
-        <div class="get-item">Revenue leaks identified</div>
-        <div class="get-item">Prioritized fix list — ROI first</div>
-        <div class="get-item">Hero copy rewritten on the spot</div>
-        <div class="get-item">Retention strategy that stops churn</div>
+        <div class="gets-label">What We Cover</div>
+        <div class="get-item">Your school's current situation</div>
+        <div class="get-item">Where ZiroWork fits your operation</div>
+        <div class="get-item">Your founding member pricing locked in</div>
+        <div class="get-item">Your input shapes the product roadmap</div>
+        <div class="get-item">Direct line to Zach before launch</div>
       </div>
     </div>
 
@@ -269,86 +234,36 @@ footer p{font-size:11px;color:var(--muted2)}
           <div class="ff full">
             <label>School Website <span style="text-transform:none;letter-spacing:0;font-weight:400;color:var(--muted2)">(optional)</span></label>
             <input type="url" id="schoolUrl" placeholder="https://yourmusicschool.com">
-            <div class="ff-note">I'll review it before our call</div>
+            <div class="ff-note">I'll look it over before we talk</div>
           </div>
         </div>
-        <button class="proceed-btn" onclick="goToPayment()">CONFIRM & PAY $97 →</button>
+        <button class="confirm-btn" id="confirmBtn" onclick="submitBooking()">CLAIM YOUR FREE CALL →</button>
         <div class="err" id="formErr"></div>
       </div>
 
-      <div class="pay-wrap" id="payWrap">
-        <div class="pay-summary">
-          <div class="ps-row"><span>Session</span><strong>Strategy Session</strong></div>
-          <div class="ps-row"><span>Time</span><strong id="payTimeLabel">—</strong></div>
-          <div class="ps-row"><span>Format</span><strong>Google Meet</strong></div>
-          <div class="ps-row ps-total"><span>Total</span><strong>$97</strong></div>
-        </div>
-
-        <!-- EXPRESS CHECKOUT -->
-        <div class="wallet-label">Express Checkout</div>
-        <div id="apple-pay-btn"></div>
-        <div id="google-pay-btn"></div>
-        <div id="cash-app-btn"></div>
-
-        <div class="wallet-divider"><span>or pay by card</span></div>
-
-        <div id="card-container"></div>
-        <button class="pay-btn" id="payBtn">PAY $97 & CONFIRM →</button>
-        <p class="pay-secure">🔒 Secure · Powered by Square · Instant confirmation</p>
-        <button class="back-btn" onclick="backToForm()">← Back</button>
-        <div class="err" id="payErr"></div>
-      </div>
-
       <div class="success-wrap" id="successWrap">
-        <div class="si">🎸</div>
         <h2>You're Booked.</h2>
-        <p>Your confirmation and Google Meet link are heading to your inbox. I'll review your site before we talk so we hit the ground running.</p>
+        <p>Your Google Calendar invite and Meet link are on the way. Check your inbox — including Spam and Promotions. Add zach@zirowork.com to your contacts so nothing gets blocked.</p>
         <div class="meet-box" id="meetBox" style="display:none">
           <span>Your Google Meet Link</span>
           <a id="meetLink" href="#" target="_blank">—</a>
         </div>
-        <p style="font-size:12px;color:var(--muted2)">Questions? <a href="mailto:adkinsguitarandmusic@gmail.com" style="color:var(--lime)">adkinsguitarandmusic@gmail.com</a></p>
+        <p style="font-size:12px;color:var(--muted2)">Need to reschedule? <a href="mailto:zach@zirowork.com" style="color:var(--lime)">zach@zirowork.com</a></p>
       </div>
 
     </div>
   </div>
 
   <div class="content-section">
-    <div class="cs-label">What Happens In 30 Minutes</div>
-    <h2 class="cs-title">Everything You Need.<br>Nothing You Don't.</h2>
+    <div class="cs-label">What We Cover In 30 Minutes</div>
+    <h2 class="cs-title">Built Around Your School.<br>Not A Generic Demo.</h2>
     <div class="covers-grid">
-      <div class="cover-item"><span class="cover-num">01</span><strong>Live Website Review</strong><p>I pull up your site and walk through it exactly like a parent would. You'll see what's working and what's bleeding you students.</p></div>
-      <div class="cover-item"><span class="cover-num">02</span><strong>Revenue Leak Identification</strong><p>I tell you exactly where you're losing students and calculate how much each leak costs you per month in real dollars.</p></div>
-      <div class="cover-item"><span class="cover-num">03</span><strong>Prioritized Fix List</strong><p>You leave with 3-5 specific changes ranked by ROI. Highest impact first. No fluff, no 47-step marketing funnel nonsense.</p></div>
-      <div class="cover-item"><span class="cover-num">04</span><strong>Hero Copy Rewritten Live</strong><p>Your homepage headline and CTA — rewritten on the spot so you leave with something you can implement today.</p></div>
-      <div class="cover-item"><span class="cover-num">05</span><strong>Retention Strategy</strong><p>The one thing I changed that stopped silent churn. Takes 5 minutes to implement. Worth thousands per year in saved revenue.</p></div>
-      <div class="cover-item"><span class="cover-num">06</span><strong>Your Next 90-Day Plan</strong><p>What to do first, second, and third. In order. So you leave with a clear path instead of a list of ideas you never implement.</p></div>
-    </div>
-  </div>
-
-  <div class="fit-section">
-    <div class="fit-inner">
-      <div class="fit-col">
-        <div class="fit-label yes">✓ This Is For You If...</div>
-        <ul class="fit-list">
-          <li>You own or run a music school or studio</li>
-          <li>Your website exists but isn't converting parents</li>
-          <li>You're losing students you didn't have to lose</li>
-          <li>You want specific advice, not generic marketing tips</li>
-          <li>You're ready to implement what you learn</li>
-          <li>One new student more than covers the $97</li>
-        </ul>
-      </div>
-      <div class="fit-col">
-        <div class="fit-label no">✗ This Is NOT For You If...</div>
-        <ul class="fit-list no-list">
-          <li>You don't have a music school or studio</li>
-          <li>You're looking for a generic business coach</li>
-          <li>You want someone to build everything for you</li>
-          <li>You're not willing to actually make changes</li>
-          <li>You think your website is already perfect</li>
-        </ul>
-      </div>
+      <div class="cover-item"><span class="cover-num">01</span><strong>Your Operation</strong><p>Where you are right now — locations, teachers, students, revenue. I need to understand your school before I can tell you how ZiroWork fits it.</p></div>
+      <div class="cover-item"><span class="cover-num">02</span><strong>Your Biggest Problem</strong><p>What's costing you the most time and money right now. Scheduling, follow-up, payroll, retention — we find the highest-impact thing first.</p></div>
+      <div class="cover-item"><span class="cover-num">03</span><strong>How ZiroWork Solves It</strong><p>I'll show you exactly which part of ZiroWork addresses your specific problem. Not a feature tour — a direct answer to what you told me.</p></div>
+      <div class="cover-item"><span class="cover-num">04</span><strong>Your Founding Member Terms</strong><p>50% off for life. Locked in at today's price. We confirm your spot and your rate on this call so there's no confusion at launch.</p></div>
+      <div class="cover-item"><span class="cover-num">05</span><strong>Your Input On The Roadmap</strong><p>You're a founding member. Your feedback shapes what gets built next. This call is how that starts — your problems become the product.</p></div>
+      <div class="cover-item"><span class="cover-num">06</span><strong>What Happens At Launch</strong><p>June 1st. What to expect, how onboarding works, and what your first 30 days on ZiroWork look like. You leave knowing exactly what's coming.</p></div>
     </div>
   </div>
 
@@ -359,8 +274,8 @@ footer p{font-size:11px;color:var(--muted2)}
         <div class="cs-label">Who You're Talking To</div>
         <h2 class="cs-title" style="font-size:clamp(30px,4vw,46px);">Not A Guru.<br>An Operator.</h2>
         <p class="bio-text">I went from teaching guitar in my living room to running four music school locations doing $1.5M a year. No investors. No business degree. No connections. Just a national guitar competition win in 2017 and the willingness to figure it out.</p>
-        <p class="bio-text">I've been at every level you can imagine — house sessions, single location, two, three, four locations. I've made every mistake you're probably making right now. And I fixed them.</p>
-        <p class="bio-text">Everything I tell you in 30 minutes is something I actually did — with real students, real payroll, and real consequences if it didn't work.</p>
+        <p class="bio-text">I built ZiroWork because I needed it. Every problem it solves is a problem I lived — with real students, real payroll, and real consequences when something broke. I'm not selling you software. I'm handing you the operating system I wish I had ten years ago.</p>
+        <p class="bio-text">This call isn't a sales pitch. It's me getting to know your school so ZiroWork can actually serve it.</p>
         <div class="brad-block">
           <div class="brad-quote">"You can teach anyone how to build a seven figure music business."</div>
           <div class="brad-attr">— Brad Lea · CEO, LightSpeed VT · Host, Dropping Bombs Podcast</div>
@@ -373,32 +288,27 @@ footer p{font-size:11px;color:var(--muted2)}
     <div class="cs-label">Common Questions</div>
     <h2 class="cs-title">Before You Book</h2>
     <div class="faq-grid">
-      <div class="faq-item"><strong>What do I need to prepare?</strong><p>Have your website URL ready and your screen share working. Know your current student count and pricing. That's it — I do the rest.</p></div>
-      <div class="faq-item"><strong>What if I need to reschedule?</strong><p>Email me at <a href="mailto:adkinsguitarandmusic@gmail.com">adkinsguitarandmusic@gmail.com</a> at least 4 hours before and I'll get you rescheduled.</p></div>
-      <div class="faq-item"><strong>What happens after the call?</strong><p>You get a follow-up email with your prioritized fix list and any resources I mentioned. If ZiroWork can automate something we talked about, I'll let you know — no pressure.</p></div>
-      <div class="faq-item"><strong>Is $97 refundable?</strong><p>If you show up and feel like you got zero value, email me and I'll refund you. That's never happened. But the guarantee is there.</p></div>
+      <div class="faq-item"><strong>Do I need to prepare anything?</strong><p>Have your website URL ready and know your current student count. That's it. I'll do the rest.</p></div>
+      <div class="faq-item"><strong>What if I need to reschedule?</strong><p>Email <a href="mailto:zach@zirowork.com">zach@zirowork.com</a> at least 4 hours before and I'll get you rescheduled. No problem.</p></div>
+      <div class="faq-item"><strong>Is this a sales call?</strong><p>No. It's a founder call. I want to understand your school. If ZiroWork is a fit, we'll talk about it. If it's not, I'll tell you that too.</p></div>
+      <div class="faq-item"><strong>What happens after the call?</strong><p>You get a follow-up with notes from our conversation. Your founding member spot and pricing are locked. You're on the list for June 1st launch.</p></div>
     </div>
   </div>
 
   <div class="bottom-cta">
-    <h2>One New Student Pays For This.<br><span>Ten New Students Change Everything.</span></h2>
-    <p>Scroll up and pick a time. It takes 2 minutes to book.</p>
-    <button onclick="document.getElementById('bookingCard').scrollIntoView({behavior:'smooth'})" class="scroll-btn">PICK A TIME →</button>
+    <h2>50 Spots. June 1st Launch.<br><span>This Call Is Your Entry Point.</span></h2>
+    <p>Pick a time above. Takes 2 minutes. Your spot isn't confirmed until this call is booked.</p>
+    <button onclick="document.getElementById('bookingCard').scrollIntoView({behavior:'smooth'})" class="scroll-btn">CLAIM YOUR FREE CALL →</button>
   </div>
 
 </div>
 
 <footer>
   <div class="logo">ZIROWORK</div>
-  <p>© 2026 ZiroWork · book.zirowork.com</p>
+  <p>© 2026 ZiroWork · Founding Member Access</p>
 </footer>
 
-<script src="https://web.squarecdn.com/v1/square.js"></script>
 <script>
-// ── REPLACE THESE WITH YOUR REAL VALUES ──────────────────
-const SQUARE_APP_ID      = 'sq0idp-F-S9XSRxcT_48k6AfpI8gA';
-const SQUARE_LOCATION_ID = 'EAAAl67VA4DybLYx0HA-CkucS1qntKDod_4n_DCfkUxSRK5xJAFY7N0JSNz93dHL';
-
 const REAL_SLOTS = {
   1:['10:00','11:00','15:00','19:00'],
   2:['10:00','11:00','15:00','19:00'],
@@ -406,7 +316,7 @@ const REAL_SLOTS = {
   4:['10:00','11:00','15:00','19:00'],
   6:['10:00','11:00','15:00'],
 };
-const FAKE_SLOT_INDEX = 1; // 11am always shows "Already Booked"
+const FAKE_SLOT_INDEX = 1;
 
 const MON_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const MON_SHORT=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -414,14 +324,11 @@ const DAY_FULL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Sat
 
 let viewYear, viewMonth;
 let selDate=null, selDateStr='', selTime='', selLabel='';
-let bookData={};
-let sqCard=null, sqInited=false;
 
 function toDateStr(d){ return d.toISOString().split('T')[0]; }
 function fmt12(h,m){ const h12=h>12?h-12:h===0?12:h; return `${h12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`; }
 function addMins(h,m,mins){ const t=h*60+m+mins; return [Math.floor(t/60)%24,t%60]; }
 
-// ── CALENDAR ──────────────────────────────────────────────
 function buildCalendar(){
   const today=new Date(); today.setHours(0,0,0,0);
   const cutoff=new Date(new Date().getTime()+8*60*60*1000);
@@ -483,12 +390,10 @@ function changeMonth(dir){
 function selectDay(d,ds,dow){
   selDate=d; selDateStr=ds; selTime=''; selLabel='';
   document.getElementById('formWrap').classList.remove('visible');
-  document.getElementById('payWrap').classList.remove('visible');
   buildCalendar();
   buildTimes(d,ds,dow);
 }
 
-// ── TIMES ─────────────────────────────────────────────────
 function buildTimes(d,ds,dow){
   const today=new Date(); today.setHours(0,0,0,0);
   const isToday=ds===toDateStr(today);
@@ -531,102 +436,37 @@ function buildTimes(d,ds,dow){
 function clearTime(){
   selTime=''; selLabel='';
   document.getElementById('formWrap').classList.remove('visible');
-  document.getElementById('payWrap').classList.remove('visible');
   if(selDate) buildTimes(selDate,selDateStr,selDate.getDay());
 }
 
-// ── FORM ──────────────────────────────────────────────────
 function showForm(){
   document.getElementById('selTimeLabel').textContent=selLabel;
-  document.getElementById('payWrap').classList.remove('visible');
   document.getElementById('formWrap').classList.add('visible');
   document.getElementById('formWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-function goToPayment(){
+async function submitBooking(){
   const fn=document.getElementById('firstName').value.trim();
   const ln=document.getElementById('lastName').value.trim();
   const em=document.getElementById('email').value.trim();
   const err=document.getElementById('formErr');
+  const btn=document.getElementById('confirmBtn');
+
   if(!fn||!ln||!em){err.textContent='Please fill in your name and email.';err.style.display='block';return;}
+  if(!selTime){err.textContent='Please select a time slot.';err.style.display='block';return;}
   err.style.display='none';
-  bookData={firstName:fn,lastName:ln,email:em,
-    schoolUrl:document.getElementById('schoolUrl').value.trim(),
-    selectedDate:selDateStr,selectedTime:selTime,selectedDateLabel:selLabel};
-  document.getElementById('payTimeLabel').textContent=selLabel;
-  document.getElementById('formWrap').classList.remove('visible');
-  document.getElementById('payWrap').classList.add('visible');
-  document.getElementById('payWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
-  if(!sqInited) initSquare();
-}
 
-function backToForm(){
-  document.getElementById('payWrap').classList.remove('visible');
-  document.getElementById('formWrap').classList.add('visible');
-}
-
-// ── SQUARE ────────────────────────────────────────────────
-async function initSquare(){
-  if(sqInited) return;
-  try{
-    const payments=Square.payments(SQUARE_APP_ID,SQUARE_LOCATION_ID);
-
-    const paymentRequest=payments.paymentRequest({
-      countryCode:'US',
-      currencyCode:'USD',
-      total:{amount:'97.00',label:'ZiroWork Strategy Session'}
-    });
-
-    // Apple Pay
-    try{
-      const ap=await payments.applePay(paymentRequest);
-      await ap.attach('#apple-pay-btn');
-      ap.addEventListener('ontokenization',({detail})=>{
-        if(detail.tokenResult?.status==='OK') submitBooking(detail.tokenResult.token);
-      });
-    }catch(e){ document.getElementById('apple-pay-btn').style.display='none'; }
-
-    // Google Pay
-    try{
-      const gp=await payments.googlePay(paymentRequest);
-      await gp.attach('#google-pay-btn');
-      gp.addEventListener('ontokenization',({detail})=>{
-        if(detail.tokenResult?.status==='OK') submitBooking(detail.tokenResult.token);
-      });
-    }catch(e){ document.getElementById('google-pay-btn').style.display='none'; }
-
-    // Cash App Pay
-    try{
-      const ca=await payments.cashAppPay(paymentRequest,{
-        redirectURL:window.location.href,
-        referenceId:`zw-${Date.now()}`
-      });
-      await ca.attach('#cash-app-btn');
-      ca.addEventListener('ontokenization',({detail})=>{
-        if(detail.tokenResult?.status==='OK') submitBooking(detail.tokenResult.token);
-      });
-    }catch(e){ document.getElementById('cash-app-btn').style.display='none'; }
-
-    // Card (always available)
-    sqCard=await payments.card();
-    await sqCard.attach('#card-container');
-    sqInited=true;
-
-  }catch(e){ console.error('Square init:',e); }
-}
-
-// ── SUBMIT ────────────────────────────────────────────────
-async function submitBooking(token){
-  const btn=document.getElementById('payBtn');
-  const err=document.getElementById('payErr');
-  err.style.display='none';
-  btn.textContent='PROCESSING...'; btn.disabled=true;
+  btn.textContent='BOOKING...'; btn.disabled=true;
 
   try{
-    const res=await fetch('/api/book',{
+    const res=await fetch('/api/book-waitlist',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({...bookData,sourceId:token})
+      body:JSON.stringify({
+        firstName:fn, lastName:ln, email:em,
+        schoolUrl:document.getElementById('schoolUrl').value.trim(),
+        selectedDate:selDateStr, selectedTime:selTime, selectedDateLabel:selLabel
+      })
     });
     const data=await res.json();
 
@@ -634,7 +474,6 @@ async function submitBooking(token){
       document.getElementById('monthGrid').closest('.month-cal-wrap').style.display='none';
       document.getElementById('timesWrap').style.display='none';
       document.getElementById('formWrap').classList.remove('visible');
-      document.getElementById('payWrap').classList.remove('visible');
       const sw=document.getElementById('successWrap');
       sw.classList.add('visible');
       if(data.meetLink){
@@ -644,32 +483,16 @@ async function submitBooking(token){
       }
       sw.scrollIntoView({behavior:'smooth'});
     }else{
-      err.textContent=data.error||'Payment failed. Try again.';
+      err.textContent=data.error||'Something went wrong. Try again.';
       err.style.display='block';
-      btn.textContent='PAY $97 & CONFIRM →'; btn.disabled=false;
+      btn.textContent='CLAIM YOUR FREE CALL →'; btn.disabled=false;
     }
   }catch(e){
     err.textContent='Something went wrong. Try again.';
     err.style.display='block';
-    btn.textContent='PAY $97 & CONFIRM →'; btn.disabled=false;
+    btn.textContent='CLAIM YOUR FREE CALL →'; btn.disabled=false;
   }
 }
-
-document.getElementById('payBtn').addEventListener('click',async function(){
-  const err=document.getElementById('payErr');
-  err.style.display='none';
-  try{
-    const result=await sqCard.tokenize();
-    if(result.status!=='OK'){
-      err.textContent=result.errors?.[0]?.message||'Card error. Try again.';
-      err.style.display='block'; return;
-    }
-    await submitBooking(result.token);
-  }catch(e){
-    err.textContent='Something went wrong. Try again.';
-    err.style.display='block';
-  }
-});
 
 document.getElementById('prevMonthBtn').addEventListener('click',()=>changeMonth(-1));
 document.getElementById('nextMonthBtn').addEventListener('click',()=>changeMonth(1));

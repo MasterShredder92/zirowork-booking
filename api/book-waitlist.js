@@ -1,17 +1,15 @@
-// api/book.js — Vercel Serverless Function
-// Handles: Square payment → Google Calendar event → Kit subscriber with custom fields
+// api/book-waitlist.js — Vercel Serverless Function
+// Handles: Google Calendar event → Kit subscriber with custom fields (NO payment)
+// For: ZiroWork founding members booking their free 30-minute call
 
 import { google } from 'googleapis';
 
-const SQUARE_ACCESS_TOKEN = process.env.SQUARE_ACCESS_TOKEN;
-const SQUARE_LOCATION_ID = process.env.SQUARE_LOCATION_ID;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const GOOGLE_REFRESH_TOKEN = process.env.GOOGLE_REFRESH_TOKEN;
 const KIT_API_KEY = process.env.KIT_API_KEY || 'GDLeN7k0im3DEq3y-eydKg';
-const KIT_API_SECRET = process.env.KIT_API_SECRET || 'GjhqnBQxcGyPDYtuCyLYp8y3-t2pUDWF2KRhXxgmQ-g';
 const ZACH_CALENDAR_ID = process.env.ZACH_CALENDAR_ID || 'primary';
-const BOOKED_SESSION_TAG_ID = 19259103;
+const BOOKED_FOUNDER_CALL_TAG_ID = 19259104;
 
 async function createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel }) {
   const oauth2Client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
@@ -27,14 +25,14 @@ async function createCalendarEvent({ firstName, lastName, email, schoolUrl, sele
     calendarId: ZACH_CALENDAR_ID,
     conferenceDataVersion: 1,
     requestBody: {
-      summary: `Strategy Session — ${firstName} ${lastName} — ZiroWork`,
-      description: `Music School Strategy Session\n\nClient: ${firstName} ${lastName}\nEmail: ${email}\nWebsite: ${schoolUrl || 'Not provided'}\n\nBooked via book.zirowork.com`,
+      summary: `Founder Call (Free) — ${firstName} ${lastName} — ZiroWork`,
+      description: `ZiroWork Founder Call — Free\n\nClient: ${firstName} ${lastName}\nEmail: ${email}\nWebsite: ${schoolUrl || 'Not provided'}\n\nBooked via book.zirowork.com/waitlist`,
       start: { dateTime: startDateTime.toISOString(), timeZone: 'America/Chicago' },
       end: { dateTime: endDateTime.toISOString(), timeZone: 'America/Chicago' },
       attendees: [{ email: email, displayName: `${firstName} ${lastName}` }],
       conferenceData: {
         createRequest: {
-          requestId: `zirowork-${Date.now()}`,
+          requestId: `zirowork-founder-${Date.now()}`,
           conferenceSolutionKey: { type: 'hangoutsMeet' }
         }
       },
@@ -54,43 +52,19 @@ async function createCalendarEvent({ firstName, lastName, email, schoolUrl, sele
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel, sourceId } = req.body;
+  const { firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel } = req.body;
 
-  if (!firstName || !lastName || !email || !selectedDate || !selectedTime || !sourceId) {
+  if (!firstName || !lastName || !email || !selectedDate || !selectedTime) {
     return res.status(400).json({ error: 'Missing required fields.' });
   }
 
   try {
-    // STEP 1 — CHARGE SQUARE
-    const squareRes = await fetch('https://connect.squareup.com/v2/payments', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${SQUARE_ACCESS_TOKEN}`,
-        'Content-Type': 'application/json',
-        'Square-Version': '2024-01-17'
-      },
-      body: JSON.stringify({
-        source_id: sourceId,
-        amount_money: { amount: 9700, currency: 'USD' },
-        location_id: SQUARE_LOCATION_ID,
-        idempotency_key: `booking-${Date.now()}`,
-        note: `Strategy Session — ${firstName} ${lastName}`
-      })
-    });
-
-    const squareData = await squareRes.json();
-    if (!squareRes.ok || squareData.payment?.status !== 'COMPLETED') {
-      const errMsg = squareData.errors?.[0]?.detail || 'Payment failed.';
-      return res.status(402).json({ error: errMsg });
-    }
-
-    // STEP 2 — CREATE GOOGLE CALENDAR EVENT WITH MEET LINK
+    // STEP 1 — CREATE GOOGLE CALENDAR EVENT WITH MEET LINK
     const meetLink = await createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel });
-    console.log('Calendar event created. Meet link:', meetLink);
+    console.log('Founder call calendar event created. Meet link:', meetLink);
 
-    // STEP 3 — SUBSCRIBE TO KIT WITH CUSTOM FIELDS + TAG
-    // Custom fields store the meet link and session date so Kit email can use {{ subscriber.meet_link }}
-    await fetch(`https://api.convertkit.com/v3/tags/${BOOKED_SESSION_TAG_ID}/subscribe`, {
+    // STEP 2 — SUBSCRIBE TO KIT WITH CUSTOM FIELDS + TAG
+    await fetch(`https://api.convertkit.com/v3/tags/${BOOKED_FOUNDER_CALL_TAG_ID}/subscribe`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -100,16 +74,16 @@ export default async function handler(req, res) {
         fields: {
           meet_link: meetLink || '',
           session_date: selectedDateLabel,
-          session_type: 'Strategy Session ($97)'
+          session_type: 'Founder Call (Free)'
         }
       })
     });
 
-    console.log(`Booked: ${firstName} ${lastName} <${email}> — ${selectedDateLabel}`);
+    console.log(`Founder call booked: ${firstName} ${lastName} <${email}> — ${selectedDateLabel}`);
     return res.status(200).json({ success: true, meetLink });
 
   } catch (err) {
-    console.error('Booking handler error:', err);
+    console.error('Waitlist booking handler error:', err);
     return res.status(500).json({ error: 'Server error. Please try again or email zach@zirowork.com' });
   }
 }
