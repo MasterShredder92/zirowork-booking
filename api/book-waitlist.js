@@ -1,6 +1,7 @@
 // api/book-waitlist.js — Vercel Serverless Function
 // Handles: Google Calendar event → Kit subscriber with custom fields (NO payment)
 // For: ZiroWork founding members booking their free 30-minute call
+// FIX: Sets custom fields BEFORE applying tag so confirmation email has meet_link populated
 
 import { google } from 'googleapis';
 
@@ -8,8 +9,10 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const GOOGLE_REFRESH_TOKEN = process.env.GOOGLE_REFRESH_TOKEN;
 const KIT_API_KEY = process.env.KIT_API_KEY || 'GDLeN7k0im3DEq3y-eydKg';
+const KIT_API_SECRET = process.env.KIT_API_SECRET || 'GjhqnBQxcGyPDYtuCyLYp8y3-t2pUDWF2KRhXxgmQ-g';
 const ZACH_CALENDAR_ID = process.env.ZACH_CALENDAR_ID || 'primary';
 const BOOKED_FOUNDER_CALL_TAG_ID = 19259104;
+const ZACH_NOTIFY_EMAIL = 'zach@adkinsenterprisesllc.com';
 
 async function createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel }) {
   const oauth2Client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
@@ -63,7 +66,33 @@ export default async function handler(req, res) {
     const meetLink = await createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel });
     console.log('Founder call calendar event created. Meet link:', meetLink);
 
-    // STEP 2 — SUBSCRIBE TO KIT WITH CUSTOM FIELDS + TAG
+    // STEP 2 — UPSERT SUBSCRIBER WITH CUSTOM FIELDS (no tag yet)
+    // Must set fields BEFORE applying tag so Kit confirmation email has meet_link populated
+    const subscriberRes = await fetch(`https://api.convertkit.com/v3/subscribers`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    // Use the subscribe-to-form trick to upsert subscriber with fields only (no tag trigger)
+    await fetch(`https://api.convertkit.com/v3/subscribers`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        api_secret: KIT_API_SECRET,
+        email,
+        first_name: firstName,
+        fields: {
+          meet_link: meetLink || '',
+          session_date: selectedDateLabel,
+          session_type: 'Founder Call (Free)'
+        }
+      })
+    });
+
+    // Small delay to ensure Kit has committed the custom fields before tag fires
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    // STEP 3 — APPLY TAG (triggers Kit Rule → Founder Call Confirmation sequence)
     await fetch(`https://api.convertkit.com/v3/tags/${BOOKED_FOUNDER_CALL_TAG_ID}/subscribe`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -78,6 +107,33 @@ export default async function handler(req, res) {
         }
       })
     });
+
+    // STEP 4 — NOTIFY ZACH via Kit broadcast to himself
+    // Simple: subscribe Zach's email to a one-off tag or just send a direct fetch to a notification endpoint
+    // Using Kit's tag subscribe to fire a plain notification — cheapest reliable method
+    try {
+      // Send notification email to Zach via a simple HTTPS fetch to a self-notification endpoint
+      // We'll use Kit's API to send a broadcast — but simplest is just log + rely on Google Calendar
+      // Instead: use fetch to send a plain email via the existing Kit sender
+      const notifyBody = {
+        api_secret: KIT_API_SECRET,
+        subject: `New Founder Call Booked — ${firstName} ${lastName}`,
+        content: `<p>New founder call booked.</p><p><strong>Name:</strong> ${firstName} ${lastName}<br><strong>Email:</strong> ${email}<br><strong>School:</strong> ${schoolUrl || 'Not provided'}<br><strong>Date:</strong> ${selectedDateLabel}<br><strong>Meet Link:</strong> <a href="${meetLink}">${meetLink}</a></p>`,
+        description: `Booking notification — ${firstName} ${lastName}`,
+        email_address: ZACH_NOTIFY_EMAIL,
+        published: true,
+        send_at: new Date().toISOString(),
+        subscriber_filter: [{ all: [{ type: 'email_address', value: ZACH_NOTIFY_EMAIL }] }]
+      };
+
+      await fetch('https://api.convertkit.com/v3/broadcasts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(notifyBody)
+      });
+    } catch (notifyErr) {
+      console.error('Zach notification failed (non-blocking):', notifyErr.message);
+    }
 
     console.log(`Founder call booked: ${firstName} ${lastName} <${email}> — ${selectedDateLabel}`);
     return res.status(200).json({ success: true, meetLink });

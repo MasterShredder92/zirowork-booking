@@ -1,5 +1,6 @@
 // api/book.js — Vercel Serverless Function
 // Handles: Square payment → Google Calendar event → Kit subscriber with custom fields
+// FIX: Sets custom fields BEFORE applying tag so confirmation email has meet_link populated
 
 import { google } from 'googleapis';
 
@@ -12,6 +13,7 @@ const KIT_API_KEY = process.env.KIT_API_KEY || 'GDLeN7k0im3DEq3y-eydKg';
 const KIT_API_SECRET = process.env.KIT_API_SECRET || 'GjhqnBQxcGyPDYtuCyLYp8y3-t2pUDWF2KRhXxgmQ-g';
 const ZACH_CALENDAR_ID = process.env.ZACH_CALENDAR_ID || 'primary';
 const BOOKED_SESSION_TAG_ID = 19259103;
+const ZACH_NOTIFY_EMAIL = 'zach@adkinsenterprisesllc.com';
 
 async function createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel }) {
   const oauth2Client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
@@ -88,8 +90,27 @@ export default async function handler(req, res) {
     const meetLink = await createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel });
     console.log('Calendar event created. Meet link:', meetLink);
 
-    // STEP 3 — SUBSCRIBE TO KIT WITH CUSTOM FIELDS + TAG
-    // Custom fields store the meet link and session date so Kit email can use {{ subscriber.meet_link }}
+    // STEP 3 — UPSERT SUBSCRIBER WITH CUSTOM FIELDS FIRST (no tag yet)
+    // Must set fields BEFORE applying tag so Kit confirmation email has meet_link populated
+    await fetch(`https://api.convertkit.com/v3/subscribers`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        api_secret: KIT_API_SECRET,
+        email,
+        first_name: firstName,
+        fields: {
+          meet_link: meetLink || '',
+          session_date: selectedDateLabel,
+          session_type: 'Strategy Session ($97)'
+        }
+      })
+    });
+
+    // Small delay to ensure Kit has committed the custom fields before tag fires
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    // STEP 4 — APPLY TAG (triggers Kit Rule → Strategy Session Confirmation sequence)
     await fetch(`https://api.convertkit.com/v3/tags/${BOOKED_SESSION_TAG_ID}/subscribe`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -104,6 +125,25 @@ export default async function handler(req, res) {
         }
       })
     });
+
+    // STEP 5 — NOTIFY ZACH
+    try {
+      await fetch('https://api.convertkit.com/v3/broadcasts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          api_secret: KIT_API_SECRET,
+          subject: `New Strategy Session Booked — ${firstName} ${lastName}`,
+          content: `<p>New paid strategy session booked.</p><p><strong>Name:</strong> ${firstName} ${lastName}<br><strong>Email:</strong> ${email}<br><strong>School:</strong> ${schoolUrl || 'Not provided'}<br><strong>Date:</strong> ${selectedDateLabel}<br><strong>Meet Link:</strong> <a href="${meetLink}">${meetLink}</a></p>`,
+          description: `Booking notification — ${firstName} ${lastName}`,
+          published: true,
+          send_at: new Date().toISOString(),
+          subscriber_filter: [{ all: [{ type: 'email_address', value: ZACH_NOTIFY_EMAIL }] }]
+        })
+      });
+    } catch (notifyErr) {
+      console.error('Zach notification failed (non-blocking):', notifyErr.message);
+    }
 
     console.log(`Booked: ${firstName} ${lastName} <${email}> — ${selectedDateLabel}`);
     return res.status(200).json({ success: true, meetLink });
