@@ -1,9 +1,8 @@
 // api/book-waitlist.js — Vercel Serverless Function
-// Handles: Google Calendar event → Kit subscriber with custom fields (NO payment)
-// For: ZiroWork founding members booking their free 30-minute call
-// FIX: Sets custom fields BEFORE applying tag so confirmation email has meet_link populated
+// Handles: Google Calendar event → Kit tag → Gmail SMTP instant confirmation to booker + Zach notification
 
 import { google } from 'googleapis';
+import nodemailer from 'nodemailer';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
@@ -12,7 +11,19 @@ const KIT_API_KEY = process.env.KIT_API_KEY || 'GDLeN7k0im3DEq3y-eydKg';
 const KIT_API_SECRET = process.env.KIT_API_SECRET || 'GjhqnBQxcGyPDYtuCyLYp8y3-t2pUDWF2KRhXxgmQ-g';
 const ZACH_CALENDAR_ID = process.env.ZACH_CALENDAR_ID || 'primary';
 const BOOKED_FOUNDER_CALL_TAG_ID = 19259104;
-const ZACH_NOTIFY_EMAIL = 'zach@adkinsenterprisesllc.com';
+const GMAIL_USER = process.env.GMAIL_USER;
+const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
+const ZACH_EMAIL = 'zach@adkinsenterprisesllc.com';
+
+function createTransporter() {
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: GMAIL_USER,
+      pass: GMAIL_APP_PASSWORD,
+    },
+  });
+}
 
 async function createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel }) {
   const oauth2Client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
@@ -29,7 +40,7 @@ async function createCalendarEvent({ firstName, lastName, email, schoolUrl, sele
     conferenceDataVersion: 1,
     requestBody: {
       summary: `Founder Call (Free) — ${firstName} ${lastName} — ZiroWork`,
-      description: `ZiroWork Founder Call — Free\n\nClient: ${firstName} ${lastName}\nEmail: ${email}\nWebsite: ${schoolUrl || 'Not provided'}\n\nBooked via book.zirowork.com/waitlist`,
+      description: `ZiroWork Founder Call\n\nClient: ${firstName} ${lastName}\nEmail: ${email}\nWebsite: ${schoolUrl || 'Not provided'}\n\nBooked via book.zirowork.com/waitlist`,
       start: { dateTime: startDateTime.toISOString(), timeZone: 'America/Chicago' },
       end: { dateTime: endDateTime.toISOString(), timeZone: 'America/Chicago' },
       attendees: [{ email: email, displayName: `${firstName} ${lastName}` }],
@@ -64,35 +75,8 @@ export default async function handler(req, res) {
   try {
     // STEP 1 — CREATE GOOGLE CALENDAR EVENT WITH MEET LINK
     const meetLink = await createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel });
-    console.log('Founder call calendar event created. Meet link:', meetLink);
 
-    // STEP 2 — UPSERT SUBSCRIBER WITH CUSTOM FIELDS (no tag yet)
-    // Must set fields BEFORE applying tag so Kit confirmation email has meet_link populated
-    const subscriberRes = await fetch(`https://api.convertkit.com/v3/subscribers`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    // Use the subscribe-to-form trick to upsert subscriber with fields only (no tag trigger)
-    await fetch(`https://api.convertkit.com/v3/subscribers`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        api_secret: KIT_API_SECRET,
-        email,
-        first_name: firstName,
-        fields: {
-          meet_link: meetLink || '',
-          session_date: selectedDateLabel,
-          session_type: 'Founder Call (Free)'
-        }
-      })
-    });
-
-    // Small delay to ensure Kit has committed the custom fields before tag fires
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    // STEP 3 — APPLY TAG (triggers Kit Rule → Founder Call Confirmation sequence)
+    // STEP 2 — TAG IN KIT (for CRM tracking only — no sequence dependency)
     await fetch(`https://api.convertkit.com/v3/tags/${BOOKED_FOUNDER_CALL_TAG_ID}/subscribe`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -108,34 +92,65 @@ export default async function handler(req, res) {
       })
     });
 
-    // STEP 4 — NOTIFY ZACH via Kit broadcast to himself
-    // Simple: subscribe Zach's email to a one-off tag or just send a direct fetch to a notification endpoint
-    // Using Kit's tag subscribe to fire a plain notification — cheapest reliable method
-    try {
-      // Send notification email to Zach via a simple HTTPS fetch to a self-notification endpoint
-      // We'll use Kit's API to send a broadcast — but simplest is just log + rely on Google Calendar
-      // Instead: use fetch to send a plain email via the existing Kit sender
-      const notifyBody = {
-        api_secret: KIT_API_SECRET,
-        subject: `New Founder Call Booked — ${firstName} ${lastName}`,
-        content: `<p>New founder call booked.</p><p><strong>Name:</strong> ${firstName} ${lastName}<br><strong>Email:</strong> ${email}<br><strong>School:</strong> ${schoolUrl || 'Not provided'}<br><strong>Date:</strong> ${selectedDateLabel}<br><strong>Meet Link:</strong> <a href="${meetLink}">${meetLink}</a></p>`,
-        description: `Booking notification — ${firstName} ${lastName}`,
-        email_address: ZACH_NOTIFY_EMAIL,
-        published: true,
-        send_at: new Date().toISOString(),
-        subscriber_filter: [{ all: [{ type: 'email_address', value: ZACH_NOTIFY_EMAIL }] }]
-      };
+    // STEP 3 — SEND INSTANT CONFIRMATION EMAIL TO BOOKER VIA GMAIL SMTP
+    const transporter = createTransporter();
 
-      await fetch('https://api.convertkit.com/v3/broadcasts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(notifyBody)
-      });
-    } catch (notifyErr) {
-      console.error('Zach notification failed (non-blocking):', notifyErr.message);
-    }
+    await transporter.sendMail({
+      from: `"Zach Adkins | ZiroWork" <${GMAIL_USER}>`,
+      to: email,
+      subject: `Your Founder Call is confirmed — ${selectedDateLabel}`,
+      text: `Hey ${firstName},
 
-    console.log(`Founder call booked: ${firstName} ${lastName} <${email}> — ${selectedDateLabel}`);
+You're locked in.
+
+Here's your Google Meet link for our call:
+${meetLink}
+
+Date: ${selectedDateLabel}
+
+You'll also get a Google Calendar invite at this email address — accept it and the Meet link will be in there too.
+
+Before we talk:
+- Have your website URL ready
+- Know your current student count
+- Have screen share working
+
+That's it. I'll handle the rest.
+
+If you need to reschedule, email me at least 4 hours before: zach@zirowork.com
+
+See you then.
+— Zach`,
+      html: `<p>Hey ${firstName},</p>
+<p>You're locked in.</p>
+<p>Here's your Google Meet link for our call:<br>
+<a href="${meetLink}">${meetLink}</a></p>
+<p><strong>Date:</strong> ${selectedDateLabel}</p>
+<p>You'll also get a Google Calendar invite at this email address — accept it and the Meet link will be in there too.</p>
+<p><strong>Before we talk:</strong><br>
+- Have your website URL ready<br>
+- Know your current student count<br>
+- Have screen share working</p>
+<p>That's it. I'll handle the rest.</p>
+<p>If you need to reschedule, email me at least 4 hours before: zach@zirowork.com</p>
+<p>See you then.<br>— Zach</p>`
+    });
+
+    // STEP 4 — NOTIFY ZACH
+    await transporter.sendMail({
+      from: `"ZiroWork Booking" <${GMAIL_USER}>`,
+      to: ZACH_EMAIL,
+      subject: `New Founder Call Booked — ${firstName} ${lastName}`,
+      text: `New founder call booked.
+
+Name: ${firstName} ${lastName}
+Email: ${email}
+School: ${schoolUrl || 'Not provided'}
+Date: ${selectedDateLabel}
+Meet Link: ${meetLink}`
+    });
+
+    console.log(`Founder call booked and confirmed: ${firstName} ${lastName} <${email}> — ${selectedDateLabel}`);
     return res.status(200).json({ success: true, meetLink });
 
   } catch (err) {
