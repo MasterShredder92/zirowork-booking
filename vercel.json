@@ -4,6 +4,7 @@
     { "src": "api/book.js", "use": "@vercel/node", "config": { "maxDuration": 30 } },
     { "src": "api/book-waitlist.js", "use": "@vercel/node", "config": { "maxDuration": 30 } },
     { "src": "api/slots.js", "use": "@vercel/node" },
+    { "src": "api/capture.js", "use": "@vercel/node" },
     { "src": "index.html", "use": "@vercel/static" },
     { "src": "waitlist.html", "use": "@vercel/static" },
     { "src": "images/**", "use": "@vercel/static" }
@@ -12,6 +13,8 @@
     { "src": "/api/book-waitlist", "dest": "/api/book-waitlist.js" },
     { "src": "/api/book", "dest": "/api/book.js" },
     { "src": "/api/slots", "dest": "/api/slots.js" },
+    { "src": "/api/capture", "dest": "/api/capture.js" },
+    { "src": "/images/(.*)", "dest": "/images/$1" },
     { "src": "/waitlist", "dest": "/waitlist.html" },
     { "src": "/waitlist/", "dest": "/waitlist.html" },
     { "src": "/(.*)", "dest": "/index.html" }
