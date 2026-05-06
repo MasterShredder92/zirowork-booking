@@ -499,6 +499,15 @@ async function submitBooking(){
 document.getElementById('prevMonthBtn').addEventListener('click',()=>changeMonth(-1));
 document.getElementById('nextMonthBtn').addEventListener('click',()=>changeMonth(1));
 
+// Prefill form fields from URL params (passed from founders funnel)
+(function prefillFromUrl(){
+  const p=new URLSearchParams(window.location.search);
+  const em=p.get('email');
+  const nm=p.get('name');
+  if(em){const el=document.getElementById('email');if(el)el.value=em;}
+  if(nm){const el=document.getElementById('firstName');if(el)el.value=nm;}
+})();
+
 (function init(){
   const now=new Date();
   viewYear=now.getFullYear();
