@@ -44,7 +44,10 @@ async function createCalendarEvent({ firstName, lastName, email, schoolUrl, sele
       description: `Music School Strategy Session\n\nClient: ${firstName} ${lastName}\nEmail: ${email}\nWebsite: ${schoolUrl || 'Not provided'}\n\nBooked via book.zirowork.com`,
       start: { dateTime: startDateTime.toISOString(), timeZone: 'America/Chicago' },
       end: { dateTime: endDateTime.toISOString(), timeZone: 'America/Chicago' },
-      attendees: [{ email: email, displayName: `${firstName} ${lastName}` }],
+      attendees: [
+        { email: email, displayName: `${firstName} ${lastName}` },
+        { email: 'zach@adkinsenterprisesllc.com', displayName: 'Zach Adkins', responseStatus: 'accepted' }
+      ],
       conferenceData: {
         createRequest: {
           requestId: `zirowork-${Date.now()}`,
