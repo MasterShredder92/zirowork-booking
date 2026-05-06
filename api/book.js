@@ -14,7 +14,7 @@ const ZACH_CALENDAR_ID = process.env.ZACH_CALENDAR_ID || 'primary';
 const BOOKED_SESSION_TAG_ID = 19259103;
 const GMAIL_USER = process.env.GMAIL_USER;
 const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
-const ZACH_EMAIL = 'zach@adkinsenterprisesllc.com';
+const ZACH_EMAIL = 'zach@adkinsenterprisesllc.com, admin@adkinsenterprisesllc.com';
 
 function createTransporter() {
   return nodemailer.createTransport({
