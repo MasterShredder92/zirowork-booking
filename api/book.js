@@ -1,8 +1,8 @@
 // api/book.js — Vercel Serverless Function
 // Handles: Square payment → Google Calendar event → Kit tag → Gmail SMTP instant confirmation + Zach notification
 
-import { google } from 'googleapis';
-import nodemailer from 'nodemailer';
+const { google } = require('googleapis');
+const nodemailer = require('nodemailer');
 
 const SQUARE_ACCESS_TOKEN = process.env.SQUARE_ACCESS_TOKEN;
 const SQUARE_LOCATION_ID = process.env.SQUARE_LOCATION_ID;
@@ -64,7 +64,7 @@ async function createCalendarEvent({ firstName, lastName, email, schoolUrl, sele
   return event.data.conferenceData?.entryPoints?.[0]?.uri || null;
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel, sourceId } = req.body;

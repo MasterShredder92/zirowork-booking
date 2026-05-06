@@ -1,8 +1,8 @@
 // api/book-waitlist.js — Vercel Serverless Function
 // Handles: Google Calendar event → Kit tag → Gmail SMTP instant confirmation to booker + Zach notification
 
-import { google } from 'googleapis';
-import nodemailer from 'nodemailer';
+const { google } = require('googleapis');
+const nodemailer = require('nodemailer');
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
@@ -14,6 +14,7 @@ const BOOKED_FOUNDER_CALL_TAG_ID = 19259104;
 const GMAIL_USER = process.env.GMAIL_USER;
 const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
 const ZACH_EMAIL = 'zach@adkinsenterprisesllc.com';
+const ADMIN_EMAIL = 'admin@adkinsenterprisesllc.com';
 
 function createTransporter() {
   return nodemailer.createTransport({
@@ -63,7 +64,7 @@ async function createCalendarEvent({ firstName, lastName, email, schoolUrl, sele
   return event.data.conferenceData?.entryPoints?.[0]?.uri || null;
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel } = req.body;
