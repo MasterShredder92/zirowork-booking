@@ -28,6 +28,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 4
 .eyebrow{display:inline-block;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--lime);margin-bottom:14px}
 .hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,7vw,64px);line-height:1;color:#fff;margin-bottom:16px}
 .hero h1 span{color:var(--lime)}
+.tz-disclaimer{font-size:12px;color:var(--muted);text-align:center;max-width:480px;margin:8px auto 0;line-height:1.5;padding:0 16px}
 .guarantee-box{border:1px solid var(--lime);background:rgba(197,241,53,0.04);padding:16px 20px;margin:0 auto 28px;max-width:560px;text-align:left}
 .guarantee-box p{font-size:14px;color:var(--text);line-height:1.65}
 .guarantee-box p strong{color:var(--lime)}
@@ -69,6 +70,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 4
 .time-pill.tp-selected{border-color:var(--lime);background:rgba(197,241,53,0.1)}
 .time-pill.tp-booked{cursor:not-allowed;opacity:0.45;border-color:var(--border)}
 .tp-time{font-size:13px;font-weight:600;color:#fff}
+.tp-cst{font-size:10px;color:var(--muted);margin-top:1px}
 .time-pill.tp-booked .tp-time{color:var(--muted)}
 .tp-status{font-size:10px;font-weight:700;letter-spacing:0.5px;margin-top:2px}
 .tp-status.s-open{color:var(--lime)}
@@ -145,6 +147,7 @@ footer p{font-size:11px;color:var(--muted2)}
     <p>This is my gift to you for joining the waitlist. I guarantee I can help you find <strong>$500 in monthly revenue</strong> from this one call. It's free. Nothing to lose, a lot to gain. Talk about whatever you want — pricing, retention, scheduling, your website, your team. I've been there. I'll help.</p>
   </div>
   <p class="hero-sub" id="heroSub">Pick a time below.</p>
+  <div class="tz-disclaimer">Yes, I'm in the United States. I made all times available for my USA, UK, and AU friends. Book based on your time zone below — I'll make myself available to you, even if it's 6am. &#x1F645;&#x1F4AA;</div>
 </div>
 
 <div class="booking-wrap">
@@ -215,12 +218,14 @@ footer p{font-size:11px;color:var(--muted2)}
 </footer>
 
 <script>
+// All times in CST (America/Chicago). Browser converts to visitor's local timezone for display.
+// Coverage: 6AM/7AM = UK prime + AU late; 10AM/3PM = US core; 8PM/9PM = AU prime
 const REAL_SLOTS = {
-  1:['10:00','11:00','15:00','19:00'],
-  2:['10:00','11:00','15:00','19:00'],
-  3:['10:00','11:00','15:00','19:00'],
-  4:['10:00','11:00','15:00','19:00'],
-  6:['10:00','11:00','15:00'],
+  1:['06:00','07:00','10:00','15:00','20:00','21:00'],
+  2:['06:00','07:00','10:00','15:00','20:00','21:00'],
+  3:['06:00','07:00','10:00','15:00','20:00','21:00'],
+  4:['06:00','07:00','10:00','15:00','20:00','21:00'],
+  6:['06:00','07:00','10:00','15:00','20:00','21:00'],
 };
 const FAKE_SLOT_INDEX = 1;
 
@@ -234,6 +239,33 @@ let selDate=null, selDateStr='', selTime='', selLabel='';
 function toDateStr(d){ return d.toISOString().split('T')[0]; }
 function fmt12(h,m){ const h12=h>12?h-12:h===0?12:h; return `${h12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`; }
 function addMins(h,m,mins){ const t=h*60+m+mins; return [Math.floor(t/60)%24,t%60]; }
+
+// Timezone conversion: CST slot -> visitor local time
+const VISITOR_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const VISITOR_TZ_ABBR = (()=>{
+  try {
+    const s = new Intl.DateTimeFormat('en-US',{timeZone:VISITOR_TZ,timeZoneName:'short'}).format(new Date());
+    return s.split(', ')[1] || VISITOR_TZ;
+  } catch(e){ return ''; }
+})();
+function cstToLocal(dateObj, cstHour, cstMin) {
+  // Build a Date representing the CST slot, then read it in visitor's timezone
+  // CST = UTC-6 (CDT = UTC-5). Use Intl to get the correct offset.
+  const cstDate = new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), cstHour + 6, cstMin));
+  const localStr = cstDate.toLocaleTimeString('en-US',{timeZone:VISITOR_TZ,hour:'numeric',minute:'2-digit',hour12:true});
+  return localStr;
+}
+function cstToLocalFull(dateObj, cstHour, cstMin) {
+  const [lh, lm] = (() => {
+    const cstDate = new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), cstHour + 6, cstMin));
+    const parts = new Intl.DateTimeFormat('en-US',{timeZone:VISITOR_TZ,hour:'numeric',minute:'2-digit',hour12:false}).formatToParts(cstDate);
+    const h = parseInt(parts.find(p=>p.type==='hour').value);
+    const m = parseInt(parts.find(p=>p.type==='minute').value);
+    return [h, m];
+  })();
+  const [eh, em] = addMins(lh, lm, 30);
+  return { startStr: cstToLocal(dateObj, cstHour, cstMin), endStr: fmt12(eh, em) };
+}
 
 function buildCalendar(){
   const today=new Date(); today.setHours(0,0,0,0);
@@ -321,13 +353,19 @@ function buildTimes(d,ds,dow){
 
     const pill=document.createElement('div');
     pill.className=`time-pill${isBooked?' tp-booked':''}${isSelected?' tp-selected':''}`;
+    const localFmt = cstToLocalFull(d, h, m);
+    const isSameTz = VISITOR_TZ === 'America/Chicago' || VISITOR_TZ === 'America/Winnipeg';
+    const displayTime = isSameTz ? `${fmt12(h,m)} – ${fmt12(eh,em)} CST` : `${localFmt.startStr} – ${localFmt.endStr} ${VISITOR_TZ_ABBR}`;
+    const cstRef = isSameTz ? '' : `<span class="tp-cst">${fmt12(h,m)} CST</span>`;
     pill.innerHTML=`
-      <span class="tp-time">${fmt12(h,m)} – ${fmt12(eh,em)}</span>
+      <span class="tp-time">${displayTime}</span>
+      ${cstRef}
       <span class="tp-status ${isBooked?'s-booked':'s-open'}">${isBooked?'Already Booked':'Available'}</span>`;
     if(!isBooked){
+      const localLabel = isSameTz ? `${fmt12(h,m)} CST` : `${localFmt.startStr} ${VISITOR_TZ_ABBR} (${fmt12(h,m)} CST)`;
       pill.onclick=()=>{
         selTime=time;
-        selLabel=`${DAY_FULL[dow]}, ${MON_SHORT[d.getMonth()]} ${d.getDate()} · ${fmt12(h,m)} CST`;
+        selLabel=`${DAY_FULL[dow]}, ${MON_SHORT[d.getMonth()]} ${d.getDate()} · ${localLabel}`;
         buildTimes(d,ds,dow);
         showForm();
       };
