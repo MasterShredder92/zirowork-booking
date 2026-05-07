@@ -239,7 +239,7 @@ function addMins(h,m,mins){ const t=h*60+m+mins; return [Math.floor(t/60)%24,t%6
 function buildCalendar(){
   const today=new Date(); today.setHours(0,0,0,0);
   const cutoff=new Date(new Date().getTime()+8*60*60*1000);
-  const maxDate=new Date(today); maxDate.setDate(today.getDate()+14);
+  const maxDate=new Date(today); maxDate.setDate(today.getDate()+7);
 
   document.getElementById('monthTitle').textContent=`${MON_NAMES[viewMonth]} ${viewYear}`;
   document.getElementById('prevMonthBtn').disabled=new Date(viewYear,viewMonth,1)<=new Date(today.getFullYear(),today.getMonth(),1);
@@ -435,7 +435,7 @@ document.getElementById('nextMonthBtn').addEventListener('click',()=>changeMonth
   viewMonth=now.getMonth();
   const today=new Date(); today.setHours(0,0,0,0);
   const cutoff=new Date(new Date().getTime()+8*60*60*1000);
-  const maxDate=new Date(today); maxDate.setDate(today.getDate()+14);
+  const maxDate=new Date(today); maxDate.setDate(today.getDate()+7);
   let hasSlotThisMonth=false;
   for(let day=today.getDate();day<=new Date(viewYear,viewMonth+1,0).getDate();day++){
     const d=new Date(viewYear,viewMonth,day);
