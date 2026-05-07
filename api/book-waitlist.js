@@ -31,10 +31,16 @@ async function createCalendarEvent({ firstName, lastName, email, schoolUrl, sele
   oauth2Client.setCredentials({ refresh_token: GOOGLE_REFRESH_TOKEN });
   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
-  const [year, month, day] = selectedDate.split('-').map(Number);
+  // Build datetime as a local string — Google Calendar interprets it in the given timeZone.
+  // Do NOT use new Date() + toISOString() because Vercel servers run UTC and will bake in
+  // the wrong offset, shifting CST times by 5-6 hours.
   const [hour, minute] = selectedTime.split(':').map(Number);
-  const startDateTime = new Date(year, month - 1, day, hour, minute, 0);
-  const endDateTime = new Date(startDateTime.getTime() + 30 * 60 * 1000);
+  const endMinute = minute + 30;
+  const endHour = hour + Math.floor(endMinute / 60);
+  const endMinuteFinal = endMinute % 60;
+  const pad = (n) => String(n).padStart(2, '0');
+  const startLocalStr = `${selectedDate}T${pad(hour)}:${pad(minute)}:00`;
+  const endLocalStr = `${selectedDate}T${pad(endHour)}:${pad(endMinuteFinal)}:00`;
 
   const event = await calendar.events.insert({
     calendarId: ZACH_CALENDAR_ID,
@@ -42,8 +48,8 @@ async function createCalendarEvent({ firstName, lastName, email, schoolUrl, sele
     requestBody: {
       summary: `Founder Call (Free) — ${firstName} ${lastName} — ZiroWork`,
       description: `ZiroWork Founder Call\n\nClient: ${firstName} ${lastName}\nEmail: ${email}\nWebsite: ${schoolUrl || 'Not provided'}\n\nBooked via book.zirowork.com/waitlist`,
-      start: { dateTime: startDateTime.toISOString(), timeZone: 'America/Chicago' },
-      end: { dateTime: endDateTime.toISOString(), timeZone: 'America/Chicago' },
+      start: { dateTime: startLocalStr, timeZone: 'America/Chicago' },
+      end: { dateTime: endLocalStr, timeZone: 'America/Chicago' },
       attendees: [
         { email: email, displayName: `${firstName} ${lastName}` },
         { email: 'zach@adkinsenterprisesllc.com', displayName: 'Zach Adkins', responseStatus: 'accepted' }
