@@ -225,6 +225,7 @@ const REAL_SLOTS = {
   2:['06:00','07:00','10:00','15:00','20:00','21:00'],
   3:['06:00','07:00','10:00','15:00','20:00','21:00'],
   4:['06:00','07:00','10:00','15:00','20:00','21:00'],
+  5:['06:00','07:00','10:00','15:00','20:00','21:00'],
   6:['06:00','07:00','10:00','15:00','20:00','21:00'],
 };
 const FAKE_SLOT_INDEX = 1;
@@ -269,7 +270,7 @@ function cstToLocalFull(dateObj, cstHour, cstMin) {
 
 function buildCalendar(){
   const today=new Date(); today.setHours(0,0,0,0);
-  const cutoff=new Date(new Date().getTime()+8*60*60*1000);
+  const _isFri=new Date().toLocaleDateString('en-US',{weekday:'long',timeZone:'America/Chicago'})==='Friday'; const cutoff=new Date(new Date().getTime()+(_isFri?30:8*60)*60*1000);
   const maxDate=new Date(today); maxDate.setDate(today.getDate()+7);
 
   document.getElementById('monthTitle').textContent=`${MON_NAMES[viewMonth]} ${viewYear}`;
@@ -335,7 +336,7 @@ function selectDay(d,ds,dow){
 function buildTimes(d,ds,dow){
   const today=new Date(); today.setHours(0,0,0,0);
   const isToday=ds===toDateStr(today);
-  const cutoff=new Date(new Date().getTime()+8*60*60*1000);
+  const _isFri=new Date().toLocaleDateString('en-US',{weekday:'long',timeZone:'America/Chicago'})==='Friday'; const cutoff=new Date(new Date().getTime()+(_isFri?30:8*60)*60*1000);
   const slots=REAL_SLOTS[dow]||[];
 
   document.getElementById('timesDayLabel').textContent=
@@ -471,7 +472,7 @@ document.getElementById('nextMonthBtn').addEventListener('click',()=>changeMonth
   viewYear=now.getFullYear();
   viewMonth=now.getMonth();
   const today=new Date(); today.setHours(0,0,0,0);
-  const cutoff=new Date(new Date().getTime()+8*60*60*1000);
+  const _isFri=new Date().toLocaleDateString('en-US',{weekday:'long',timeZone:'America/Chicago'})==='Friday'; const cutoff=new Date(new Date().getTime()+(_isFri?30:8*60)*60*1000);
   const maxDate=new Date(today); maxDate.setDate(today.getDate()+7);
   let hasSlotThisMonth=false;
   for(let day=today.getDate();day<=new Date(viewYear,viewMonth+1,0).getDate();day++){
