@@ -34,7 +34,11 @@ module.exports = async function handler(req, res) {
 
     const now = new Date();
     const windowEnd = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-    const minBookingTime = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+    // On Fridays, remove the 8-hour buffer so same-day slots show
+    const todayCST = now.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'America/Chicago' });
+    const minBookingTime = todayCST === 'Friday'
+      ? new Date(now.getTime() + 30 * 60 * 1000) // 30-min buffer on Fridays
+      : new Date(now.getTime() + 8 * 60 * 60 * 1000);
 
     // Get existing calendar events
     const eventsRes = await calendar.events.list({
