@@ -419,7 +419,7 @@ let selDate=null, selDateStr='', selTime='', selLabel='';
 let bookData={};
 let sqCard=null, sqInited=false;
 
-function toDateStr(d){ return d.toISOString().split('T')[0]; }
+function toDateStr(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function fmt12(h,m){ const h12=h>12?h-12:h===0?12:h; return `${h12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`; }
 function addMins(h,m,mins){ const t=h*60+m+mins; return [Math.floor(t/60)%24,t%60]; }
 

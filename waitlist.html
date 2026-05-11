@@ -237,7 +237,7 @@ const DAY_FULL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Sat
 let viewYear, viewMonth;
 let selDate=null, selDateStr='', selTime='', selLabel='';
 
-function toDateStr(d){ return d.toISOString().split('T')[0]; }
+function toDateStr(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function fmt12(h,m){ const h12=h>12?h-12:h===0?12:h; return `${h12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`; }
 function addMins(h,m,mins){ const t=h*60+m+mins; return [Math.floor(t/60)%24,t%60]; }
 
@@ -249,16 +249,41 @@ const VISITOR_TZ_ABBR = (()=>{
     return s.split(', ')[1] || VISITOR_TZ;
   } catch(e){ return ''; }
 })();
+
+// Dynamically resolve CST/CDT offset (handles DST automatically)
+function getCstUtcOffset(dateObj) {
+  // Returns the number of hours to ADD to CST local time to get UTC
+  // CST = UTC-6, CDT = UTC-5. Intl resolves this automatically.
+  const jan = new Date(dateObj.getFullYear(), 0, 1);
+  const jul = new Date(dateObj.getFullYear(), 6, 1);
+  const stdOffset = Math.max(
+    jan.getTimezoneOffset(),
+    jul.getTimezoneOffset()
+  );
+  // Use Intl to get the actual offset for Chicago on the given date
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Chicago',
+    timeZoneName: 'shortOffset'
+  });
+  const parts = formatter.formatToParts(dateObj);
+  const tzPart = parts.find(p => p.type === 'timeZoneName');
+  // tzPart.value is like "GMT-5" or "GMT-6"
+  const match = tzPart && tzPart.value.match(/GMT([+-]?\d+)/);
+  return match ? -parseInt(match[1]) : 6; // fallback to 6 (CST)
+}
+
 function cstToLocal(dateObj, cstHour, cstMin) {
   // Build a Date representing the CST slot, then read it in visitor's timezone
   // CST = UTC-6 (CDT = UTC-5). Use Intl to get the correct offset.
-  const cstDate = new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), cstHour + 6, cstMin));
+  const offset = getCstUtcOffset(dateObj);
+  const cstDate = new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), cstHour + offset, cstMin));
   const localStr = cstDate.toLocaleTimeString('en-US',{timeZone:VISITOR_TZ,hour:'numeric',minute:'2-digit',hour12:true});
   return localStr;
 }
 function cstToLocalFull(dateObj, cstHour, cstMin) {
   const [lh, lm] = (() => {
-    const cstDate = new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), cstHour + 6, cstMin));
+    const offset = getCstUtcOffset(dateObj);
+    const cstDate = new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), cstHour + offset, cstMin));
     const parts = new Intl.DateTimeFormat('en-US',{timeZone:VISITOR_TZ,hour:'numeric',minute:'2-digit',hour12:false}).formatToParts(cstDate);
     const h = parseInt(parts.find(p=>p.type==='hour').value);
     const m = parseInt(parts.find(p=>p.type==='minute').value);
