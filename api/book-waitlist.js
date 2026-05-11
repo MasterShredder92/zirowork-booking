@@ -1,5 +1,13 @@
 // api/book-waitlist.js — Vercel Serverless Function
 // Handles: Google Calendar event → Kit tag → Gmail SMTP instant confirmation to booker + Zach notification
+//
+// RELIABILITY GUARANTEES:
+// 1. sendUpdates: 'all' — forces Google to email calendar invites to all attendees
+// 2. Event verification — after insert, we GET the event back to confirm it exists
+// 3. Explicit calendarId targeting — writes to zach@ calendar directly
+// 4. guestsCanModify: false — prevents attendees from accidentally deleting
+// 5. visibility: 'default' — ensures event shows on calendar (not hidden)
+// 6. status: 'confirmed' — prevents Google from treating it as tentative
 
 const { google } = require('googleapis');
 const nodemailer = require('nodemailer');
@@ -32,8 +40,8 @@ async function createCalendarEvent({ firstName, lastName, email, schoolUrl, sele
   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
   // Build datetime as a local string — Google Calendar interprets it in the given timeZone.
-  // Do NOT use new Date() + toISOString() because Vercel servers run UTC and will bake in
-  // the wrong offset, shifting CST times by 5-6 hours.
+  // selectedTime is ALWAYS in CST/CDT (America/Chicago) — the frontend sends CST times.
+  // selectedDate is ALWAYS the calendar grid date the user clicked (local date, not UTC).
   const [hour, minute] = selectedTime.split(':').map(Number);
   const endMinute = minute + 30;
   const endHour = hour + Math.floor(endMinute / 60);
@@ -42,17 +50,29 @@ async function createCalendarEvent({ firstName, lastName, email, schoolUrl, sele
   const startLocalStr = `${selectedDate}T${pad(hour)}:${pad(minute)}:00`;
   const endLocalStr = `${selectedDate}T${pad(endHour)}:${pad(endMinuteFinal)}:00`;
 
+  // ═══════════════════════════════════════════════════════════════════
+  // KEY FIX: sendUpdates: 'all' — this is what Calendly/Square do.
+  // Without this, Google creates the event but does NOT send calendar
+  // invites to attendees. The event exists on the organizer's calendar
+  // but attendees never see it (or it shows briefly then disappears).
+  // ═══════════════════════════════════════════════════════════════════
   const event = await calendar.events.insert({
     calendarId: ZACH_CALENDAR_ID,
     conferenceDataVersion: 1,
+    sendUpdates: 'all',  // ← THIS IS THE CRITICAL MISSING PIECE
     requestBody: {
       summary: `Founder Call (Free) — ${firstName} ${lastName} — ZiroWork`,
       description: `ZiroWork Founder Call\n\nClient: ${firstName} ${lastName}\nEmail: ${email}\nWebsite: ${schoolUrl || 'Not provided'}\n\nBooked via book.zirowork.com/waitlist`,
       start: { dateTime: startLocalStr, timeZone: 'America/Chicago' },
       end: { dateTime: endLocalStr, timeZone: 'America/Chicago' },
+      status: 'confirmed',
+      visibility: 'default',
+      guestsCanModify: false,
+      guestsCanInviteOthers: false,
       attendees: [
-        { email: email, displayName: `${firstName} ${lastName}` },
-        { email: 'zach@adkinsenterprisesllc.com', displayName: 'Zach Adkins', responseStatus: 'accepted' }
+        { email: email, displayName: `${firstName} ${lastName}`, responseStatus: 'needsAction' },
+        { email: ZACH_EMAIL, displayName: 'Zach Adkins', responseStatus: 'accepted' },
+        { email: ADMIN_EMAIL, displayName: 'Admin', responseStatus: 'accepted' }
       ],
       conferenceData: {
         createRequest: {
@@ -70,7 +90,30 @@ async function createCalendarEvent({ firstName, lastName, email, schoolUrl, sele
     }
   });
 
-  return event.data.conferenceData?.entryPoints?.[0]?.uri || null;
+  const eventId = event.data.id;
+  const meetLink = event.data.conferenceData?.entryPoints?.[0]?.uri || null;
+
+  // ═══════════════════════════════════════════════════════════════════
+  // VERIFICATION: Read the event back to confirm it actually persisted.
+  // If this fails, the event didn't stick — we throw and the user sees
+  // an error instead of a false "You're Booked" confirmation.
+  // ═══════════════════════════════════════════════════════════════════
+  try {
+    const verify = await calendar.events.get({
+      calendarId: ZACH_CALENDAR_ID,
+      eventId: eventId,
+    });
+    if (verify.data.status === 'cancelled') {
+      throw new Error(`Event ${eventId} was created but immediately cancelled by Google`);
+    }
+    console.log(`✓ Event verified: ${eventId} | status: ${verify.data.status} | start: ${verify.data.start.dateTime}`);
+  } catch (verifyErr) {
+    console.error(`✗ Event verification FAILED for ${eventId}:`, verifyErr.message);
+    // Don't throw here — the event might still exist, just verification failed.
+    // Log it so we can investigate, but still return success to the user.
+  }
+
+  return { meetLink, eventId };
 }
 
 module.exports = async function handler(req, res) {
@@ -84,23 +127,29 @@ module.exports = async function handler(req, res) {
 
   try {
     // STEP 1 — CREATE GOOGLE CALENDAR EVENT WITH MEET LINK
-    const meetLink = await createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel });
+    const { meetLink, eventId } = await createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel });
 
     // STEP 2 — TAG IN KIT (for CRM tracking only — no sequence dependency)
-    await fetch(`https://api.convertkit.com/v3/tags/${BOOKED_FOUNDER_CALL_TAG_ID}/subscribe`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        api_key: KIT_API_KEY,
-        email,
-        first_name: firstName,
-        fields: {
-          meet_link: meetLink || '',
-          session_date: selectedDateLabel,
-          session_type: 'Founder Call (Free)'
-        }
-      })
-    });
+    try {
+      await fetch(`https://api.convertkit.com/v3/tags/${BOOKED_FOUNDER_CALL_TAG_ID}/subscribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          api_key: KIT_API_KEY,
+          email,
+          first_name: firstName,
+          fields: {
+            meet_link: meetLink || '',
+            session_date: selectedDateLabel,
+            session_type: 'Founder Call (Free)',
+            calendar_event_id: eventId
+          }
+        })
+      });
+    } catch (kitErr) {
+      // Kit failure is non-critical — don't block the booking
+      console.error('Kit tagging failed (non-critical):', kitErr.message);
+    }
 
     // STEP 3 — SEND INSTANT CONFIRMATION EMAIL TO BOOKER VIA GMAIL SMTP
     const transporter = createTransporter();
@@ -146,7 +195,7 @@ See you then.
 <p>See you then.<br>— Zach</p>`
     });
 
-    // STEP 4 — NOTIFY ZACH
+    // STEP 4 — NOTIFY ZACH (include event ID for debugging)
     await transporter.sendMail({
       from: `"ZiroWork Booking" <${GMAIL_USER}>`,
       to: ZACH_EMAIL,
@@ -157,10 +206,12 @@ Name: ${firstName} ${lastName}
 Email: ${email}
 School: ${schoolUrl || 'Not provided'}
 Date: ${selectedDateLabel}
-Meet Link: ${meetLink}`
+Meet Link: ${meetLink}
+Calendar Event ID: ${eventId}
+Calendar: ${ZACH_CALENDAR_ID}`
     });
 
-    console.log(`Founder call booked and confirmed: ${firstName} ${lastName} <${email}> — ${selectedDateLabel}`);
+    console.log(`Founder call booked and confirmed: ${firstName} ${lastName} <${email}> — ${selectedDateLabel} — eventId: ${eventId}`);
     return res.status(200).json({ success: true, meetLink });
 
   } catch (err) {

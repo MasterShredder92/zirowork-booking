@@ -39,6 +39,7 @@ async function createCalendarEvent({ firstName, lastName, email, schoolUrl, sele
   const event = await calendar.events.insert({
     calendarId: ZACH_CALENDAR_ID,
     conferenceDataVersion: 1,
+    sendUpdates: "all",
     requestBody: {
       summary: `Strategy Session — ${firstName} ${lastName} — ZiroWork`,
       description: `Music School Strategy Session\n\nClient: ${firstName} ${lastName}\nEmail: ${email}\nWebsite: ${schoolUrl || 'Not provided'}\n\nBooked via book.zirowork.com`,
