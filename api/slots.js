@@ -13,7 +13,7 @@ function requireEnv(name) {
 const GOOGLE_CLIENT_ID = requireEnv('GOOGLE_CLIENT_ID');
 const GOOGLE_CLIENT_SECRET = requireEnv('GOOGLE_CLIENT_SECRET');
 const GOOGLE_REFRESH_TOKEN = requireEnv('GOOGLE_REFRESH_TOKEN');
-const ZACH_CALENDAR_ID = process.env.ZACH_CALENDAR_ID || 'primary';
+const ZACH_CALENDAR_ID = requireEnv('ZACH_CALENDAR_ID');
 
 // Availability defined in America/Chicago time
 // Days: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
