@@ -86,7 +86,7 @@ async function createCalendarEvent({ firstName, lastName, email, schoolUrl, sele
   const event = await calendar.events.insert({
     calendarId: ZACH_CALENDAR_ID,
     conferenceDataVersion: 1,
-    sendUpdates: 'all',
+    sendUpdates: 'none',
     requestBody: payload,
   });
 
