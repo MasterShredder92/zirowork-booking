@@ -1,27 +1,31 @@
 // api/book-waitlist.js — Vercel Serverless Function
-// Handles: Google Calendar event → Kit tag → Gmail SMTP instant confirmation to booker + Zach notification
-//
-// RELIABILITY GUARANTEES:
-// 1. sendUpdates: 'all' — forces Google to email calendar invites to all attendees
-// 2. Event verification — after insert, we GET the event back to confirm it exists
-// 3. Explicit calendarId targeting — writes to zach@ calendar directly
-// 4. guestsCanModify: false — prevents attendees from accidentally deleting
-// 5. visibility: 'default' — ensures event shows on calendar (not hidden)
-// 6. status: 'confirmed' — prevents Google from treating it as tentative
+// Handles: real availability check → Google Calendar event → Kit tag → Gmail confirmations.
 
 const { google } = require('googleapis');
 const nodemailer = require('nodemailer');
+const {
+  ZACH_TIME_ZONE,
+  buildCalendarEventPayload,
+  filterAvailableSlots,
+  findSlotOrThrow,
+  normalizeBusyEvents,
+} = require('./schedule-core');
 
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const GOOGLE_REFRESH_TOKEN = process.env.GOOGLE_REFRESH_TOKEN;
-const KIT_API_KEY = process.env.KIT_API_KEY || 'GDLeN7k0im3DEq3y-eydKg';
-const KIT_API_SECRET = process.env.KIT_API_SECRET || 'GjhqnBQxcGyPDYtuCyLYp8y3-t2pUDWF2KRhXxgmQ-g';
+function requireEnv(name) {
+  const value = process.env[name];
+  if (!value) throw new Error(`${name} not set`);
+  return value;
+}
+
+const GOOGLE_CLIENT_ID = requireEnv('GOOGLE_CLIENT_ID');
+const GOOGLE_CLIENT_SECRET = requireEnv('GOOGLE_CLIENT_SECRET');
+const GOOGLE_REFRESH_TOKEN = requireEnv('GOOGLE_REFRESH_TOKEN');
+const KIT_API_KEY = requireEnv('KIT_API_KEY');
+const KIT_API_SECRET = requireEnv('KIT_API_SECRET');
 const ZACH_CALENDAR_ID = process.env.ZACH_CALENDAR_ID || 'primary';
 const BOOKED_FOUNDER_CALL_TAG_ID = 19259104;
-const GMAIL_USER = process.env.GMAIL_USER;
-const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
-const ZACH_EMAIL = 'zach@adkinsenterprisesllc.com';
+const GMAIL_USER = requireEnv('GMAIL_USER');
+const GMAIL_APP_PASSWORD = requireEnv('GMAIL_APP_PASSWORD');
 const ADMIN_EMAIL = 'admin@adkinsenterprisesllc.com';
 
 function createTransporter() {
@@ -34,102 +38,94 @@ function createTransporter() {
   });
 }
 
-async function createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel }) {
+function getCalendarClient() {
   const oauth2Client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
   oauth2Client.setCredentials({ refresh_token: GOOGLE_REFRESH_TOKEN });
-  const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+  return google.calendar({ version: 'v3', auth: oauth2Client });
+}
 
-  // Build datetime as a local string — Google Calendar interprets it in the given timeZone.
-  // selectedTime is ALWAYS in CST/CDT (America/Chicago) — the frontend sends CST times.
-  // selectedDate is ALWAYS the calendar grid date the user clicked (local date, not UTC).
-  const [hour, minute] = selectedTime.split(':').map(Number);
-  const endMinute = minute + 30;
-  const endHour = hour + Math.floor(endMinute / 60);
-  const endMinuteFinal = endMinute % 60;
-  const pad = (n) => String(n).padStart(2, '0');
-  const startLocalStr = `${selectedDate}T${pad(hour)}:${pad(minute)}:00`;
-  const endLocalStr = `${selectedDate}T${pad(endHour)}:${pad(endMinuteFinal)}:00`;
+async function assertSlotStillAvailable(calendar, slot) {
+  const eventsRes = await calendar.events.list({
+    calendarId: ZACH_CALENDAR_ID,
+    timeMin: slot.startISO,
+    timeMax: slot.endISO,
+    singleEvents: true,
+    orderBy: 'startTime',
+    showDeleted: false,
+  });
+  const busyTimes = normalizeBusyEvents(eventsRes.data.items || []);
+  if (filterAvailableSlots([slot], busyTimes).length !== 1) {
+    const error = new Error('That time was just booked. Pick another open time.');
+    error.statusCode = 409;
+    throw error;
+  }
+}
 
-  // ═══════════════════════════════════════════════════════════════════
-  // KEY FIX: sendUpdates: 'all' — this is what Calendly/Square do.
-  // Without this, Google creates the event but does NOT send calendar
-  // invites to attendees. The event exists on the organizer's calendar
-  // but attendees never see it (or it shows briefly then disappears).
-  // ═══════════════════════════════════════════════════════════════════
+async function verifyCalendarEvent(calendar, eventId) {
+  const verify = await calendar.events.get({
+    calendarId: ZACH_CALENDAR_ID,
+    eventId,
+  });
+
+  if (verify.data.status === 'cancelled') {
+    throw new Error(`Event ${eventId} was created but came back cancelled`);
+  }
+
+  console.log(`Event verified: ${eventId} | status: ${verify.data.status} | start: ${verify.data.start?.dateTime}`);
+}
+
+async function createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, visitorTimeZone }) {
+  const calendar = getCalendarClient();
+  const slot = findSlotOrThrow({ selectedDate, selectedTime, visitorTimeZone: visitorTimeZone || ZACH_TIME_ZONE });
+  await assertSlotStillAvailable(calendar, slot);
+
   const event = await calendar.events.insert({
     calendarId: ZACH_CALENDAR_ID,
     conferenceDataVersion: 1,
-    sendUpdates: 'all',  // ← THIS IS THE CRITICAL MISSING PIECE
-    requestBody: {
-      summary: `Founder Call (Free) — ${firstName} ${lastName} — ZiroWork`,
-      description: `ZiroWork Founder Call\n\nClient: ${firstName} ${lastName}\nEmail: ${email}\nWebsite: ${schoolUrl || 'Not provided'}\n\nBooked via book.zirowork.com/waitlist`,
-      start: { dateTime: startLocalStr, timeZone: 'America/Chicago' },
-      end: { dateTime: endLocalStr, timeZone: 'America/Chicago' },
-      status: 'confirmed',
-      visibility: 'default',
-      guestsCanModify: false,
-      guestsCanInviteOthers: false,
-      attendees: [
-        { email: email, displayName: `${firstName} ${lastName}`, responseStatus: 'needsAction' },
-        { email: ZACH_EMAIL, displayName: 'Zach Adkins', responseStatus: 'accepted' },
-        { email: ADMIN_EMAIL, displayName: 'Admin', responseStatus: 'accepted' }
-      ],
-      conferenceData: {
-        createRequest: {
-          requestId: `zirowork-founder-${Date.now()}`,
-          conferenceSolutionKey: { type: 'hangoutsMeet' }
-        }
-      },
-      reminders: {
-        useDefault: false,
-        overrides: [
-          { method: 'email', minutes: 1440 },
-          { method: 'popup', minutes: 30 }
-        ]
-      }
-    }
+    sendUpdates: 'all',
+    requestBody: buildCalendarEventPayload({ firstName, lastName, email, schoolUrl, slot }),
   });
 
   const eventId = event.data.id;
-  const meetLink = event.data.conferenceData?.entryPoints?.[0]?.uri || null;
+  await verifyCalendarEvent(calendar, eventId);
 
-  // ═══════════════════════════════════════════════════════════════════
-  // VERIFICATION: Read the event back to confirm it actually persisted.
-  // If this fails, the event didn't stick — we throw and the user sees
-  // an error instead of a false "You're Booked" confirmation.
-  // ═══════════════════════════════════════════════════════════════════
+  return {
+    meetLink: event.data.conferenceData?.entryPoints?.[0]?.uri || null,
+    eventId,
+    slot,
+  };
+}
+
+async function sendEmail(transporter, message, context) {
   try {
-    const verify = await calendar.events.get({
-      calendarId: ZACH_CALENDAR_ID,
-      eventId: eventId,
-    });
-    if (verify.data.status === 'cancelled') {
-      throw new Error(`Event ${eventId} was created but immediately cancelled by Google`);
-    }
-    console.log(`✓ Event verified: ${eventId} | status: ${verify.data.status} | start: ${verify.data.start.dateTime}`);
-  } catch (verifyErr) {
-    console.error(`✗ Event verification FAILED for ${eventId}:`, verifyErr.message);
-    // Don't throw here — the event might still exist, just verification failed.
-    // Log it so we can investigate, but still return success to the user.
+    await transporter.sendMail(message);
+  } catch (err) {
+    console.error(`[email] ${context} failed:`, err.message);
   }
-
-  return { meetLink, eventId };
 }
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel } = req.body;
+  const { firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel, visitorTimeZone } = req.body || {};
 
   if (!firstName || !lastName || !email || !selectedDate || !selectedTime) {
     return res.status(400).json({ error: 'Missing required fields.' });
   }
 
   try {
-    // STEP 1 — CREATE GOOGLE CALENDAR EVENT WITH MEET LINK
-    const { meetLink, eventId } = await createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel });
+    const { meetLink, eventId, slot } = await createCalendarEvent({
+      firstName,
+      lastName,
+      email,
+      schoolUrl,
+      selectedDate,
+      selectedTime,
+      visitorTimeZone: visitorTimeZone || ZACH_TIME_ZONE,
+    });
 
-    // STEP 2 — TAG IN KIT (for CRM tracking only — no sequence dependency)
+    const label = selectedDateLabel || slot.label || slot.centralLabel;
+
     try {
       await fetch(`https://api.convertkit.com/v3/tags/${BOOKED_FOUNDER_CALL_TAG_ID}/subscribe`, {
         method: 'POST',
@@ -140,24 +136,24 @@ module.exports = async function handler(req, res) {
           first_name: firstName,
           fields: {
             meet_link: meetLink || '',
-            session_date: selectedDateLabel,
+            session_date: label,
             session_type: 'Founder Call (Free)',
-            calendar_event_id: eventId
-          }
-        })
+            calendar_event_id: eventId,
+            slot_start_utc: slot.startISO,
+            visitor_time_zone: slot.visitorTimeZone,
+          },
+        }),
       });
     } catch (kitErr) {
-      // Kit failure is non-critical — don't block the booking
-      console.error('Kit tagging failed (non-critical):', kitErr.message);
+      console.error('[kit] Waitlist booking tag failed:', kitErr.message, { email, eventId, kitSecretConfigured: Boolean(KIT_API_SECRET) });
     }
 
-    // STEP 3 — SEND INSTANT CONFIRMATION EMAIL TO BOOKER VIA GMAIL SMTP
     const transporter = createTransporter();
 
-    await transporter.sendMail({
+    await sendEmail(transporter, {
       from: `"Zach Adkins | ZiroWork" <${GMAIL_USER}>`,
       to: email,
-      subject: `Your Founder Call is confirmed — ${selectedDateLabel}`,
+      subject: `Your Founder Call is confirmed — ${label}`,
       text: `Hey ${firstName},
 
 You're locked in.
@@ -165,16 +161,14 @@ You're locked in.
 Here's your Google Meet link for our call:
 ${meetLink}
 
-Date: ${selectedDateLabel}
+Date: ${label}
 
-You'll also get a Google Calendar invite at this email address — accept it and the Meet link will be in there too.
+You'll also get a Google Calendar invite at this email address. Accept it and the Meet link will be in there too.
 
 Before we talk:
 - Have your website URL ready
 - Know your current student count
 - Have screen share working
-
-That's it. I'll handle the rest.
 
 If you need to reschedule, email me at least 4 hours before: zach@zirowork.com
 
@@ -182,40 +176,41 @@ See you then.
 — Zach`,
       html: `<p>Hey ${firstName},</p>
 <p>You're locked in.</p>
-<p>Here's your Google Meet link for our call:<br>
-<a href="${meetLink}">${meetLink}</a></p>
-<p><strong>Date:</strong> ${selectedDateLabel}</p>
-<p>You'll also get a Google Calendar invite at this email address — accept it and the Meet link will be in there too.</p>
+<p>Here's your Google Meet link for our call:<br><a href="${meetLink}">${meetLink}</a></p>
+<p><strong>Date:</strong> ${label}</p>
+<p>You'll also get a Google Calendar invite at this email address. Accept it and the Meet link will be in there too.</p>
 <p><strong>Before we talk:</strong><br>
 - Have your website URL ready<br>
 - Know your current student count<br>
 - Have screen share working</p>
-<p>That's it. I'll handle the rest.</p>
 <p>If you need to reschedule, email me at least 4 hours before: zach@zirowork.com</p>
-<p>See you then.<br>— Zach</p>`
-    });
+<p>See you then.<br>— Zach</p>`,
+    }, `waitlist customer confirmation for ${email} / ${eventId}`);
 
-    // STEP 4 — NOTIFY ZACH (include event ID for debugging)
-    await transporter.sendMail({
+    await sendEmail(transporter, {
       from: `"ZiroWork Booking" <${GMAIL_USER}>`,
-      to: ZACH_EMAIL,
+      to: ADMIN_EMAIL,
       subject: `New Founder Call Booked — ${firstName} ${lastName}`,
       text: `New founder call booked.
 
 Name: ${firstName} ${lastName}
 Email: ${email}
 School: ${schoolUrl || 'Not provided'}
-Date: ${selectedDateLabel}
+Date: ${label}
 Meet Link: ${meetLink}
 Calendar Event ID: ${eventId}
-Calendar: ${ZACH_CALENDAR_ID}`
-    });
+Calendar: ${ZACH_CALENDAR_ID}
+Slot UTC: ${slot.startISO}
+Visitor TZ: ${slot.visitorTimeZone}`,
+    }, `waitlist admin notification for ${email} / ${eventId}`);
 
-    console.log(`Founder call booked and confirmed: ${firstName} ${lastName} <${email}> — ${selectedDateLabel} — eventId: ${eventId}`);
-    return res.status(200).json({ success: true, meetLink });
-
+    console.log(`Founder call booked: ${firstName} ${lastName} <${email}> | ${slot.id} | eventId: ${eventId}`);
+    return res.status(200).json({ success: true, meetLink, eventId, slot });
   } catch (err) {
     console.error('Waitlist booking handler error:', err);
-    return res.status(500).json({ error: 'Server error. Please try again or email zach@zirowork.com' });
+    const statusCode = err.statusCode || 500;
+    return res.status(statusCode).json({
+      error: statusCode === 409 ? err.message : 'Server error. Please try again or email zach@zirowork.com',
+    });
   }
-}
+};

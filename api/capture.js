@@ -1,14 +1,142 @@
-// book.zirowork.com — Pre-payment lead capture
-// POST /api/capture — fires when user hits "Confirm & Pay" before Square loads
-// Saves name + email + selected time to Supabase + Kit so no lead is lost
+// api/capture.js — non-blocking pre-payment lead capture
+// Saves name, email, school URL, and selected time to Supabase + Kit.
 
-const { createClient } = require('@supabase/supabase-js');
+function requireEnv(name) {
+  const value = process.env[name];
+  if (!value) throw new Error(`${name} not set`);
+  return value;
+}
 
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://gngbyydqjouxkoprzzil.supabase.co';
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
-const KIT_API_KEY = process.env.KIT_API_KEY || 'GDLeN7k0im3DEq3y-eydKg';
-
+const SUPABASE_URL = requireEnv('SUPABASE_URL');
+const SUPABASE_SERVICE_KEY = requireEnv('SUPABASE_SERVICE_KEY');
+const KIT_API_KEY = requireEnv('KIT_API_KEY');
 const TENANT_ID = '00000000-0000-0000-0000-000000000001';
+const CAPTURE_SOURCE = 'book.zirowork.com/waitlist';
+const CAPTURE_STAGE = 'waitlist_submitted';
+
+function supabaseHeaders(prefer) {
+  const headers = {
+    apikey: SUPABASE_SERVICE_KEY,
+    Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
+    'Content-Type': 'application/json',
+  };
+  if (prefer) headers.Prefer = prefer;
+  return headers;
+}
+
+async function findExistingLead(email) {
+  const params = new URLSearchParams({
+    source: `eq.${CAPTURE_SOURCE}`,
+    tenant_id: `eq.${TENANT_ID}`,
+    status: `eq.${CAPTURE_STAGE}`,
+    select: 'id',
+    limit: '1',
+  });
+  params.append('raw_payload->>email', `eq.${email}`);
+
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/intake_submissions?${params.toString()}`, {
+    method: 'GET',
+    headers: supabaseHeaders(),
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`Supabase lookup failed ${response.status}: ${body}`);
+  }
+
+  return response.json();
+}
+
+async function upsertLead({ email, firstName, lastName, schoolUrl, selectedDate, selectedTime, selectedDateLabel }) {
+  const sanitizedFirst = (firstName || '').trim();
+  const sanitizedLast = (lastName || '').trim();
+  const fullName = `${sanitizedFirst} ${sanitizedLast}`.trim();
+
+  const raw_payload = {
+    email,
+    firstName: sanitizedFirst,
+    lastName: sanitizedLast,
+    schoolUrl: schoolUrl || null,
+    selectedDate: selectedDate || null,
+    selectedTime: selectedTime || null,
+    selectedDateLabel: selectedDateLabel || null,
+    capturedAt: new Date().toISOString(),
+    stage: CAPTURE_STAGE,
+    source: CAPTURE_SOURCE,
+  };
+
+  const metadata = {
+    name: fullName || email,
+    email,
+    school_url: schoolUrl || null,
+    selected_time: selectedDateLabel || selectedTime || null,
+    stage: CAPTURE_STAGE,
+  };
+
+  const existing = await findExistingLead(email);
+
+  if (existing && existing.length > 0) {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/intake_submissions?id=eq.${existing[0].id}`, {
+      method: 'PATCH',
+      headers: supabaseHeaders('return=minimal'),
+      body: JSON.stringify({ raw_payload, metadata }),
+    });
+
+    if (!response.ok) {
+      const body = await response.text();
+      throw new Error(`Supabase update failed ${response.status}: ${body}`);
+    }
+
+    console.log('[capture] Updated waitlist lead:', existing[0].id, email);
+    return;
+  }
+
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/intake_submissions`, {
+    method: 'POST',
+    headers: supabaseHeaders('return=minimal'),
+    body: JSON.stringify([{
+      tenant_id: TENANT_ID,
+      source: CAPTURE_SOURCE,
+      form_version: 'v1',
+      status: CAPTURE_STAGE,
+      raw_payload,
+      metadata,
+    }]),
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`Supabase insert failed ${response.status}: ${body}`);
+  }
+
+  console.log('[capture] Saved waitlist lead:', email);
+}
+
+async function upsertKitSubscriber({ email, firstName, lastName, schoolUrl, selectedTime, selectedDateLabel }) {
+  const response = await fetch('https://api.convertkit.com/v3/subscribers', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      api_key: KIT_API_KEY,
+      email,
+      first_name: (firstName || '').trim() || email.split('@')[0],
+      fields: {
+        booking_intent: 'true',
+        booking_intent_at: new Date().toISOString(),
+        booking_selected_time: selectedDateLabel || selectedTime || null,
+        school_url: schoolUrl || null,
+        last_name: (lastName || '').trim() || undefined,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`Kit upsert failed ${response.status}: ${body}`);
+  }
+
+  console.log('[capture] Kit subscriber upserted:', email);
+}
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -32,105 +160,26 @@ module.exports = async function handler(req, res) {
   }
 
   const sanitizedEmail = email.trim().toLowerCase();
-  const sanitizedFirst = (firstName || '').trim();
-  const fullName = `${sanitizedFirst} ${(lastName || '').trim()}`.trim();
+  const payload = {
+    email: sanitizedEmail,
+    firstName,
+    lastName,
+    schoolUrl,
+    selectedDate,
+    selectedTime,
+    selectedDateLabel,
+  };
 
-  // ── SUPABASE INSERT ────────────────────────────────────────────────────────
-  if (SUPABASE_SERVICE_KEY) {
-    try {
-      const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-
-      const raw_payload = {
-        email: sanitizedEmail,
-        firstName: sanitizedFirst,
-        lastName: (lastName || '').trim(),
-        schoolUrl: schoolUrl || null,
-        selectedDate: selectedDate || null,
-        selectedTime: selectedTime || null,
-        selectedDateLabel: selectedDateLabel || null,
-        capturedAt: new Date().toISOString(),
-        stage: 'pre_payment',
-        source: 'book.zirowork.com'
-      };
-
-      const metadata = {
-        name: fullName || sanitizedEmail,
-        email: sanitizedEmail,
-        school_url: schoolUrl || null,
-        selected_time: selectedDateLabel || null,
-        stage: 'pre_payment'
-      };
-
-      // Check for existing pre_payment row for this email
-      const { data: existing } = await supabase
-        .from('intake_submissions')
-        .select('id')
-        .eq('source', 'book.zirowork.com')
-        .eq('tenant_id', TENANT_ID)
-        .eq('status', 'pre_payment')
-        .filter('raw_payload->>email', 'eq', sanitizedEmail)
-        .limit(1);
-
-      if (existing && existing.length > 0) {
-        await supabase
-          .from('intake_submissions')
-          .update({ raw_payload, metadata })
-          .eq('id', existing[0].id);
-        console.log('[capture] Updated pre_payment row:', existing[0].id);
-      } else {
-        const { error: insertErr } = await supabase
-          .from('intake_submissions')
-          .insert([{
-            tenant_id: TENANT_ID,
-            source: 'book.zirowork.com',
-            form_version: 'v1',
-            status: 'pre_payment',
-            raw_payload,
-            metadata
-          }]);
-
-        if (insertErr) {
-          console.error('[capture] Supabase insert error:', JSON.stringify(insertErr));
-        } else {
-          console.log('[capture] Pre-payment lead saved:', sanitizedEmail);
-        }
-      }
-    } catch (err) {
-      console.error('[capture] Supabase exception:', err.message);
-    }
-  } else {
-    console.error('[capture] SUPABASE_SERVICE_KEY not set');
+  try {
+    await upsertLead(payload);
+  } catch (err) {
+    console.error('[capture] Supabase failed:', err.message, { email: sanitizedEmail });
   }
 
-  // ── KIT UPSERT ─────────────────────────────────────────────────────────────
   try {
-    const kitPayload = {
-      api_key: KIT_API_KEY,
-      email: sanitizedEmail,
-      first_name: sanitizedFirst || sanitizedEmail.split('@')[0],
-      fields: {
-        booking_intent: 'true',
-        booking_intent_at: new Date().toISOString(),
-        booking_selected_time: selectedDateLabel || selectedTime || null,
-        school_url: schoolUrl || null,
-        last_name: (lastName || '').trim() || undefined
-      }
-    };
-
-    const subRes = await fetch('https://api.convertkit.com/v3/subscribers', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(kitPayload)
-    });
-
-    if (!subRes.ok) {
-      const errText = await subRes.text();
-      console.error('[capture] Kit error', subRes.status, errText);
-    } else {
-      console.log('[capture] Kit subscriber upserted:', sanitizedEmail);
-    }
+    await upsertKitSubscriber(payload);
   } catch (err) {
-    console.error('[capture] Kit exception:', err.message);
+    console.error('[capture] Kit failed:', err.message, { email: sanitizedEmail });
   }
 
   return res.status(200).json({ ok: true });

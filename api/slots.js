@@ -4,6 +4,17 @@
 
 const { google } = require('googleapis');
 
+function requireEnv(name) {
+  const value = process.env[name];
+  if (!value) throw new Error(`${name} not set`);
+  return value;
+}
+
+const GOOGLE_CLIENT_ID = requireEnv('GOOGLE_CLIENT_ID');
+const GOOGLE_CLIENT_SECRET = requireEnv('GOOGLE_CLIENT_SECRET');
+const GOOGLE_REFRESH_TOKEN = requireEnv('GOOGLE_REFRESH_TOKEN');
+const ZACH_CALENDAR_ID = process.env.ZACH_CALENDAR_ID || 'primary';
+
 // Availability defined in America/Chicago time
 // Days: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
 const AVAILABILITY = {
@@ -48,11 +59,11 @@ function chicagoToUTC(dateStr, timeStr) {
 
 function getOAuthClient() {
   const oauth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET,
     'https://book.zirowork.com/api/auth/callback'
   );
-  oauth2Client.setCredentials({ refresh_token: process.env.GOOGLE_REFRESH_TOKEN });
+  oauth2Client.setCredentials({ refresh_token: GOOGLE_REFRESH_TOKEN });
   return oauth2Client;
 }
 
@@ -74,7 +85,7 @@ module.exports = async function handler(req, res) {
 
     // Get existing calendar events
     const eventsRes = await calendar.events.list({
-      calendarId: 'primary',
+      calendarId: ZACH_CALENDAR_ID,
       timeMin: now.toISOString(),
       timeMax: windowEnd.toISOString(),
       singleEvents: true,
