@@ -165,16 +165,19 @@ test('live source has no Google delete/update/cancel mutation paths', () => {
   assert.doesNotMatch(source, /status\s*:\s*['"]cancelled['"]/);
 });
 
-test('slots route validates required Google env vars and keeps package/UI protected', () => {
+test('slots route validates required Google env vars and keeps protected config untouched', () => {
   const slotsSource = fs.readFileSync(path.join(__dirname, 'api', 'slots.js'), 'utf8');
+  const waitlistSource = fs.readFileSync(path.join(__dirname, 'waitlist.html'), 'utf8');
 
   assert.match(slotsSource, /const GOOGLE_CLIENT_ID = requireEnv\('GOOGLE_CLIENT_ID'\)/);
   assert.match(slotsSource, /const GOOGLE_CLIENT_SECRET = requireEnv\('GOOGLE_CLIENT_SECRET'\)/);
   assert.match(slotsSource, /const GOOGLE_REFRESH_TOKEN = requireEnv\('GOOGLE_REFRESH_TOKEN'\)/);
   assert.match(slotsSource, /calendarId:\s*ZACH_CALENDAR_ID/);
+  assert.doesNotMatch(waitlistSource, /zach@/i);
+  assert.match(waitlistSource, /admin@adkinsenterprisesllc\.com/);
 
   const protectedDiff = require('child_process')
-    .execSync('git diff -- waitlist.html package.json vercel.json', { cwd: __dirname, encoding: 'utf8' })
+    .execSync('git diff -- package.json vercel.json', { cwd: __dirname, encoding: 'utf8' })
     .trim();
 
   assert.equal(protectedDiff, '');

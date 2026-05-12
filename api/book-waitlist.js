@@ -155,7 +155,7 @@ module.exports = async function handler(req, res) {
     const transporter = createTransporter();
 
     await sendEmail(transporter, {
-      from: `"Zach Adkins | ZiroWork" <${GMAIL_USER}>`,
+      from: `"ZiroWork" <${GMAIL_USER}>`,
       to: email,
       subject: `Your Founder Call is confirmed — ${label}`,
       text: `Hey ${firstName},
@@ -174,7 +174,7 @@ Before we talk:
 - Know your current student count
 - Have screen share working
 
-If you need to reschedule, email me at least 4 hours before: zach@zirowork.com
+If you need to reschedule, email us at least 4 hours before: admin@adkinsenterprisesllc.com
 
 See you then.
 — Zach`,
@@ -187,7 +187,7 @@ See you then.
 - Have your website URL ready<br>
 - Know your current student count<br>
 - Have screen share working</p>
-<p>If you need to reschedule, email me at least 4 hours before: zach@zirowork.com</p>
+<p>If you need to reschedule, email us at least 4 hours before: admin@adkinsenterprisesllc.com</p>
 <p>See you then.<br>— Zach</p>`,
     }, `waitlist customer confirmation for ${email} / ${eventId}`);
 
@@ -214,7 +214,7 @@ Visitor TZ: ${slot.visitorTimeZone}`,
     console.error('Waitlist booking handler error:', err);
     const statusCode = err.statusCode || 500;
     return res.status(statusCode).json({
-      error: statusCode === 409 ? err.message : 'Server error. Please try again or email zach@zirowork.com',
+      error: statusCode === 409 ? err.message : 'Server error. Please try again or email admin@adkinsenterprisesllc.com',
     });
   }
 };
