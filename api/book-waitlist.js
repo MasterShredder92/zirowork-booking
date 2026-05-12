@@ -20,8 +20,8 @@ function requireEnv(name) {
 const GOOGLE_CLIENT_ID = requireEnv('GOOGLE_CLIENT_ID');
 const GOOGLE_CLIENT_SECRET = requireEnv('GOOGLE_CLIENT_SECRET');
 const GOOGLE_REFRESH_TOKEN = requireEnv('GOOGLE_REFRESH_TOKEN');
-const KIT_API_KEY = requireEnv('KIT_API_KEY');
-const KIT_API_SECRET = requireEnv('KIT_API_SECRET');
+const KIT_API_KEY = process.env.KIT_API_KEY || '';
+const KIT_API_SECRET = process.env.KIT_API_SECRET || '';
 const ZACH_CALENDAR_ID = requireEnv('ZACH_CALENDAR_ID');
 const BOOKED_FOUNDER_CALL_TAG_ID = 19259104;
 const GMAIL_USER = requireEnv('GMAIL_USER');
@@ -126,26 +126,30 @@ module.exports = async function handler(req, res) {
 
     const label = selectedDateLabel || slot.label || slot.centralLabel;
 
-    try {
-      await fetch(`https://api.convertkit.com/v3/tags/${BOOKED_FOUNDER_CALL_TAG_ID}/subscribe`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          api_key: KIT_API_KEY,
-          email,
-          first_name: firstName,
-          fields: {
-            meet_link: meetLink || '',
-            session_date: label,
-            session_type: 'Founder Call (Free)',
-            calendar_event_id: eventId,
-            slot_start_utc: slot.startISO,
-            visitor_time_zone: slot.visitorTimeZone,
-          },
-        }),
-      });
-    } catch (kitErr) {
-      console.error('[kit] Waitlist booking tag failed:', kitErr.message, { email, eventId, kitSecretConfigured: Boolean(KIT_API_SECRET) });
+    if (KIT_API_KEY) {
+      try {
+        await fetch(`https://api.convertkit.com/v3/tags/${BOOKED_FOUNDER_CALL_TAG_ID}/subscribe`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            api_key: KIT_API_KEY,
+            email,
+            first_name: firstName,
+            fields: {
+              meet_link: meetLink || '',
+              session_date: label,
+              session_type: 'Founder Call (Free)',
+              calendar_event_id: eventId,
+              slot_start_utc: slot.startISO,
+              visitor_time_zone: slot.visitorTimeZone,
+            },
+          }),
+        });
+      } catch (kitErr) {
+        console.error('[kit] Waitlist booking tag failed:', kitErr.message, { email, eventId, kitSecretConfigured: Boolean(KIT_API_SECRET) });
+      }
+    } else {
+      console.warn('[kit] Waitlist booking tag skipped: KIT_API_KEY not configured', { email, eventId, kitSecretConfigured: Boolean(KIT_API_SECRET) });
     }
 
     const transporter = createTransporter();

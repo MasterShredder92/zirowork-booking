@@ -22,7 +22,7 @@ const SQUARE_LOCATION_ID = requireEnv('SQUARE_LOCATION_ID');
 const GOOGLE_CLIENT_ID = requireEnv('GOOGLE_CLIENT_ID');
 const GOOGLE_CLIENT_SECRET = requireEnv('GOOGLE_CLIENT_SECRET');
 const GOOGLE_REFRESH_TOKEN = requireEnv('GOOGLE_REFRESH_TOKEN');
-const KIT_API_KEY = requireEnv('KIT_API_KEY');
+const KIT_API_KEY = process.env.KIT_API_KEY || '';
 const ZACH_CALENDAR_ID = requireEnv('ZACH_CALENDAR_ID');
 const BOOKED_SESSION_TAG_ID = 19259103;
 const GMAIL_USER = requireEnv('GMAIL_USER');
@@ -147,26 +147,30 @@ module.exports = async function handler(req, res) {
     const { meetLink, eventId, slot } = await createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, visitorTimeZone });
     const label = selectedDateLabel || slot.label || slot.centralLabel;
 
-    try {
-      await fetch(`https://api.convertkit.com/v3/tags/${BOOKED_SESSION_TAG_ID}/subscribe`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          api_key: KIT_API_KEY,
-          email,
-          first_name: firstName,
-          fields: {
-            meet_link: meetLink || '',
-            session_date: label,
-            session_type: 'Strategy Session ($97)',
-            calendar_event_id: eventId,
-            slot_start_utc: slot.startISO,
-            visitor_time_zone: slot.visitorTimeZone,
-          },
-        }),
-      });
-    } catch (kitErr) {
-      console.error('[kit] Paid booking tag failed:', kitErr.message, { email, eventId });
+    if (KIT_API_KEY) {
+      try {
+        await fetch(`https://api.convertkit.com/v3/tags/${BOOKED_SESSION_TAG_ID}/subscribe`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            api_key: KIT_API_KEY,
+            email,
+            first_name: firstName,
+            fields: {
+              meet_link: meetLink || '',
+              session_date: label,
+              session_type: 'Strategy Session ($97)',
+              calendar_event_id: eventId,
+              slot_start_utc: slot.startISO,
+              visitor_time_zone: slot.visitorTimeZone,
+            },
+          }),
+        });
+      } catch (kitErr) {
+        console.error('[kit] Paid booking tag failed:', kitErr.message, { email, eventId });
+      }
+    } else {
+      console.warn('[kit] Paid booking tag skipped: KIT_API_KEY not configured', { email, eventId });
     }
 
     const transporter = createTransporter();

@@ -179,3 +179,15 @@ test('slots route validates required Google env vars and keeps package/UI protec
 
   assert.equal(protectedDiff, '');
 });
+
+test('booking routes keep Kit tagging optional so missing Kit env does not block calendar or email flow', () => {
+  const waitlistSource = fs.readFileSync(path.join(__dirname, 'api', 'book-waitlist.js'), 'utf8');
+  const paidSource = fs.readFileSync(path.join(__dirname, 'api', 'book.js'), 'utf8');
+
+  for (const source of [waitlistSource, paidSource]) {
+    assert.doesNotMatch(source, /const KIT_API_KEY = requireEnv\('KIT_API_KEY'\)/);
+    assert.match(source, /const KIT_API_KEY = process\.env\.KIT_API_KEY \|\| ''/);
+    assert.match(source, /if \(KIT_API_KEY\) \{/);
+    assert.match(source, /tag skipped: KIT_API_KEY not configured/);
+  }
+});
