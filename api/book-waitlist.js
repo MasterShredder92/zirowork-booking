@@ -26,7 +26,7 @@ const ZACH_CALENDAR_ID = requireEnv('ZACH_CALENDAR_ID');
 const BOOKED_FOUNDER_CALL_TAG_ID = 19259104;
 const GMAIL_USER = requireEnv('GMAIL_USER');
 const GMAIL_APP_PASSWORD = requireEnv('GMAIL_APP_PASSWORD');
-const ADMIN_EMAIL = 'admin@adkinsenterprisesllc.com';
+const ADMIN_EMAIL = 'zach@adkinsenterprisesllc.com';
 
 function createTransporter() {
   return nodemailer.createTransport({
@@ -82,7 +82,7 @@ async function createCalendarEvent({ firstName, lastName, email, schoolUrl, sele
   const event = await calendar.events.insert({
     calendarId: ZACH_CALENDAR_ID,
     conferenceDataVersion: 1,
-    sendUpdates: 'none',
+    sendUpdates: 'all',
     requestBody: buildCalendarEventPayload({ firstName, lastName, email, schoolUrl, slot }),
   });
 
@@ -174,7 +174,7 @@ Before we talk:
 - Know your current student count
 - Have screen share working
 
-If you need to reschedule, email us at least 4 hours before: admin@adkinsenterprisesllc.com
+If you need to reschedule, email us at least 4 hours before: zach@adkinsenterprisesllc.com
 
 See you then.
 — Zach`,
@@ -187,7 +187,7 @@ See you then.
 - Have your website URL ready<br>
 - Know your current student count<br>
 - Have screen share working</p>
-<p>If you need to reschedule, email us at least 4 hours before: admin@adkinsenterprisesllc.com</p>
+<p>If you need to reschedule, email us at least 4 hours before: zach@adkinsenterprisesllc.com</p>
 <p>See you then.<br>— Zach</p>`,
     }, `waitlist customer confirmation for ${email} / ${eventId}`);
 
@@ -214,7 +214,7 @@ Visitor TZ: ${slot.visitorTimeZone}`,
     console.error('Waitlist booking handler error:', err);
     const statusCode = err.statusCode || 500;
     return res.status(statusCode).json({
-      error: statusCode === 409 ? err.message : 'Server error. Please try again or email admin@adkinsenterprisesllc.com',
+      error: statusCode === 409 ? err.message : 'Server error. Please try again or email zach@adkinsenterprisesllc.com',
     });
   }
 };

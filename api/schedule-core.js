@@ -3,7 +3,7 @@
 // The backend is the source of truth. All slots are defined in America/Chicago.
 
 const ZACH_TIME_ZONE = 'America/Chicago';
-const ADMIN_EMAIL = 'admin@adkinsenterprisesllc.com';
+const ADMIN_EMAIL = 'zach@adkinsenterprisesllc.com';
 const SLOT_MINUTES = 30;
 const BOOKING_WINDOW_DAYS = 7;
 
@@ -238,7 +238,7 @@ function buildCalendarEventPayload({ firstName, lastName, email, schoolUrl, slot
     guestsCanSeeOtherGuests: false,
     attendees: [
       { email, displayName, responseStatus: 'needsAction' },
-      { email: ADMIN_EMAIL, displayName: 'Admin', responseStatus: 'accepted' },
+      { email: ADMIN_EMAIL, displayName: 'Zach Adkins', responseStatus: 'accepted' },
     ],
     conferenceData: {
       createRequest: {

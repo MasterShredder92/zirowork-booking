@@ -86,7 +86,7 @@ async function createCalendarEvent({ firstName, lastName, email, schoolUrl, sele
   const event = await calendar.events.insert({
     calendarId: ZACH_CALENDAR_ID,
     conferenceDataVersion: 1,
-    sendUpdates: 'none',
+    sendUpdates: 'all',
     requestBody: payload,
   });
 
@@ -195,7 +195,7 @@ Before we talk:
 - Know your current student count and monthly revenue
 - Have screen share working
 
-If you need to reschedule, email us at least 4 hours before: admin@adkinsenterprisesllc.com
+If you need to reschedule, email us at least 4 hours before: zach@adkinsenterprisesllc.com
 
 See you then.
 — Zach`,
@@ -208,13 +208,13 @@ See you then.
 - Have your website URL ready<br>
 - Know your current student count and monthly revenue<br>
 - Have screen share working</p>
-<p>If you need to reschedule, email us at least 4 hours before: admin@adkinsenterprisesllc.com</p>
+<p>If you need to reschedule, email us at least 4 hours before: zach@adkinsenterprisesllc.com</p>
 <p>See you then.<br>— Zach</p>`,
     }, `paid customer confirmation for ${email} / ${eventId}`);
 
     await sendEmail(transporter, {
       from: `"ZiroWork Booking" <${GMAIL_USER}>`,
-      to: 'admin@adkinsenterprisesllc.com',
+      to: 'zach@adkinsenterprisesllc.com',
       subject: `New Strategy Session Booked — ${firstName} ${lastName} ($97)`,
       text: `New paid strategy session booked.
 
@@ -235,7 +235,7 @@ Visitor TZ: ${slot.visitorTimeZone}`,
     console.error('Booking handler error:', err);
     const statusCode = err.statusCode || 500;
     return res.status(statusCode).json({
-      error: statusCode === 409 ? err.message : 'Server error. Please try again or email admin@adkinsenterprisesllc.com',
+      error: statusCode === 409 ? err.message : 'Server error. Please try again or email zach@adkinsenterprisesllc.com',
     });
   }
 };

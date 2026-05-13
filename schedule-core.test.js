@@ -108,7 +108,7 @@ test('cancelled Google events do not block slots', () => {
   assert.equal(filterAvailableSlots([slot], busy).length, 1);
 });
 
-test('calendar payload invites the visitor and admin only, locks guest controls, and creates Google Meet', () => {
+test('calendar payload invites the visitor and zach@ organizer, locks guest controls, and creates Google Meet', () => {
   const slot = listCandidateSlots({ now: new Date('2026-01-12T00:00:00.000Z') })[0];
   const payload = buildCalendarEventPayload({
     firstName: 'Test',
@@ -123,15 +123,15 @@ test('calendar payload invites the visitor and admin only, locks guest controls,
   assert.equal(payload.guestsCanModify, false);
   assert.equal(payload.guestsCanInviteOthers, false);
   assert.equal(payload.guestsCanSeeOtherGuests, false);
-  assert.deepEqual(payload.attendees.map((a) => a.email), ['parent@example.com', 'admin@adkinsenterprisesllc.com']);
+  assert.deepEqual(payload.attendees.map((a) => a.email), ['parent@example.com', 'zach@adkinsenterprisesllc.com']);
   assert.equal(payload.attendees[0].responseStatus, 'needsAction');
   assert.equal(payload.attendees[1].responseStatus, 'accepted');
-  assert.doesNotMatch(payload.attendees.map((a) => a.email).join(','), /zach@/i);
+  assert.match(payload.attendees.map((a) => a.email).join(','), /zach@adkinsenterprisesllc\.com/i);
   assert.equal(payload.conferenceData.createRequest.conferenceSolutionKey.type, 'hangoutsMeet');
   assert.ok(payload.conferenceData.createRequest.requestId.startsWith('zirowork-founder-'));
 });
 
-test('booking routes request Google invite emails and Meet conference creation without stale Zach attendee logic', () => {
+test('booking routes request Google invite emails and Meet conference creation with zach@ as organizer', () => {
   const waitlistSource = fs.readFileSync(path.join(__dirname, 'api', 'book-waitlist.js'), 'utf8');
   const paidSource = fs.readFileSync(path.join(__dirname, 'api', 'book.js'), 'utf8');
 
@@ -140,7 +140,7 @@ test('booking routes request Google invite emails and Meet conference creation w
     assert.match(source, /conferenceDataVersion:\s*1/);
     assert.match(source, /sendUpdates:\s*['"]all['"]/);
     assert.match(source, /calendar\.events\.insert\s*\(/);
-    assert.doesNotMatch(source, /zach@adkinsenterprisesllc\.com/);
+    // zach@ is now the organizer/attendee — it lives in schedule-core.js, not directly in book*.js
   }
 });
 
@@ -173,8 +173,8 @@ test('slots route validates required Google env vars and keeps protected config 
   assert.match(slotsSource, /const GOOGLE_CLIENT_SECRET = requireEnv\('GOOGLE_CLIENT_SECRET'\)/);
   assert.match(slotsSource, /const GOOGLE_REFRESH_TOKEN = requireEnv\('GOOGLE_REFRESH_TOKEN'\)/);
   assert.match(slotsSource, /calendarId:\s*ZACH_CALENDAR_ID/);
-  assert.doesNotMatch(waitlistSource, /zach@/i);
-  assert.match(waitlistSource, /admin@adkinsenterprisesllc\.com/);
+  assert.match(waitlistSource, /zach@adkinsenterprisesllc\.com/);
+  assert.match(waitlistSource, /zach@/i);
 
   const protectedDiff = require('child_process')
     .execSync('git diff -- package.json vercel.json', { cwd: __dirname, encoding: 'utf8' })
