@@ -1,0 +1,45 @@
+{
+  "brand": "ZiroWork",
+  "version": "2026-05-14",
+  "rule": {
+    "main_logo_slots": "Use zirowork-logo-horizontal-bolt.png",
+    "circle_icon_and_favicon_slots": "Use zirowork-bolt-icon.png and generated favicon sizes",
+    "do_not_use": [
+      "old logos",
+      "random lightning files",
+      "square text logos for nav/header/footer",
+      "stacked logos for nav/header/footer",
+      "background variants for visible logo slots"
+    ]
+  },
+  "canonical_assets": {
+    "zirowork-logo-horizontal-bolt.png": {
+      "slot": "main_text_logo",
+      "sha256": "6267ec65949789a8e61d79a8a21d4db521e7e3d3591591a2fbc4e9281e05a5ae"
+    },
+    "zirowork-bolt-icon.png": {
+      "slot": "circle_icon_favicon_source",
+      "sha256": "80965aaf9e0eef2e8d158ec9cb24ced8726a3f91a980c8b84bd2d3ddc6a4b5df"
+    },
+    "zirowork-bolt-icon-192.png": {
+      "slot": "app_icon_192",
+      "sha256": "1a85f740a48a0e5fae324a73e66c4ebe65e9360ac3b987bbcfa4cb7200eae293"
+    },
+    "zirowork-bolt-icon-512.png": {
+      "slot": "app_icon_512",
+      "sha256": "80965aaf9e0eef2e8d158ec9cb24ced8726a3f91a980c8b84bd2d3ddc6a4b5df"
+    }
+  },
+  "approved_repos": [
+    "MasterShredder92/zirowork-booking",
+    "MasterShredder92/zirowork-waitlist",
+    "MasterShredder92/zirowork-university",
+    "MasterShredder92/zirowork-signup-static",
+    "MasterShredder92/zirowork-vault",
+    "MasterShredder92/zirowork-playbook",
+    "MasterShredder92/zirowork-founders",
+    "MasterShredder92/zirowork-connect",
+    "MasterShredder92/zirowork-audit",
+    "MasterShredder92/ziro-work"
+  ]
+}
