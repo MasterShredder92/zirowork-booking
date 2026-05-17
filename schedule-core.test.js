@@ -296,6 +296,11 @@ test('security headers allow required payment and tracking vendors without wildc
   assert.doesNotMatch(csp, /\s\*\s/);
   assert.ok(headers.some((header) => header.key === 'Strict-Transport-Security'));
   assert.ok(headers.some((header) => header.key === 'X-Content-Type-Options'));
+
+  const routeHeaderPass = config.routes.find((route) => route.src === '/(.*)' && route.continue === true && route.headers);
+  assert.ok(routeHeaderPass, 'legacy routes must include a continuing route-level header pass');
+  assert.equal(routeHeaderPass.headers['Content-Security-Policy'], csp);
+  assert.equal(routeHeaderPass.headers['X-Content-Type-Options'], 'nosniff');
 });
 
 test('gitignore protects OAuth tokens, env snapshots, and repair scripts', () => {
