@@ -81,16 +81,22 @@ function isGoogleAuthError(err) {
 }
 
 async function createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, visitorTimeZone, slotId, slotStartISO }) {
+  if (!slotId || !slotStartISO) {
+    const error = new Error('Selected slot is missing required validation data. Please refresh and pick an open time.');
+    error.statusCode = 409;
+    throw error;
+  }
+
   const calendar = getCalendarClient();
   const slot = findSlotOrThrow({ selectedDate, selectedTime, visitorTimeZone: visitorTimeZone || ZACH_TIME_ZONE });
 
-  if (slotId && slot.id !== slotId) {
+  if (slot.id !== slotId) {
     const error = new Error('Selected slot is stale. Please refresh and pick an open time.');
     error.statusCode = 409;
     throw error;
   }
 
-  if (slotStartISO && slot.startISO !== slotStartISO) {
+  if (slot.startISO !== slotStartISO) {
     const error = new Error('Selected slot changed. Please refresh and pick an open time.');
     error.statusCode = 409;
     throw error;
