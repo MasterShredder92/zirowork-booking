@@ -411,14 +411,15 @@ footer p{font-size:11px;color:var(--muted2)}
 const SQUARE_APP_ID      = 'sq0idp-F-S9XSRxcT_48k6AfpI8gA';
 const SQUARE_LOCATION_ID = 'EAAAl67VA4DybLYx0HA-CkucS1qntKDod_4n_DCfkUxSRK5xJAFY7N0JSNz93dHL';
 
+// Mirrors api/schedule-core.js availability. Do not add client-only slots here.
 const REAL_SLOTS = {
-  1:['10:00','11:00','15:00','19:00'],
-  2:['10:00','11:00','15:00','19:00'],
-  3:['10:00','11:00','15:00','19:00'],
-  4:['10:00','11:00','15:00','19:00'],
-  6:['10:00','11:00','15:00'],
+  1:['06:00','07:00','10:00','15:00','20:00','21:00'],
+  2:['06:00','07:00','10:00','15:00','20:00','21:00'],
+  3:['06:00','07:00','10:00','15:00','20:00','21:00'],
+  4:['06:00','07:00','10:00','15:00','20:00','21:00'],
+  5:['06:00','07:00','10:00','15:00'],
 };
-const FAKE_SLOT_INDEX = 1; // 11am always shows "Already Booked"
+const FAKE_SLOT_INDEX = 1; // 7am always shows "Already Booked"
 
 const MON_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const MON_SHORT=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];

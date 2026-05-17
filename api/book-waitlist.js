@@ -74,9 +74,28 @@ async function verifyCalendarEvent(calendar, eventId) {
   console.log(`Event verified: ${eventId} | status: ${verify.data.status} | start: ${verify.data.start?.dateTime}`);
 }
 
-async function createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, visitorTimeZone }) {
+function isGoogleAuthError(err) {
+  const message = String(err?.message || '');
+  const responseError = String(err?.response?.data?.error || '');
+  return message.includes('invalid_grant') || responseError.includes('invalid_grant');
+}
+
+async function createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, visitorTimeZone, slotId, slotStartISO }) {
   const calendar = getCalendarClient();
   const slot = findSlotOrThrow({ selectedDate, selectedTime, visitorTimeZone: visitorTimeZone || ZACH_TIME_ZONE });
+
+  if (slotId && slot.id !== slotId) {
+    const error = new Error('Selected slot is stale. Please refresh and pick an open time.');
+    error.statusCode = 409;
+    throw error;
+  }
+
+  if (slotStartISO && slot.startISO !== slotStartISO) {
+    const error = new Error('Selected slot changed. Please refresh and pick an open time.');
+    error.statusCode = 409;
+    throw error;
+  }
+
   await assertSlotStillAvailable(calendar, slot);
 
   const event = await calendar.events.insert({
@@ -107,7 +126,7 @@ async function sendEmail(transporter, message, context) {
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel, visitorTimeZone } = req.body || {};
+  const { firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel, visitorTimeZone, slotId, slotStartISO } = req.body || {};
 
   if (!firstName || !lastName || !email || !selectedDate || !selectedTime) {
     return res.status(400).json({ error: 'Missing required fields.' });
@@ -122,6 +141,8 @@ module.exports = async function handler(req, res) {
       selectedDate,
       selectedTime,
       visitorTimeZone: visitorTimeZone || ZACH_TIME_ZONE,
+      slotId,
+      slotStartISO,
     });
 
     const label = selectedDateLabel || slot.label || slot.centralLabel;
@@ -211,10 +232,23 @@ Visitor TZ: ${slot.visitorTimeZone}`,
     console.log(`Founder call booked: ${firstName} ${lastName} <${email}> | ${slot.id} | eventId: ${eventId}`);
     return res.status(200).json({ success: true, meetLink, eventId, slot });
   } catch (err) {
-    console.error('Waitlist booking handler error:', err);
-    const statusCode = err.statusCode || 500;
+    const statusCode = err.statusCode || (isGoogleAuthError(err) ? 503 : 500);
+    console.error('Waitlist booking handler error:', {
+      message: err.message,
+      code: err.code,
+      statusCode,
+      googleError: err.response?.data?.error,
+      selectedDate,
+      selectedTime,
+      slotId,
+      email,
+    });
     return res.status(statusCode).json({
-      error: statusCode === 409 ? err.message : 'Server error. Please try again or email zach@adkinsenterprisesllc.com',
+      error: statusCode === 409
+        ? err.message
+        : statusCode === 503
+          ? 'Calendar connection error. Your details were received, but the invite could not be created. Email zach@adkinsenterprisesllc.com and we will lock it manually.'
+          : 'Server error. Please try again or email zach@adkinsenterprisesllc.com',
     });
   }
 };

@@ -228,84 +228,60 @@ footer p{font-size:11px;color:var(--muted2)}
 </footer>
 
 <script>
-// All times in CST (America/Chicago). Browser converts to visitor's local timezone for display.
-// Coverage: 6AM/7AM = UK prime + AU late; 10AM/3PM = US core; 8PM/9PM = AU prime
-const REAL_SLOTS = {
-  1:['06:00','07:00','10:00','15:00','20:00','21:00'],
-  2:['06:00','07:00','10:00','15:00','20:00','21:00'],
-  3:['06:00','07:00','10:00','15:00','20:00','21:00'],
-  4:['06:00','07:00','10:00','15:00','20:00','21:00'],
-  5:['06:00','07:00','10:00','15:00','20:00','21:00'],
-  6:['06:00','07:00','10:00','15:00','20:00','21:00'],
-};
-const FAKE_SLOT_INDEX = 1;
-
+// Slots are loaded from /api/slots. The backend schedule-core.js is the only source of truth.
 const MON_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const MON_SHORT=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const DAY_FULL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
 let viewYear, viewMonth;
-let selDate=null, selDateStr='', selTime='', selLabel='';
+let selDate=null, selDateStr='', selTime='', selLabel='', selSlot=null;
+let availableSlots=[];
+let slotsByDate=new Map();
+let slotsLoaded=false;
 
-function toDateStr(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
-function fmt12(h,m){ const h12=h>12?h-12:h===0?12:h; return `${h12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`; }
-function addMins(h,m,mins){ const t=h*60+m+mins; return [Math.floor(t/60)%24,t%60]; }
-
-// Timezone conversion: CST slot -> visitor local time
-const VISITOR_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
-const VISITOR_TZ_ABBR = (()=>{
-  try {
-    const s = new Intl.DateTimeFormat('en-US',{timeZone:VISITOR_TZ,timeZoneName:'short'}).format(new Date());
-    return s.split(', ')[1] || VISITOR_TZ;
-  } catch(e){ return ''; }
+const VISITOR_TZ = (()=>{
+  try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Chicago'; }
+  catch(e){ return 'America/Chicago'; }
 })();
 
-// Dynamically resolve CST/CDT offset (handles DST automatically)
-function getCstUtcOffset(dateObj) {
-  // Returns the number of hours to ADD to CST local time to get UTC
-  // CST = UTC-6, CDT = UTC-5. Intl resolves this automatically.
-  const jan = new Date(dateObj.getFullYear(), 0, 1);
-  const jul = new Date(dateObj.getFullYear(), 6, 1);
-  const stdOffset = Math.max(
-    jan.getTimezoneOffset(),
-    jul.getTimezoneOffset()
-  );
-  // Use Intl to get the actual offset for Chicago on the given date
-  const formatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/Chicago',
-    timeZoneName: 'shortOffset'
-  });
-  const parts = formatter.formatToParts(dateObj);
-  const tzPart = parts.find(p => p.type === 'timeZoneName');
-  // tzPart.value is like "GMT-5" or "GMT-6"
-  const match = tzPart && tzPart.value.match(/GMT([+-]?\d+)/);
-  return match ? -parseInt(match[1]) : 6; // fallback to 6 (CST)
+function toDateStr(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function fmt12FromKey(timeKey){
+  const [h,m]=timeKey.split(':').map(Number);
+  const h12=h>12?h-12:h===0?12:h;
+  return `${h12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`;
+}
+function slotSort(a,b){ return new Date(a.startISO)-new Date(b.startISO); }
+
+function setSlots(slots){
+  availableSlots=(Array.isArray(slots)?slots:[]).slice().sort(slotSort);
+  slotsByDate=new Map();
+  for(const slot of availableSlots){
+    if(!slot || !slot.dateKey || !slot.timeKey) continue;
+    if(!slotsByDate.has(slot.dateKey)) slotsByDate.set(slot.dateKey,[]);
+    slotsByDate.get(slot.dateKey).push(slot);
+  }
 }
 
-function cstToLocal(dateObj, cstHour, cstMin) {
-  // Build a Date representing the CST slot, then read it in visitor's timezone
-  // CST = UTC-6 (CDT = UTC-5). Use Intl to get the correct offset.
-  const offset = getCstUtcOffset(dateObj);
-  const cstDate = new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), cstHour + offset, cstMin));
-  const localStr = cstDate.toLocaleTimeString('en-US',{timeZone:VISITOR_TZ,hour:'numeric',minute:'2-digit',hour12:true});
-  return localStr;
+async function loadSlots(){
+  slotsLoaded=false;
+  const qs=new URLSearchParams({visitorTimeZone:VISITOR_TZ});
+  const res=await fetch(`/api/slots?${qs.toString()}`,{headers:{'Accept':'application/json'}});
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(data.error||'Could not load available times.');
+  setSlots(data.slots||[]);
+  slotsLoaded=true;
 }
-function cstToLocalFull(dateObj, cstHour, cstMin) {
-  const [lh, lm] = (() => {
-    const offset = getCstUtcOffset(dateObj);
-    const cstDate = new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), cstHour + offset, cstMin));
-    const parts = new Intl.DateTimeFormat('en-US',{timeZone:VISITOR_TZ,hour:'numeric',minute:'2-digit',hour12:false}).formatToParts(cstDate);
-    const h = parseInt(parts.find(p=>p.type==='hour').value);
-    const m = parseInt(parts.find(p=>p.type==='minute').value);
-    return [h, m];
-  })();
-  const [eh, em] = addMins(lh, lm, 30);
-  return { startStr: cstToLocal(dateObj, cstHour, cstMin), endStr: fmt12(eh, em) };
+
+function showCalendarError(message){
+  const timesWrap=document.getElementById('timesWrap');
+  const row=document.getElementById('timesRow');
+  document.getElementById('timesDayLabel').textContent='Calendar unavailable';
+  row.innerHTML=`<div class="time-pill tp-booked"><span class="tp-time">${message}</span><span class="tp-status s-booked">Email zach@adkinsenterprisesllc.com</span></div>`;
+  timesWrap.classList.add('visible');
 }
 
 function buildCalendar(){
   const today=new Date(); today.setHours(0,0,0,0);
-  const _isFri=new Date().toLocaleDateString('en-US',{weekday:'long',timeZone:'America/Chicago'})==='Friday'; const cutoff=new Date(new Date().getTime()+(_isFri?30:8*60)*60*1000);
   const maxDate=new Date(today); maxDate.setDate(today.getDate()+7);
 
   document.getElementById('monthTitle').textContent=`${MON_NAMES[viewMonth]} ${viewYear}`;
@@ -326,29 +302,20 @@ function buildCalendar(){
     const d=new Date(viewYear,viewMonth,day);
     const dow=d.getDay();
     const ds=toDateStr(d);
-    const slots=REAL_SLOTS[dow]||[];
-    const isToday=ds===toDateStr(today);
-
-    const openSlots=slots.filter((t,idx)=>{
-      if(idx===FAKE_SLOT_INDEX) return false;
-      const [h,m]=t.split(':').map(Number);
-      const dt=new Date(d.getFullYear(),d.getMonth(),d.getDate(),h,m);
-      if(isToday && dt<cutoff) return false;
-      return true;
-    });
-
-    const isAvail=slots.length>0 && d>=today && d<=maxDate && openSlots.length>0;
+    const daySlots=slotsByDate.get(ds)||[];
+    const isAvail=slotsLoaded && d>=today && d<=maxDate && daySlots.length>0;
     const isSelected=selDate && ds===selDateStr;
 
     const cell=document.createElement('div');
     cell.className='mg-day';
     if(d<today||d>maxDate) cell.classList.add('past');
-    else if(!isAvail)      cell.classList.add('unavail');
-    else                   cell.classList.add('avail');
-    if(isToday)    cell.classList.add('is-today');
+    else if(!isAvail) cell.classList.add('unavail');
+    else cell.classList.add('avail');
+    if(ds===toDateStr(today)) cell.classList.add('is-today');
     if(isSelected) cell.classList.add('selected');
 
-    cell.innerHTML=`<span class="day-num">${day}</span>${isAvail?`<span class="day-slots">${openSlots.length} open</span>`:''}`;
+    const loadingText=!slotsLoaded && d>=today && d<=maxDate ? '<span class="day-slots">Loading</span>' : '';
+    cell.innerHTML=`<span class="day-num">${day}</span>${isAvail?`<span class="day-slots">${daySlots.length} open</span>`:loadingText}`;
     if(isAvail) cell.onclick=()=>selectDay(d,ds,dow);
     grid.appendChild(cell);
   }
@@ -362,59 +329,53 @@ function changeMonth(dir){
 }
 
 function selectDay(d,ds,dow){
-  selDate=d; selDateStr=ds; selTime=''; selLabel='';
+  selDate=d; selDateStr=ds; selTime=''; selLabel=''; selSlot=null;
   document.getElementById('formWrap').classList.remove('visible');
   buildCalendar();
   buildTimes(d,ds,dow);
 }
 
 function buildTimes(d,ds,dow){
-  const today=new Date(); today.setHours(0,0,0,0);
-  const isToday=ds===toDateStr(today);
-  const _isFri=new Date().toLocaleDateString('en-US',{weekday:'long',timeZone:'America/Chicago'})==='Friday'; const cutoff=new Date(new Date().getTime()+(_isFri?30:8*60)*60*1000);
-  const slots=REAL_SLOTS[dow]||[];
-
-  document.getElementById('timesDayLabel').textContent=
-    `${DAY_FULL[dow]}, ${MON_SHORT[d.getMonth()]} ${d.getDate()}`;
+  const slots=slotsByDate.get(ds)||[];
+  document.getElementById('timesDayLabel').textContent=`${DAY_FULL[dow]}, ${MON_SHORT[d.getMonth()]} ${d.getDate()}`;
 
   const row=document.getElementById('timesRow');
   row.innerHTML='';
 
-  slots.forEach((time,idx)=>{
-    const [h,m]=time.split(':').map(Number);
-    const [eh,em]=addMins(h,m,30);
-    const dt=new Date(d.getFullYear(),d.getMonth(),d.getDate(),h,m);
-    const isBooked=idx===FAKE_SLOT_INDEX||(isToday&&dt<cutoff);
-    const isSelected=!isBooked&&selTime===time;
-
-    const pill=document.createElement('div');
-    pill.className=`time-pill${isBooked?' tp-booked':''}${isSelected?' tp-selected':''}`;
-    const localFmt = cstToLocalFull(d, h, m);
-    const isSameTz = VISITOR_TZ === 'America/Chicago' || VISITOR_TZ === 'America/Winnipeg';
-    const displayTime = isSameTz ? `${fmt12(h,m)} – ${fmt12(eh,em)} CST` : `${localFmt.startStr} – ${localFmt.endStr} ${VISITOR_TZ_ABBR}`;
-    const cstRef = isSameTz ? '' : `<span class="tp-cst">${fmt12(h,m)} CST</span>`;
-    pill.innerHTML=`
-      <span class="tp-time">${displayTime}</span>
-      ${cstRef}
-      <span class="tp-status ${isBooked?'s-booked':'s-open'}">${isBooked?'Already Booked':'Available'}</span>`;
-    if(!isBooked){
-      const localLabel = isSameTz ? `${fmt12(h,m)} CST` : `${localFmt.startStr} ${VISITOR_TZ_ABBR} (${fmt12(h,m)} CST)`;
+  if(!slotsLoaded){
+    row.innerHTML='<div class="time-pill tp-booked"><span class="tp-time">Loading live availability...</span></div>';
+  }else if(slots.length===0){
+    row.innerHTML='<div class="time-pill tp-booked"><span class="tp-time">No open times left for this day.</span><span class="tp-status s-booked">Already Booked</span></div>';
+  }else{
+    slots.forEach((slot)=>{
+      const time=slot.timeKey;
+      const isSelected=selSlot && selSlot.id===slot.id;
+      const pill=document.createElement('div');
+      pill.className=`time-pill${isSelected?' tp-selected':''}`;
+      const label=slot.label || slot.centralLabel || `${fmt12FromKey(time)} Central`;
+      const centralRef=(slot.centralLabel && slot.label && slot.centralLabel!==slot.label) ? `<span class="tp-cst">${slot.centralLabel}</span>` : '';
+      pill.innerHTML=`
+        <span class="tp-time">${label}</span>
+        ${centralRef}
+        <span class="tp-status s-open">Available</span>`;
       pill.onclick=()=>{
-        selTime=time;
-        selLabel=`${DAY_FULL[dow]}, ${MON_SHORT[d.getMonth()]} ${d.getDate()} · ${localLabel}`;
+        selSlot=slot;
+        selTime=slot.timeKey;
+        selDateStr=slot.dateKey;
+        selLabel=slot.label || slot.centralLabel || `${DAY_FULL[dow]}, ${MON_SHORT[d.getMonth()]} ${d.getDate()} · ${fmt12FromKey(slot.timeKey)} Central`;
         buildTimes(d,ds,dow);
         showForm();
       };
-    }
-    row.appendChild(pill);
-  });
+      row.appendChild(pill);
+    });
+  }
 
   document.getElementById('timesWrap').classList.add('visible');
   document.getElementById('timesWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 function clearTime(){
-  selTime=''; selLabel='';
+  selTime=''; selLabel=''; selSlot=null;
   document.getElementById('formWrap').classList.remove('visible');
   if(selDate) buildTimes(selDate,selDateStr,selDate.getDay());
 }
@@ -433,22 +394,31 @@ async function submitBooking(){
   const btn=document.getElementById('confirmBtn');
 
   if(!fn||!ln||!em){err.textContent='Please fill in your name and email.';err.style.display='block';return;}
-  if(!selTime){err.textContent='Please select a time slot.';err.style.display='block';return;}
+  if(!selSlot||!selTime){err.textContent='Please select a live available time slot.';err.style.display='block';return;}
   err.style.display='none';
 
   btn.textContent='BOOKING...'; btn.disabled=true;
 
   try{
+    const payload={
+      firstName:fn,
+      lastName:ln,
+      email:em,
+      schoolUrl:document.getElementById('schoolUrl').value.trim(),
+      selectedDate:selSlot.dateKey,
+      selectedTime:selSlot.timeKey,
+      selectedDateLabel:selLabel,
+      visitorTimeZone:VISITOR_TZ,
+      slotId:selSlot.id,
+      slotStartISO:selSlot.startISO
+    };
+
     const res=await fetch('/api/book-waitlist',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        firstName:fn, lastName:ln, email:em,
-        schoolUrl:document.getElementById('schoolUrl').value.trim(),
-        selectedDate:selDateStr, selectedTime:selTime, selectedDateLabel:selLabel
-      })
+      body:JSON.stringify(payload)
     });
-    const data=await res.json();
+    const data=await res.json().catch(()=>({}));
 
     if(res.ok&&data.success){
       document.getElementById('monthGrid').closest('.month-cal-wrap').style.display='none';
@@ -463,12 +433,15 @@ async function submitBooking(){
       }
       sw.scrollIntoView({behavior:'smooth'});
     }else{
-      err.textContent=data.error||'Something went wrong. Try again.';
+      err.textContent=data.error||'That time could not be booked. Pick another open time or email zach@adkinsenterprisesllc.com.';
       err.style.display='block';
       btn.textContent='CONFIRM MY FREE CALL →'; btn.disabled=false;
+      await loadSlots().catch(()=>{});
+      buildCalendar();
+      if(selDate) buildTimes(selDate,selDateStr,selDate.getDay());
     }
   }catch(e){
-    err.textContent='Something went wrong. Try again.';
+    err.textContent='Connection error. Please try again or email zach@adkinsenterprisesllc.com.';
     err.style.display='block';
     btn.textContent='CONFIRM MY FREE CALL →'; btn.disabled=false;
   }
@@ -496,37 +469,31 @@ document.getElementById('nextMonthBtn').addEventListener('click',()=>changeMonth
     if(fnEl) fnEl.value=fn;
     if(lnEl) lnEl.value=ln;
 
-    // Personalize the sub-headline
     const sub=document.getElementById('heroSub');
     if(sub && fn) sub.textContent=`${fn}, pick a time below. Takes 60 seconds.`;
   }
 })();
 
-(function init(){
+(async function init(){
   const now=new Date();
   viewYear=now.getFullYear();
   viewMonth=now.getMonth();
-  const today=new Date(); today.setHours(0,0,0,0);
-  const _isFri=new Date().toLocaleDateString('en-US',{weekday:'long',timeZone:'America/Chicago'})==='Friday'; const cutoff=new Date(new Date().getTime()+(_isFri?30:8*60)*60*1000);
-  const maxDate=new Date(today); maxDate.setDate(today.getDate()+7);
-  let hasSlotThisMonth=false;
-  for(let day=today.getDate();day<=new Date(viewYear,viewMonth+1,0).getDate();day++){
-    const d=new Date(viewYear,viewMonth,day);
-    if(d>maxDate) break;
-    const dow=d.getDay();
-    const slots=REAL_SLOTS[dow]||[];
-    for(const t of slots){
-      const [h,m]=t.split(':').map(Number);
-      const dt=new Date(d.getFullYear(),d.getMonth(),d.getDate(),h,m);
-      if(dt>cutoff){hasSlotThisMonth=true;break;}
-    }
-    if(hasSlotThisMonth) break;
-  }
-  if(!hasSlotThisMonth){
-    viewMonth+=1;
-    if(viewMonth>11){viewMonth=0;viewYear++;}
-  }
   buildCalendar();
+  try{
+    await loadSlots();
+    const firstSlot=availableSlots[0];
+    if(firstSlot){
+      const firstDate=new Date(firstSlot.startISO);
+      const centralParts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',year:'numeric',month:'numeric'}).formatToParts(firstDate);
+      const y=Number(centralParts.find(p=>p.type==='year').value);
+      const m=Number(centralParts.find(p=>p.type==='month').value)-1;
+      viewYear=y; viewMonth=m;
+    }
+    buildCalendar();
+  }catch(e){
+    buildCalendar();
+    showCalendarError('Could not load live availability. Please refresh or email zach@adkinsenterprisesllc.com.');
+  }
 })();
 </script>
 </body>

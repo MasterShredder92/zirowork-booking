@@ -26,6 +26,12 @@ function getOAuthClient() {
   return oauth2Client;
 }
 
+function isGoogleAuthError(err) {
+  const message = String(err?.message || '');
+  const responseError = String(err?.response?.data?.error || '');
+  return message.includes('invalid_grant') || responseError.includes('invalid_grant');
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -53,7 +59,17 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({ slots });
   } catch (err) {
-    console.error('Slots error:', err.message);
-    return res.status(500).json({ error: 'Could not load available times. Please try again.' });
+    const statusCode = isGoogleAuthError(err) ? 503 : 500;
+    console.error('Slots error:', {
+      message: err.message,
+      code: err.code,
+      statusCode,
+      googleError: err.response?.data?.error,
+    });
+    return res.status(statusCode).json({
+      error: statusCode === 503
+        ? 'Calendar connection error. Please email zach@adkinsenterprisesllc.com to book manually.'
+        : 'Could not load available times. Please try again.',
+    });
   }
 };

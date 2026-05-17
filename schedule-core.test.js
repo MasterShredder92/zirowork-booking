@@ -194,3 +194,27 @@ test('booking routes keep Kit tagging optional so missing Kit env does not block
     assert.match(source, /tag skipped: KIT_API_KEY not configured/);
   }
 });
+
+test('waitlist calendar renders only live slots from the slots API', () => {
+  const waitlistSource = fs.readFileSync(path.join(__dirname, 'waitlist.html'), 'utf8');
+  const bookingSource = fs.readFileSync(path.join(__dirname, 'api', 'book-waitlist.js'), 'utf8');
+
+  assert.doesNotMatch(waitlistSource, /const\s+REAL_SLOTS\s*=/);
+  assert.doesNotMatch(waitlistSource, /FAKE_SLOT_INDEX/);
+  assert.match(waitlistSource, /fetch\(`\/api\/slots\?/);
+  assert.match(waitlistSource, /slotId/);
+  assert.match(waitlistSource, /slotStartISO/);
+  assert.match(bookingSource, /slot\.id !== slotId/);
+  assert.match(bookingSource, /slot\.startISO !== slotStartISO/);
+});
+
+test('slot APIs expose calendar auth failures as controlled 503 errors', () => {
+  const slotsSource = fs.readFileSync(path.join(__dirname, 'api', 'slots.js'), 'utf8');
+  const waitlistBookingSource = fs.readFileSync(path.join(__dirname, 'api', 'book-waitlist.js'), 'utf8');
+
+  for (const source of [slotsSource, waitlistBookingSource]) {
+    assert.match(source, /isGoogleAuthError/);
+    assert.match(source, /invalid_grant/);
+    assert.match(source, /503/);
+  }
+});
