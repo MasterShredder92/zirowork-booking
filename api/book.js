@@ -74,9 +74,39 @@ async function verifyCalendarEvent(calendar, eventId) {
   console.log(`Event verified: ${eventId} | status: ${verify.data.status} | start: ${verify.data.start?.dateTime}`);
 }
 
-async function createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, visitorTimeZone }) {
-  const calendar = getCalendarClient();
+function isGoogleAuthError(err) {
+  const message = String(err?.message || '');
+  const responseError = String(err?.response?.data?.error || '');
+  return message.includes('invalid_grant') || responseError.includes('invalid_grant');
+}
+
+function assertSlotIdentity({ selectedDate, selectedTime, visitorTimeZone, slotId, slotStartISO }) {
+  if (!slotId || !slotStartISO) {
+    const error = new Error('Selected slot is missing required validation data. Please refresh and pick an open time.');
+    error.statusCode = 409;
+    throw error;
+  }
+
   const slot = findSlotOrThrow({ selectedDate, selectedTime, visitorTimeZone: visitorTimeZone || ZACH_TIME_ZONE });
+
+  if (slot.id !== slotId) {
+    const error = new Error('Selected slot is stale. Please refresh and pick an open time.');
+    error.statusCode = 409;
+    throw error;
+  }
+
+  if (slot.startISO !== slotStartISO) {
+    const error = new Error('Selected slot changed. Please refresh and pick an open time.');
+    error.statusCode = 409;
+    throw error;
+  }
+
+  return slot;
+}
+
+async function createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, visitorTimeZone, slotId, slotStartISO }) {
+  const calendar = getCalendarClient();
+  const slot = assertSlotIdentity({ selectedDate, selectedTime, visitorTimeZone, slotId, slotStartISO });
   await assertSlotStillAvailable(calendar, slot);
 
   const payload = buildCalendarEventPayload({ firstName, lastName, email, schoolUrl, slot });
@@ -111,15 +141,17 @@ async function sendEmail(transporter, message, context) {
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel, sourceId, visitorTimeZone } = req.body || {};
+  const { firstName, lastName, email, schoolUrl, selectedDate, selectedTime, selectedDateLabel, sourceId, visitorTimeZone, slotId, slotStartISO } = req.body || {};
 
   if (!firstName || !lastName || !email || !selectedDate || !selectedTime || !sourceId) {
     return res.status(400).json({ error: 'Missing required fields.' });
   }
 
+  let paymentCompleted = false;
+
   try {
     const calendar = getCalendarClient();
-    const prePaymentSlot = findSlotOrThrow({ selectedDate, selectedTime, visitorTimeZone: visitorTimeZone || ZACH_TIME_ZONE });
+    const prePaymentSlot = assertSlotIdentity({ selectedDate, selectedTime, visitorTimeZone, slotId, slotStartISO });
     await assertSlotStillAvailable(calendar, prePaymentSlot);
 
     const squareRes = await fetch('https://connect.squareup.com/v2/payments', {
@@ -143,8 +175,9 @@ module.exports = async function handler(req, res) {
       const errMsg = squareData.errors?.[0]?.detail || 'Payment failed.';
       return res.status(402).json({ error: errMsg });
     }
+    paymentCompleted = true;
 
-    const { meetLink, eventId, slot } = await createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, visitorTimeZone });
+    const { meetLink, eventId, slot } = await createCalendarEvent({ firstName, lastName, email, schoolUrl, selectedDate, selectedTime, visitorTimeZone, slotId, slotStartISO });
     const label = selectedDateLabel || slot.label || slot.centralLabel;
 
     if (KIT_API_KEY) {
@@ -232,10 +265,29 @@ Visitor TZ: ${slot.visitorTimeZone}`,
     console.log(`Strategy session booked: ${firstName} ${lastName} <${email}> | ${slot.id} | eventId: ${eventId}`);
     return res.status(200).json({ success: true, meetLink, eventId, slot });
   } catch (err) {
-    console.error('Booking handler error:', err);
-    const statusCode = err.statusCode || 500;
+    const statusCode = err.statusCode || (isGoogleAuthError(err) ? 503 : 500);
+    console.error('Booking handler error:', {
+      message: err.message,
+      code: err.code,
+      statusCode,
+      googleError: err.response?.data?.error,
+      selectedDate,
+      selectedTime,
+      slotId,
+      email,
+      paymentCompleted,
+    });
+
+    const paidManualMessage = 'Your payment was received, but the calendar invite could not be created automatically. Email zach@adkinsenterprisesllc.com and we will lock it manually.';
+
     return res.status(statusCode).json({
-      error: statusCode === 409 ? err.message : 'Server error. Please try again or email zach@adkinsenterprisesllc.com',
+      error: paymentCompleted
+        ? paidManualMessage
+        : statusCode === 409
+          ? err.message
+          : statusCode === 503
+            ? 'Calendar connection error. Your details were received, but the invite could not be created. Email zach@adkinsenterprisesllc.com and we will lock it manually.'
+            : 'Server error. Please try again or email zach@adkinsenterprisesllc.com',
     });
   }
 };

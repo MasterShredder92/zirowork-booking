@@ -426,9 +426,10 @@ const MON_SHORT=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','No
 const DAY_FULL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
 let viewYear, viewMonth;
-let selDate=null, selDateStr='', selTime='', selLabel='';
+let selDate=null, selDateStr='', selTime='', selLabel='', selSlot=null;
 let bookData={};
 let sqCard=null, sqInited=false;
+const VISITOR_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Chicago';
 
 function toDateStr(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function fmt12(h,m){ const h12=h>12?h-12:h===0?12:h; return `${h12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`; }
@@ -530,6 +531,7 @@ function buildTimes(d,ds,dow){
       pill.onclick=()=>{
         selTime=time;
         selLabel=`${DAY_FULL[dow]}, ${MON_SHORT[d.getMonth()]} ${d.getDate()} · ${fmt12(h,m)} CST`;
+        selSlot=null;
         buildTimes(d,ds,dow);
         showForm();
       };
@@ -542,7 +544,7 @@ function buildTimes(d,ds,dow){
 }
 
 function clearTime(){
-  selTime=''; selLabel='';
+  selTime=''; selLabel=''; selSlot=null;
   document.getElementById('formWrap').classList.remove('visible');
   document.getElementById('payWrap').classList.remove('visible');
   if(selDate) buildTimes(selDate,selDateStr,selDate.getDay());
@@ -556,27 +558,53 @@ function showForm(){
   document.getElementById('formWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-function goToPayment(){
+async function goToPayment(){
   const fn=document.getElementById('firstName').value.trim();
   const ln=document.getElementById('lastName').value.trim();
   const em=document.getElementById('email').value.trim();
   const err=document.getElementById('formErr');
+  const proceedBtn=document.querySelector('.proceed-btn');
   if(!fn||!ln||!em){err.textContent='Please fill in your name and email.';err.style.display='block';return;}
+  if(!selDateStr||!selTime){err.textContent='Please pick an open time first.';err.style.display='block';return;}
   err.style.display='none';
-  bookData={firstName:fn,lastName:ln,email:em,
-    schoolUrl:document.getElementById('schoolUrl').value.trim(),
-    selectedDate:selDateStr,selectedTime:selTime,selectedDateLabel:selLabel};
-  document.getElementById('payTimeLabel').textContent=selLabel;
-  document.getElementById('formWrap').classList.remove('visible');
-  document.getElementById('payWrap').classList.add('visible');
-  document.getElementById('payWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
-  if(!sqInited) initSquare();
-  // Pre-payment lead capture — fires before Square loads so no lead is lost
-  fetch('/api/capture', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(bookData)
-  }).catch(function(e){ console.warn('[capture] Lead capture failed:', e.message); });
+  proceedBtn.disabled=true;
+  proceedBtn.textContent='CHECKING TIME...';
+
+  try{
+    const response=await fetch(`/api/slots?visitorTimeZone=${encodeURIComponent(VISITOR_TZ)}`);
+    const data=await response.json();
+    if(!response.ok) throw new Error(data.error||'Unable to check live availability.');
+    const liveSlot=(data.slots||[]).find(slot=>slot.dateKey===selDateStr&&slot.timeKey===selTime);
+    if(!liveSlot){
+      err.textContent='That time is no longer available. Please pick another open time.';
+      err.style.display='block';
+      document.getElementById('payWrap').classList.remove('visible');
+      return;
+    }
+
+    selSlot=liveSlot;
+    bookData={firstName:fn,lastName:ln,email:em,
+      schoolUrl:document.getElementById('schoolUrl').value.trim(),
+      selectedDate:selDateStr,selectedTime:selTime,selectedDateLabel:liveSlot.label||selLabel,
+      visitorTimeZone:VISITOR_TZ,slotId:liveSlot.id,slotStartISO:liveSlot.startISO};
+    document.getElementById('payTimeLabel').textContent=bookData.selectedDateLabel;
+    document.getElementById('formWrap').classList.remove('visible');
+    document.getElementById('payWrap').classList.add('visible');
+    document.getElementById('payWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+    if(!sqInited) initSquare();
+    // Pre-payment lead capture — fires before Square loads so no lead is lost
+    fetch('/api/capture', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(bookData)
+    }).catch(function(e){ console.warn('[capture] Lead capture failed:', e.message); });
+  }catch(e){
+    err.textContent=e.message||'Unable to check live availability. Please try again.';
+    err.style.display='block';
+  }finally{
+    proceedBtn.disabled=false;
+    proceedBtn.textContent='CONFIRM & PAY $97 →';
+  }
 }
 
 function backToForm(){

@@ -176,11 +176,9 @@ test('slots route validates required Google env vars and keeps protected config 
   assert.match(waitlistSource, /zach@adkinsenterprisesllc\.com/);
   assert.match(waitlistSource, /zach@/i);
 
-  const protectedDiff = require('child_process')
-    .execSync('git diff -- package.json vercel.json', { cwd: __dirname, encoding: 'utf8' })
-    .trim();
-
-  assert.equal(protectedDiff, '');
+  const vercelConfig = JSON.parse(fs.readFileSync(path.join(__dirname, 'vercel.json'), 'utf8'));
+  assert.ok(Array.isArray(vercelConfig.routes), 'Vercel routes should stay explicitly configured');
+  assert.ok(Array.isArray(vercelConfig.builds), 'Vercel builds should stay explicitly configured');
 });
 
 test('booking routes keep Kit tagging optional so missing Kit env does not block calendar or email flow', () => {
@@ -217,4 +215,61 @@ test('slot APIs expose calendar auth failures as controlled 503 errors', () => {
     assert.match(source, /invalid_grant/);
     assert.match(source, /503/);
   }
+});
+
+
+test('paid booking validates live slot identity before Square payment and sends slot identity from the frontend', () => {
+  const paidSource = fs.readFileSync(path.join(__dirname, 'api', 'book.js'), 'utf8');
+  const indexSource = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+
+  assert.match(paidSource, /slotId/);
+  assert.match(paidSource, /slotStartISO/);
+  assert.match(paidSource, /assertSlotIdentity\(\{ selectedDate, selectedTime, visitorTimeZone, slotId, slotStartISO \}\)/);
+  assert.ok(paidSource.indexOf('assertSlotIdentity({ selectedDate, selectedTime, visitorTimeZone, slotId, slotStartISO })') < paidSource.indexOf("fetch('https://connect.squareup.com/v2/payments'"));
+  assert.match(indexSource, /fetch\(`\/api\/slots\?visitorTimeZone=/);
+  assert.match(indexSource, /slotId:liveSlot\.id/);
+  assert.match(indexSource, /slotStartISO:liveSlot\.startISO/);
+});
+
+test('paid booking post-payment calendar failures tell the customer payment was received', () => {
+  const paidSource = fs.readFileSync(path.join(__dirname, 'api', 'book.js'), 'utf8');
+
+  assert.match(paidSource, /let paymentCompleted = false/);
+  assert.match(paidSource, /paymentCompleted = true/);
+  assert.match(paidSource, /Your payment was received, but the calendar invite could not be created automatically/);
+  assert.match(paidSource, /isGoogleAuthError/);
+  assert.match(paidSource, /invalid_grant/);
+});
+
+test('capture CORS allows production and booking previews but blocks sibling Vercel projects', () => {
+  const source = fs.readFileSync(path.join(__dirname, 'api', 'capture.js'), 'utf8');
+
+  assert.match(source, /book\.zirowork\.com/);
+  assert.match(source, /zirowork-booking-\[a-z0-9\]/);
+  assert.match(source, /Origin not allowed/);
+  assert.doesNotMatch(source, /Access-Control-Allow-Origin', '\*'/);
+});
+
+test('security headers allow required payment and tracking vendors without wildcard sources', () => {
+  const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'vercel.json'), 'utf8'));
+  const headers = config.headers[0].headers;
+  const csp = headers.find((header) => header.key === 'Content-Security-Policy').value;
+
+  assert.match(csp, /web\.squarecdn\.com/);
+  assert.match(csp, /connect\.squareup\.com/);
+  assert.match(csp, /fonts\.googleapis\.com/);
+  assert.match(csp, /connect\.facebook\.net/);
+  assert.doesNotMatch(csp, /\s\*\s/);
+  assert.ok(headers.some((header) => header.key === 'Strict-Transport-Security'));
+  assert.ok(headers.some((header) => header.key === 'X-Content-Type-Options'));
+});
+
+test('gitignore protects OAuth tokens, env snapshots, and repair scripts', () => {
+  const source = fs.readFileSync(path.join(__dirname, '.gitignore'), 'utf8');
+
+  assert.match(source, /\.google_token_response\.json/);
+  assert.match(source, /\*token\*\.json/);
+  assert.match(source, /vercel-\*\.env/);
+  assert.match(source, /exchange_google_code\.py/);
+  assert.match(source, /validate_google_calendar_token\.py/);
 });

@@ -1,2 +1,12 @@
 .vercel
 .env*.local
+.env
+.env.*
+!.env.example
+.google_token_response.json
+*token*.json
+*refresh*token*
+vercel-*.env
+*production.env
+exchange_google_code.py
+validate_google_calendar_token.py

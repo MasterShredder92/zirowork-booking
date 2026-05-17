@@ -5,5 +5,9 @@
   "dependencies": {
     "googleapis": "^140.0.0",
     "nodemailer": "^8.0.7"
+  },
+  "scripts": {
+    "test": "node --test schedule-core.test.js",
+    "audit:prod": "npm audit --omit=dev"
   }
 }

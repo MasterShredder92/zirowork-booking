@@ -1,24 +1,108 @@
 {
   "version": 2,
   "builds": [
-    { "src": "api/book.js", "use": "@vercel/node", "config": { "maxDuration": 30 } },
-    { "src": "api/book-waitlist.js", "use": "@vercel/node", "config": { "maxDuration": 30 } },
-    { "src": "api/slots.js", "use": "@vercel/node" },
-    { "src": "api/capture.js", "use": "@vercel/node" },
-    { "src": "index.html", "use": "@vercel/static" },
-    { "src": "waitlist.html", "use": "@vercel/static" },
-    { "src": "images/**", "use": "@vercel/static" },
-    { "src": "brand/**", "use": "@vercel/static" }
+    {
+      "src": "api/book.js",
+      "use": "@vercel/node",
+      "config": {
+        "maxDuration": 30
+      }
+    },
+    {
+      "src": "api/book-waitlist.js",
+      "use": "@vercel/node",
+      "config": {
+        "maxDuration": 30
+      }
+    },
+    {
+      "src": "api/slots.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/capture.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "waitlist.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "images/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "brand/**",
+      "use": "@vercel/static"
+    }
   ],
   "routes": [
-    { "src": "/api/book-waitlist", "dest": "/api/book-waitlist.js" },
-    { "src": "/api/book", "dest": "/api/book.js" },
-    { "src": "/api/slots", "dest": "/api/slots.js" },
-    { "src": "/api/capture", "dest": "/api/capture.js" },
-    { "src": "/images/(.*)", "dest": "/images/$1" },
-    { "src": "/brand/(.*)", "dest": "/brand/$1" },
-    { "src": "/waitlist", "dest": "/waitlist.html" },
-    { "src": "/waitlist/", "dest": "/waitlist.html" },
-    { "src": "/(.*)", "dest": "/index.html" }
+    {
+      "src": "/api/book-waitlist",
+      "dest": "/api/book-waitlist.js"
+    },
+    {
+      "src": "/api/book",
+      "dest": "/api/book.js"
+    },
+    {
+      "src": "/api/slots",
+      "dest": "/api/slots.js"
+    },
+    {
+      "src": "/api/capture",
+      "dest": "/api/capture.js"
+    },
+    {
+      "src": "/images/(.*)",
+      "dest": "/images/$1"
+    },
+    {
+      "src": "/brand/(.*)",
+      "dest": "/brand/$1"
+    },
+    {
+      "src": "/waitlist",
+      "dest": "/waitlist.html"
+    },
+    {
+      "src": "/waitlist/",
+      "dest": "/waitlist.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://web.squarecdn.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://www.facebook.com; connect-src 'self' https://connect.squareup.com https://*.squarecdn.com https://graph.facebook.com; frame-src 'self' https://web.squarecdn.com; form-action 'self'; base-uri 'self'; object-src 'none'"
+        }
+      ]
+    }
   ]
 }

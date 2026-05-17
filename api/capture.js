@@ -13,6 +13,28 @@ const KIT_API_KEY = requireEnv('KIT_API_KEY');
 const TENANT_ID = '00000000-0000-0000-0000-000000000001';
 const CAPTURE_SOURCE = 'book.zirowork.com/waitlist';
 const CAPTURE_STAGE = 'waitlist_submitted';
+const ALLOWED_ORIGINS = new Set([
+  'https://book.zirowork.com',
+  'https://www.book.zirowork.com',
+  'http://localhost:3000',
+  'http://localhost:5173',
+]);
+const BOOKING_PREVIEW_ORIGIN = /^https:\/\/zirowork-booking-[a-z0-9][a-z0-9-]*\.vercel\.app$/;
+
+function isAllowedOrigin(origin) {
+  if (!origin) return true;
+  return ALLOWED_ORIGINS.has(origin) || BOOKING_PREVIEW_ORIGIN.test(origin);
+}
+
+function setCorsHeaders(req, res) {
+  const origin = req.headers.origin;
+  if (isAllowedOrigin(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin || 'https://book.zirowork.com');
+    res.setHeader('Vary', 'Origin');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+}
 
 function supabaseHeaders(prefer) {
   const headers = {
@@ -139,9 +161,11 @@ async function upsertKitSubscriber({ email, firstName, lastName, schoolUrl, sele
 }
 
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  setCorsHeaders(req, res);
+
+  if (!isAllowedOrigin(req.headers.origin)) {
+    return res.status(403).json({ ok: false, error: 'Origin not allowed' });
+  }
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ ok: false });
