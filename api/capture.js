@@ -7,9 +7,6 @@ function requireEnv(name) {
   return value;
 }
 
-const SUPABASE_URL = requireEnv('SUPABASE_URL');
-const SUPABASE_SERVICE_KEY = requireEnv('SUPABASE_SERVICE_KEY');
-const KIT_API_KEY = requireEnv('KIT_API_KEY');
 const TENANT_ID = '00000000-0000-0000-0000-000000000001';
 const CAPTURE_SOURCE = 'book.zirowork.com/waitlist';
 const CAPTURE_STAGE = 'waitlist_submitted';
@@ -37,9 +34,10 @@ function setCorsHeaders(req, res) {
 }
 
 function supabaseHeaders(prefer) {
+  const serviceKey = requireEnv('SUPABASE_SERVICE_KEY');
   const headers = {
-    apikey: SUPABASE_SERVICE_KEY,
-    Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
+    apikey: serviceKey,
+    Authorization: `Bearer ${serviceKey}`,
     'Content-Type': 'application/json',
   };
   if (prefer) headers.Prefer = prefer;
@@ -47,6 +45,7 @@ function supabaseHeaders(prefer) {
 }
 
 async function findExistingLead(email) {
+  const supabaseUrl = requireEnv('SUPABASE_URL');
   const params = new URLSearchParams({
     source: `eq.${CAPTURE_SOURCE}`,
     tenant_id: `eq.${TENANT_ID}`,
@@ -56,7 +55,7 @@ async function findExistingLead(email) {
   });
   params.append('raw_payload->>email', `eq.${email}`);
 
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/intake_submissions?${params.toString()}`, {
+  const response = await fetch(`${supabaseUrl}/rest/v1/intake_submissions?${params.toString()}`, {
     method: 'GET',
     headers: supabaseHeaders(),
   });
@@ -70,6 +69,7 @@ async function findExistingLead(email) {
 }
 
 async function upsertLead({ email, firstName, lastName, schoolUrl, selectedDate, selectedTime, selectedDateLabel }) {
+  const supabaseUrl = requireEnv('SUPABASE_URL');
   const sanitizedFirst = (firstName || '').trim();
   const sanitizedLast = (lastName || '').trim();
   const fullName = `${sanitizedFirst} ${sanitizedLast}`.trim();
@@ -98,7 +98,7 @@ async function upsertLead({ email, firstName, lastName, schoolUrl, selectedDate,
   const existing = await findExistingLead(email);
 
   if (existing && existing.length > 0) {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/intake_submissions?id=eq.${existing[0].id}`, {
+    const response = await fetch(`${supabaseUrl}/rest/v1/intake_submissions?id=eq.${existing[0].id}`, {
       method: 'PATCH',
       headers: supabaseHeaders('return=minimal'),
       body: JSON.stringify({ raw_payload, metadata }),
@@ -113,7 +113,7 @@ async function upsertLead({ email, firstName, lastName, schoolUrl, selectedDate,
     return;
   }
 
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/intake_submissions`, {
+  const response = await fetch(`${supabaseUrl}/rest/v1/intake_submissions`, {
     method: 'POST',
     headers: supabaseHeaders('return=minimal'),
     body: JSON.stringify([{
@@ -135,11 +135,12 @@ async function upsertLead({ email, firstName, lastName, schoolUrl, selectedDate,
 }
 
 async function upsertKitSubscriber({ email, firstName, lastName, schoolUrl, selectedTime, selectedDateLabel }) {
+  const kitApiKey = requireEnv('KIT_API_KEY');
   const response = await fetch('https://api.convertkit.com/v3/subscribers', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      api_key: KIT_API_KEY,
+      api_key: kitApiKey,
       email,
       first_name: (firstName || '').trim() || email.split('@')[0],
       fields: {

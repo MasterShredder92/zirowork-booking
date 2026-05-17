@@ -147,7 +147,8 @@ test('booking routes request Google invite emails and Meet conference creation w
 test('capture route has no hardcoded Kit key and writes waitlist-specific source and stage', () => {
   const source = fs.readFileSync(path.join(__dirname, 'api', 'capture.js'), 'utf8');
 
-  assert.match(source, /const KIT_API_KEY = requireEnv\('KIT_API_KEY'\)/);
+  assert.match(source, /requireEnv\('KIT_API_KEY'\)/);
+  assert.doesNotMatch(source, /const KIT_API_KEY = requireEnv\('KIT_API_KEY'\)/);
   assert.doesNotMatch(source, /GDLeN7k0im3DEq3y-eydKg/);
   assert.doesNotMatch(source, /@supabase\/supabase-js/);
   assert.match(source, /book\.zirowork\.com\/waitlist/);
@@ -241,13 +242,46 @@ test('paid booking post-payment calendar failures tell the customer payment was 
   assert.match(paidSource, /invalid_grant/);
 });
 
-test('capture CORS allows production and booking previews but blocks sibling Vercel projects', () => {
+test('capture CORS allows production and booking previews but blocks sibling Vercel projects', async () => {
   const source = fs.readFileSync(path.join(__dirname, 'api', 'capture.js'), 'utf8');
 
   assert.match(source, /book\.zirowork\.com/);
   assert.match(source, /zirowork-booking-\[a-z0-9\]/);
   assert.match(source, /Origin not allowed/);
   assert.doesNotMatch(source, /Access-Control-Allow-Origin', '\*'/);
+
+  const envSnapshot = {
+    SUPABASE_URL: process.env.SUPABASE_URL,
+    SUPABASE_SERVICE_KEY: process.env.SUPABASE_SERVICE_KEY,
+    KIT_API_KEY: process.env.KIT_API_KEY,
+  };
+  delete process.env.SUPABASE_URL;
+  delete process.env.SUPABASE_SERVICE_KEY;
+  delete process.env.KIT_API_KEY;
+  delete require.cache[require.resolve('./api/capture')];
+
+  try {
+    const handler = require('./api/capture');
+    const headers = {};
+    const res = {
+      setHeader(key, value) { headers[key] = value; },
+      status(code) { this.statusCode = code; return this; },
+      end() { this.ended = true; return this; },
+      json(payload) { this.payload = payload; return this; },
+    };
+
+    await handler({ method: 'OPTIONS', headers: { origin: 'https://book.zirowork.com' } }, res);
+
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.ended, true);
+    assert.equal(headers['Access-Control-Allow-Origin'], 'https://book.zirowork.com');
+  } finally {
+    for (const [key, value] of Object.entries(envSnapshot)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+    delete require.cache[require.resolve('./api/capture')];
+  }
 });
 
 test('security headers allow required payment and tracking vendors without wildcard sources', () => {
